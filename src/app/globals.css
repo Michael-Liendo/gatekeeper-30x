@@ -1,26 +1,89 @@
 @import "tailwindcss";
 
+/*
+ * Theme tokens. Components use them through Tailwind utilities (bg-surface,
+ * text-ink-muted, bg-approve-soft, ...); never hardcoded colors.
+ * Light theme only for now; visual polish comes later.
+ */
 :root {
-	--background: #ffffff;
-	--foreground: #171717;
+	color-scheme: light;
+	--ground: #f5f6f8;
+	--surface: #ffffff;
+	--surface-muted: #f3f4f6;
+	--line: #e3e5e9;
+	--line-strong: #c9cdd4;
+	--ink: #111318;
+	--ink-muted: #5f6673;
+	--primary: #111318;
+	--primary-ink: #ffffff;
+	--focus: #2f5bd3;
+	--danger: #b42318;
+	--danger-soft: #fdecea;
+	--success: #1f7a4d;
+	--suggest: #f3f5fe;
+
+	/* Routes: dot, tinted background, text on the tint. */
+	--route-approve: #1f7a4d;
+	--route-approve-soft: #e3f3ea;
+	--route-approve-ink: #155c39;
+	--route-enrich: #3653d6;
+	--route-enrich-soft: #e8ecfc;
+	--route-enrich-ink: #2338a8;
+	--route-human: #d98a0b;
+	--route-human-soft: #fcf1dc;
+	--route-human-ink: #7a4b00;
+	--route-reject: #8a919c;
+	--route-reject-soft: #eef0f3;
+	--route-reject-ink: #3f4652;
+	--route-pending: #d5d9df;
 }
 
 @theme inline {
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
-	--font-mono: var(--font-geist-mono);
+	--color-ground: var(--ground);
+	--color-surface: var(--surface);
+	--color-surface-muted: var(--surface-muted);
+	--color-line: var(--line);
+	--color-line-strong: var(--line-strong);
+	--color-ink: var(--ink);
+	--color-ink-muted: var(--ink-muted);
+	--color-primary: var(--primary);
+	--color-primary-ink: var(--primary-ink);
+	--color-focus: var(--focus);
+	--color-danger: var(--danger);
+	--color-danger-soft: var(--danger-soft);
+	--color-success: var(--success);
+	--color-suggest: var(--suggest);
+
+	--color-approve: var(--route-approve);
+	--color-approve-soft: var(--route-approve-soft);
+	--color-approve-ink: var(--route-approve-ink);
+	--color-enrich: var(--route-enrich);
+	--color-enrich-soft: var(--route-enrich-soft);
+	--color-enrich-ink: var(--route-enrich-ink);
+	--color-human: var(--route-human);
+	--color-human-soft: var(--route-human-soft);
+	--color-human-ink: var(--route-human-ink);
+	--color-reject: var(--route-reject);
+	--color-reject-soft: var(--route-reject-soft);
+	--color-reject-ink: var(--route-reject-ink);
+	--color-pending: var(--route-pending);
+
+	--radius-card: 10px;
+
+	--font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+	--font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
+@layer base {
+	html,
+	body {
+		background: var(--ground);
+		color: var(--ink);
+		font-family: var(--font-sans);
 	}
-}
 
-body {
-	background: var(--background);
-	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
+	:focus-visible {
+		outline: 2px solid var(--focus);
+		outline-offset: 2px;
+	}
 }
