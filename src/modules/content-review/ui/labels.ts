@@ -85,10 +85,12 @@ export const QUESTION_LABEL = {
 	brand_risk: "Riesgo de marca",
 	offers_unsold_product: "Ofrece algo que la marca no vende",
 	is_spam: "Spam",
+	reach_potential: "Potencial de alcance",
+	editorial_fit: "Encaja con la línea editorial",
 } as const;
 
 export const CHOICE_KEYS = ["topic", "format"] as const;
-export const SCORE_KEYS = ["relevance", "actionable"] as const;
+export const SCORE_KEYS = ["relevance", "actionable", "reach_potential"] as const;
 export const FLAG_KEYS = [
 	"brand_risk",
 	"exaggerated_promises",
@@ -99,6 +101,33 @@ export const FLAG_KEYS = [
 ] as const;
 
 export type FlagKey = (typeof FLAG_KEYS)[number];
+
+/**
+ * Plain-language highlights for the editor: reach potential (Bajo/Medio/Alto) and
+ * editorial fit. Informative only; the policy never uses them to approve or reject.
+ */
+export function pieceHighlights(answers: ReviewResult["answers"]): {
+	reach: string | null;
+	fit: string | null;
+} {
+	const reach = answers.reach_potential;
+	const fit = answers.editorial_fit;
+	const levels = editorialQuestions.reach_potential.levels;
+	return {
+		reach:
+			reach?.type === "score"
+				? (levels[Math.min(levels.length - 1, Math.max(0, Math.round(reach.score)))]?.label ?? null)
+				: null,
+		fit:
+			fit?.type === "yes_no"
+				? fit.probability >= 0.7
+					? "Sí"
+					: fit.probability >= 0.4
+						? "En parte"
+						: "No"
+				: null,
+	};
+}
 
 const FORMAT_OPTION_LABEL: Record<string, string> = {
 	post: "Post",

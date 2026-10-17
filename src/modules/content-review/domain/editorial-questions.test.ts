@@ -42,15 +42,23 @@ describe("buildEditorialQuestions", () => {
 		assert.deepEqual(Object.keys(buildEditorialQuestions(brand)).sort(), [
 			"actionable",
 			"brand_risk",
+			"editorial_fit",
 			"exaggerated_promises",
 			"format",
 			"is_spam",
 			"offers_unsold_product",
+			"reach_potential",
 			"relevance",
 			"too_promotional",
 			"topic",
 			"unsourced_claims",
 		]);
+	});
+
+	it("asks editorial fit against the brand's own line, not 30X", () => {
+		const { instructions } = buildEditorialQuestions(brand).editorial_fit;
+		assert.match(instructions, /línea editorial de Café Andino/);
+		assert.doesNotMatch(instructions, /30X/);
 	});
 
 	it("lists the brand's offerings in offers_unsold_product", () => {
