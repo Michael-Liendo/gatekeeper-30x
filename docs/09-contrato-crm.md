@@ -36,7 +36,7 @@ Al revisar con JEV: AUTO_APPROVE→approved, ENRICH_WITH_LLM→needs_changes, HU
 2. Un LLM (OpenAI, `OPENAI_LLM_MODEL`) reescribe título y texto **con la voz de la marca**, corrigiendo solo lo marcado, sin inventar datos (si había datos sin fuente: los quita o pide la fuente con `[FUENTE]`), sin ofrecer lo que la marca no vende.
 3. JEV revisa la versión nueva con las mismas preguntas → la propuesta trae su veredicto.
 4. La UI muestra antes/después + veredicto nuevo; "Guardar como nueva versión" llama a `POST /api/pieces/[id]/versions`.
-Capturas: se reescribe el texto y la imagen se rediseña con OpenAI `gpt-image-2` usando los colores de la marca; JEV revisa la versión nueva con la imagen nueva.
+Capturas: se reescribe el texto y la imagen se rediseña con OpenAI `gpt-image-2.5-sunburst` (calidad alta, edición fiel al original) usando los colores de la marca; JEV revisa la versión nueva con la imagen nueva.
 
 ## UI (owner: agente de UI)
 - `/tablero`: columnas por estado (Por revisar, Por mejorar, Aprobado, Rechazado) con tarjetas (miniatura, título, autor, potencial de alcance); mover con botones/menú (y arrastrar si es simple).

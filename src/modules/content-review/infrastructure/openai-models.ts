@@ -7,4 +7,4 @@ export const OPENAI_DECISIONS_MODEL = "gpt-6-luna";
 export const OPENAI_LLM_MODEL = "gpt-6-luna";
 
 /** "Regenerar con IA": redraws a piece's screenshot with the corrected copy. */
-export const OPENAI_IMAGE_MODEL = "gpt-image-2";
+export const OPENAI_IMAGE_MODEL = "gpt-image-2.5-sunburst";

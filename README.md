@@ -67,7 +67,7 @@ aprueba sin respuesta**.
 En una pieza que no pasó, **"Regenerar con IA"**:
 1. Un LLM (OpenAI `gpt-6-luna`) reescribe título y texto **con la voz de la marca**,
    corrigiendo solo lo que JEV marcó, sin inventar datos ni ofrecer lo que la marca no vende.
-2. Si la pieza era una captura, `gpt-image-2` redibuja la imagen con el texto corregido.
+2. Si la pieza era una captura, `gpt-image-2.5-sunburst` (calidad alta) redibuja la imagen con el texto corregido.
 3. **JEV revisa la versión nueva** con las mismas preguntas y la propuesta trae su veredicto.
 4. Ves antes/después y decides: **"Guardar como nueva versión"** (Versión 2, Versión 3…).
 
@@ -126,7 +126,7 @@ flowchart LR
   DE -->|principal| JEV[JEV · TypeSafe<br/>@typesafe-ai/sdk]
   DE -->|respaldo si falla o tarda| OAD[OpenAI Decisions<br/>gpt-6-luna]
   UC --> LLM[OpenAI gpt-6-luna<br/>sugerencias y reescritura]
-  UC --> IMG[OpenAI gpt-image-2<br/>redibujo de capturas]
+  UC --> IMG[OpenAI gpt-image-2.5-sunburst<br/>redibujo de capturas]
   UC --> DB[(SQLite node:sqlite<br/>DATA_DIR/gatekeeper.db<br/>+ uploads/)]
 ```
 
