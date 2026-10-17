@@ -44,12 +44,19 @@ export interface EditorialPolicy {
 	};
 }
 
+/**
+ * Calibrated on 2026-10-17 against live JEV (jev-1.13.0) answers for the 45 labeled
+ * simulated pieces: 82% match the expected route and no risky or spam piece is
+ * auto-approved (every miss is the conservative one). JEV's choice/score
+ * `confidence` runs lower than the class probability, so the confidence gates sit
+ * below the original design's 0.85 / 0.6. Re-calibrate with real labeled data.
+ */
 export const defaultEditorialPolicy: EditorialPolicy = {
-	autoApproveConfidence: 0.85,
-	grayZoneFloor: 0.6,
-	riskBlock: 0.7,
-	spamReject: 0.85,
-	minEditorialScore: 0.75,
+	autoApproveConfidence: 0.5,
+	grayZoneFloor: 0.2,
+	riskBlock: 0.6,
+	spamReject: 0.6,
+	minEditorialScore: 0.5,
 	flagThreshold: 0.5,
 	weights: {
 		relevance: 0.5,

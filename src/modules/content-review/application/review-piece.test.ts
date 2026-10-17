@@ -163,7 +163,11 @@ describe("reviewPiece", () => {
 		assert.equal(strict.route, "ENRICH_WITH_LLM");
 
 		// Halving relevance's weight: 0.25 + 0.5 − 0.025 − 0.025 = 0.7 < 0.75.
-		const reweighted = await reviewPiece(piece, { policy: { weights: { relevance: 0.25 } } }, deps);
+		const reweighted = await reviewPiece(
+			piece,
+			{ policy: { minEditorialScore: 0.75, weights: { relevance: 0.25 } } },
+			deps,
+		);
 		assert.equal(reweighted.route, "ENRICH_WITH_LLM");
 		assert.ok(reweighted.reasons.some((r) => r.check === "editorial_score"));
 	});
