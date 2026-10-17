@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import { useSession } from "@/modules/accounts/ui/session-provider";
 import { useToast } from "@/shared/ui/toast";
 import type { ReviewResult } from "../domain/review";
 import { AnswerList } from "./answer-list";
 import { formatDecimal, formatMs, formatPercent, formatUsd } from "./format";
 import {
+	brandForResult,
 	describePiece,
 	EDITOR_ACTION_LABEL,
 	PROVIDER_LABEL,
@@ -44,6 +46,7 @@ export function PieceDetail({
 	backLabel = "Volver",
 	onResolved,
 }: PieceDetailProps) {
+	const { brand: sessionBrand } = useSession();
 	const {
 		policy,
 		editorActions,
@@ -231,7 +234,11 @@ export function PieceDetail({
 					Respuestas de {providerName ?? "JEV"}
 				</h3>
 				{hasAnswers ? (
-					<AnswerList answers={result.answers} policy={policy} />
+					<AnswerList
+						answers={result.answers}
+						policy={policy}
+						brand={brandForResult(result, sessionBrand)}
+					/>
 				) : (
 					<p className="text-sm text-ink-muted">Ningún modelo respondió para esta pieza.</p>
 				)}

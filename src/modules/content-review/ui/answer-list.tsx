@@ -1,10 +1,11 @@
+import type { BrandProfile } from "@/modules/brand/domain/brand-profile";
 import { Meter } from "@/shared/ui/meter";
 import type { ChoiceAnswer, DecisionAnswer, ScoreAnswer } from "../domain/decision";
 import type { EditorialPolicy } from "../domain/editorial-policy";
 import { formatPercent } from "./format";
 import {
 	CHOICE_KEYS,
-	CHOICE_OPTION_LABEL,
+	choiceOptionLabel,
 	FLAG_KEYS,
 	flagMarkers,
 	QUESTION_LABEL,
@@ -15,6 +16,8 @@ import {
 interface AnswerListProps {
 	answers: Record<string, DecisionAnswer>;
 	policy: EditorialPolicy;
+	/** Brand the piece was judged against (topic options come from it). */
+	brand: BrandProfile;
 }
 
 function ChoiceGroup({
@@ -24,7 +27,7 @@ function ChoiceGroup({
 }: {
 	name: string;
 	answer: ChoiceAnswer;
-	options: Record<string, string>;
+	options: (option: string) => string;
 }) {
 	const ranked = Object.entries(answer.probabilities)
 		.sort(([, a], [, b]) => b - a)
@@ -32,13 +35,12 @@ function ChoiceGroup({
 	return (
 		<div className="grid gap-1.5">
 			<p className="text-xs text-ink-muted">
-				{name}:{" "}
-				<span className="font-semibold text-ink">{options[answer.choice] ?? answer.choice}</span>
+				{name}: <span className="font-semibold text-ink">{options(answer.choice)}</span>
 			</p>
 			{ranked.map(([option, probability]) => (
 				<Meter
 					key={option}
-					label={options[option] ?? option}
+					label={options(option)}
 					value={probability}
 					valueText={formatPercent(probability)}
 					fillClassName={option === answer.choice ? "bg-ink" : "bg-line-strong"}
@@ -73,7 +75,7 @@ function ScoreRow({
 }
 
 /** Every typed answer the model gave, as label | bar | value rows. */
-export function AnswerList({ answers, policy }: AnswerListProps) {
+export function AnswerList({ answers, policy, brand }: AnswerListProps) {
 	return (
 		<div className="grid gap-5">
 			{CHOICE_KEYS.map((key) => {
@@ -84,7 +86,7 @@ export function AnswerList({ answers, policy }: AnswerListProps) {
 						key={key}
 						name={QUESTION_LABEL[key]}
 						answer={answer}
-						options={CHOICE_OPTION_LABEL[key]}
+						options={(option) => choiceOptionLabel(key, option, brand)}
 					/>
 				);
 			})}

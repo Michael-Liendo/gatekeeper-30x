@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { AppShell } from "@/modules/content-review/ui/app-shell";
-import { ReviewSessionProvider } from "@/modules/content-review/ui/review-session-provider";
 import { ToastProvider } from "@/shared/ui/toast";
 import "./globals.css";
 
@@ -27,11 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 	return (
 		<html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
 			<body className="min-h-full">
-				<ToastProvider>
-					<ReviewSessionProvider>
-						<AppShell>{children}</AppShell>
-					</ReviewSessionProvider>
-				</ToastProvider>
+				<ToastProvider>{children}</ToastProvider>
 			</body>
 		</html>
 	);
