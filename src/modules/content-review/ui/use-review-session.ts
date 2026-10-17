@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
 	type PieceStatus,
@@ -68,6 +67,8 @@ export interface ReviewSession {
 	enrich: (id: string) => Promise<void>;
 	submit: (input: SubmitInput) => Promise<ReviewResult>;
 	clearAll: () => void;
+	/** Reloads the team pieces stored in the database. */
+	refreshWorkspace: () => Promise<void>;
 }
 
 export const QUEUE_ROUTES: ReadonlySet<ReviewResult["route"]> = new Set([
@@ -122,10 +123,9 @@ export function useReviewSession(): ReviewSession {
 	const [editorActions, setEditorActions] = useState<Record<string, EditorAction>>({});
 	const [enrichments, setEnrichments] = useState<Record<string, EnrichState>>({});
 	const [workspace, setWorkspace] = useState<WorkspacePiece[]>([]);
-	const pathname = usePathname();
 
-	// Team pieces live in the database; reload them when the user moves between screens
-	// so something uploaded in "Nueva pieza" shows up everywhere.
+	// Team pieces live in the database. Reload them on mount, when the window regains
+	// focus, every 20 s and right after a submission, so uploads show up everywhere.
 	const refreshWorkspace = useCallback(async () => {
 		try {
 			setWorkspace(await listPieces());
@@ -133,10 +133,16 @@ export function useReviewSession(): ReviewSession {
 			// Signed out or offline: the sample analysis still works.
 		}
 	}, []);
-	// biome-ignore lint/correctness/useExhaustiveDependencies: reload on every navigation.
 	useEffect(() => {
 		void refreshWorkspace();
-	}, [pathname, refreshWorkspace]);
+		const onFocus = () => void refreshWorkspace();
+		window.addEventListener("focus", onFocus);
+		const timer = window.setInterval(onFocus, 20_000);
+		return () => {
+			window.removeEventListener("focus", onFocus);
+			window.clearInterval(timer);
+		};
+	}, [refreshWorkspace]);
 
 	// Restore the previous session once, after mount (localStorage is browser-only).
 	useEffect(() => {
@@ -371,5 +377,6 @@ export function useReviewSession(): ReviewSession {
 		enrich,
 		submit,
 		clearAll,
+		refreshWorkspace,
 	};
 }

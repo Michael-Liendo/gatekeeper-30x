@@ -8,6 +8,7 @@ import { ImageDropZone } from "@/shared/ui/image-drop-zone";
 import type { ContentChannel, ContentFormat } from "../domain/content-piece";
 import { CHANNEL_LABEL, FORMAT_LABEL } from "./labels";
 import { PageHeader } from "./page-header";
+import { useReview } from "./review-session-provider";
 
 const FORMATS = Object.keys(FORMAT_LABEL) as ContentFormat[];
 const CHANNELS = Object.keys(CHANNEL_LABEL) as ContentChannel[];
@@ -28,6 +29,7 @@ function titleFromText(text: string): string | undefined {
 /** Full-page form to submit a piece (screenshot, text or both); opens its result page. */
 export function NewPieceView() {
 	const router = useRouter();
+	const { refreshWorkspace } = useReview();
 	const id = useId();
 	const [image, setImage] = useState<string | null>(null);
 	const [title, setTitle] = useState("");
@@ -54,6 +56,7 @@ export function NewPieceView() {
 				format,
 				channel,
 			});
+			void refreshWorkspace();
 			router.push(`/pieza/${encodeURIComponent(piece.id)}`);
 		} catch (submitError) {
 			setError(
