@@ -32,7 +32,7 @@ la de notas (`P`) aparte: con `N` el público lee el guion. También se pasan
 tocando: la mitad derecha avanza, la izquierda retrocede. La URL guarda la lámina
 actual (`#3`).
 
-El guion completo son ~660 palabras: unos 5–6 minutos a ritmo normal.
+El guion completo son ~720 palabras: unos 5–6 minutos a ritmo normal.
 
 ## PDF
 
@@ -55,8 +55,9 @@ Las capturas quedan en `/tmp/playbook/` (o en `$SALIDA`). Míralas: medir no bas
 
 ## Las cifras
 
-Ninguna es inventada. Salen de [05-calibracion.md](../05-calibracion.md), de la
+Ninguna es inventada. Salen de [05-calibracion.md](../05-calibracion.md) (contenido
+y prueba de escala), de [12-segmentacion.md](../12-segmentacion.md) (inscritos), de la
 política en `src/modules/content-review/domain/editorial-policy.ts`, de los
 preajustes en `src/modules/content-review/ui/policy-presets.ts` y de pruebas en
 producción. Si cambia la política calibrada, se actualizan las láminas 4 y 7 y
-`playbook.md`.
+`playbook.md`; si cambia una medición de inscritos, la lámina 8.

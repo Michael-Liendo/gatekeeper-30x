@@ -9,14 +9,17 @@
 <body>
 
 <!--
-	Pitch de la final del Hackathon 30X. Nueve láminas, unos cuatro minutos.
+	Pitch de la final del Hackathon 30X. Diez láminas, unos cuatro minutos y medio.
 
-	Es para la dirección de 30X y jurados de negocio: habla de decisiones,
-	tiempo, riesgo, marca, equipo y dinero. Nada de modelos, umbrales ni
-	arquitectura: eso vive en docs/playbook/, y aquí solo se le señala una vez.
+	Responde la pregunta del reto: qué decisiones de 30X toma JEV miles de veces
+	al día, en milisegundos y por fracciones de centavo. JEV es el protagonista
+	(el motor que decide); el producto es el contexto. Habla de decisiones,
+	tiempo, riesgo y dinero. Nada de umbrales ni arquitectura: eso vive en
+	docs/playbook/.
 
-	Ninguna cifra inventada. Las de producto salen de docs/05-calibracion.md y de
-	pruebas en producción; las de 30X son las públicas del perfil @crece30x.
+	Ninguna cifra inventada. Las de producto salen de docs/05-calibracion.md
+	(contenido y prueba de escala) y docs/12-segmentacion.md (inscritos); las de
+	30X son las públicas del perfil @crece30x y la hoja anónima de inscritos.
 
 	Ninguna lámina puede desbordarse: `verificar.mjs` las mide todas.
 	Cada `data-notes` es lo que se dice en voz alta; se abren con P.
@@ -44,123 +47,129 @@
 	</svg>
 
 	<!-- ═══════════════════════════ 01 · Portada ═══════════════════════════ -->
-	<section class="slide" data-notes="Hola, somos DevGain: Michael Liendo y Haron Acosta, y les traemos Gatekeeper Editorial. La idea cabe en una frase: lo que está bien se publica solo, lo que está dudoso lo arregla la IA, y una persona revisa a mano solo lo que de verdad importa. Lo pensamos para el equipo de Media de 30X, que se hace la misma pregunta decenas de veces al día: ¿esta pieza está lista para salir?">
+	<section class="slide" data-notes="Hola, somos DevGain: Michael Liendo y Haron Acosta. El reto pregunta qué decisiones de 30X podría tomar JEV miles de veces al día, en milisegundos y por fracciones de centavo. Construimos dos, y las dos ya funcionan: para Media, ¿esta pieza sale?; para Comercial, ¿a qué programa va este inscrito y lo llamamos ya? La regla es simple: JEV decide; la IA generativa solo escribe cuando hace falta.">
 		<div class="head">
 			<span class="num">01</span>
-			<span class="eyebrow">Hackathon 30X · Final</span>
+			<span class="eyebrow">Hackathon 30X · Reto JEV · Final</span>
 		</div>
 		<div class="body">
 			<div class="split" style="grid-template-columns: 1.2fr 1fr; align-items: center; gap: 48px">
 				<div>
 					<h1>Gatekeeper Editorial</h1>
-					<div class="tagline">
-						<span class="t1">Publica solo lo bueno.</span>
-						<span class="t2">Arregla lo dudoso con IA.</span>
-						<span class="t3">Revisa a mano solo lo que importa.</span>
-					</div>
-					<p class="team-line">Equipo <strong>DevGain</strong> · Michael Liendo y Haron Acosta</p>
+					<p class="cover-lede">Decisiones de 30X que <strong>JEV toma miles de veces al día</strong>, en milisegundos y por fracciones de centavo.</p>
+					<div class="engine-line"><svg aria-hidden="true" class="icon"><use href="#i-bolt"/></svg>JEV decide. La IA generativa solo escribe cuando hace falta.</div>
+					<p class="team-line" style="margin-top:26px">Equipo <strong>DevGain</strong> · Michael Liendo y Haron Acosta</p>
 				</div>
-				<div class="card lilac" style="padding: 26px">
-					<div class="card-label">Pieza nueva del equipo creativo <svg aria-hidden="true" class="icon"><use href="#i-upload"/></svg></div>
-					<div class="verdict" style="margin-top:14px">
-						<div style="font-size:16px; font-weight:500">3 preguntas antes de subir el precio</div>
-						<div class="mini-line"></div>
-						<div class="mini-line short"></div>
-					</div>
-					<div class="verdict" style="margin-top:12px">
+				<div class="card lilac" style="padding: 22px; display:grid; gap:12px">
+					<div class="card-label">Dos decisiones, el mismo motor <svg aria-hidden="true" class="icon"><use href="#i-layers"/></svg></div>
+					<div class="verdict">
+						<span class="area">Media</span>
+						<div class="q-mini">¿Esta pieza sale?</div>
 						<span class="route approve" style="justify-self:start">Lista para publicar</span>
 						<div class="why">Aporta algo útil, habla como la marca y no promete de más.</div>
 					</div>
-					<p class="small" style="margin-top:14px; color: var(--ink)"><svg aria-hidden="true" class="icon" style="width:16px;height:16px;vertical-align:-3px"><use href="#i-clock"/></svg> Decidido en menos de un segundo</p>
+					<div class="verdict">
+						<span class="area">Comercial</span>
+						<div class="q-mini">¿A qué programa va este inscrito y lo llamamos ya?</div>
+						<span class="route approve" style="justify-self:start">AI Sales · Pasar a un asesor</span>
+						<div class="why">Dueña de su empresa, quiere vender con IA y está lista para hablar.</div>
+					</div>
+					<p class="small" style="color: var(--ink)"><svg aria-hidden="true" class="icon" style="width:16px;height:16px;vertical-align:-3px"><use href="#i-clock"/></svg> Cada una, decidida por JEV en milisegundos</p>
 				</div>
 			</div>
 		</div>
-		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>1 / 9</span></div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>1 / 10</span></div>
 	</section>
 
 	<!-- ═══════════════════════════ 02 · El problema ═══════════════════════════ -->
-	<section class="slide" data-notes="30X forma a fundadores y ejecutivos en Latinoamérica, y su marca vive en redes: en Instagram, @crece30x tiene unos cuatrocientos veinticinco mil seguidores y más de mil quinientas publicaciones. Con IA, producir una pieza ya toma minutos. Revisarla, no: alguien tiene que leerla, decidir y corregir. Eso es lento, cada editor usa su propio criterio, y basta un post equivocado para que la marca lo pague delante de cientos de miles de personas.">
+	<section class="slide" data-notes="30X toma estas dos decisiones todo el tiempo. En Media, cada pieza sale ante unos cuatrocientos veinticinco mil seguidores en Instagram, y con IA producir ya toma minutos. En Comercial, cada persona que se inscribe en Luma: solo en la hoja que nos compartieron hay seiscientos noventa y siete. Hoy las dos se deciden a mano: es lento, cada persona usa su criterio, y equivocarse cuesta marca o ventas.">
 		<div class="head">
 			<span class="num">02</span>
 			<span class="eyebrow">El problema</span>
 		</div>
 		<div class="body">
-			<h2>Producir contenido ya es rápido. <span class="hl-text">Revisarlo sigue siendo a mano.</span></h2>
-			<div class="row mt-l">
-				<div class="card lilac">
-					<div class="card-label">Seguidores de @crece30x en Instagram</div>
-					<div class="stat-big" style="margin-top:12px">425 mil</div>
+			<h2>30X toma las mismas decisiones cientos de veces. <span class="hl-text">Hoy, a mano.</span></h2>
+			<div class="decisions mt">
+				<div class="card lilac" style="padding:22px 24px">
+					<span class="area">Media</span>
+					<div class="decision" style="padding:0; margin-top:6px"><div class="q">¿Esta pieza sale?</div></div>
+					<div class="row mt-s" style="gap:12px">
+						<div class="verdict"><div class="stat-mid">425 mil</div><div class="why">seguidores de @crece30x en Instagram</div></div>
+						<div class="verdict"><div class="stat-mid">1.500+</div><div class="why">publicaciones, y la IA multiplica lo que se produce</div></div>
+					</div>
 				</div>
-				<div class="card aqua">
-					<div class="card-label">Publicaciones en ese perfil</div>
-					<div class="stat-big" style="margin-top:12px">1.500+</div>
-				</div>
-				<div class="card peach">
-					<div class="card-label">Y la IA multiplica lo que se produce</div>
-					<div class="stat-big" style="margin-top:12px">× IA</div>
+				<div class="card aqua" style="padding:22px 24px">
+					<span class="area">Comercial</span>
+					<div class="decision" style="padding:0; margin-top:6px"><div class="q">¿A qué programa va este inscrito y lo llamamos ya?</div></div>
+					<div class="row mt-s" style="gap:12px">
+						<div class="verdict"><div class="stat-mid">697</div><div class="why">inscritos de Luma en la hoja anónima que compartió 30X</div></div>
+						<div class="verdict"><div class="stat-mid">5</div><div class="why">programas posibles, y un asesor con tiempo limitado</div></div>
+					</div>
 				</div>
 			</div>
 			<div class="row mt">
-				<div class="card muted-bg">
+				<div class="card muted-bg" style="padding:16px 22px">
 					<h3><svg aria-hidden="true" class="icon" style="vertical-align:-4px; margin-right:6px"><use href="#i-clock"/></svg>Lento</h3>
-					<p class="small mt-s">Cada pieza espera a que alguien la lea y decida.</p>
+					<p class="small mt-s" style="margin-top:6px">Cada pieza y cada inscrito esperan a que alguien decida.</p>
 				</div>
-				<div class="card muted-bg">
+				<div class="card muted-bg" style="padding:16px 22px">
 					<h3><svg aria-hidden="true" class="icon" style="vertical-align:-4px; margin-right:6px"><use href="#i-scale"/></svg>Inconsistente</h3>
-					<p class="small mt-s">Dos editores, dos criterios distintos.</p>
+					<p class="small mt-s" style="margin-top:6px">Dos personas, dos criterios distintos.</p>
 				</div>
-				<div class="card muted-bg">
+				<div class="card muted-bg" style="padding:16px 22px">
 					<h3><svg aria-hidden="true" class="icon" style="vertical-align:-4px; margin-right:6px"><use href="#i-shield"/></svg>Caro si falla</h3>
-					<p class="small mt-s">Un post equivocado lo paga la marca, en público.</p>
+					<p class="small mt-s" style="margin-top:6px">Un post equivocado o una venta que se enfría.</p>
 				</div>
 			</div>
 		</div>
-		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>2 / 9 · cifras públicas del perfil @crece30x</span></div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>2 / 10 · cifras públicas de @crece30x y la hoja de inscritos de 30X</span></div>
 	</section>
 
 	<!-- ═══════════════════════════ 03 · La solución ═══════════════════════════ -->
-	<section class="slide" data-notes="Gatekeeper es un filtro editorial. El equipo sube la pieza, como captura o como texto, y en menos de un segundo el sistema dice una de cuatro cosas: se publica tal cual, se mejora con IA, la revisa una persona, o se descarta. Y siempre explica por qué, en palabras simples. Por dentro decide el motor de decisión JEV, de TypeSafe; para el equipo, es subir una pieza y recibir una respuesta clara.">
+	<section class="slide" data-notes="Nuestra respuesta: que JEV, el motor de decisión de TypeSafe, tome esas dos decisiones. Para una pieza, dice una de cuatro cosas: se publica, se mejora con IA, la revisa una persona o se descarta. Para un inscrito, dice a qué programa va y qué hacer: pasarlo a un asesor, enviarle la propuesta o nutrirlo con contenido. Siempre explica por qué, y si duda, decide una persona.">
 		<div class="head">
 			<span class="num">03</span>
 			<span class="eyebrow">La solución</span>
 		</div>
 		<div class="body">
-			<h2>Subes la pieza. En menos de un segundo sabes <span class="hl-text">qué hacer con ella</span>.</h2>
-			<div class="outcomes mt-l">
-				<div class="outcome approve">
-					<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-check"/></svg></span>
-					<h3>Se publica</h3>
-					<p>Está lista. Nadie tiene que tocarla.</p>
+			<h2>JEV decide. <span class="hl-text">La IA generativa solo escribe cuando hace falta.</span></h2>
+			<div class="decisions mt-l">
+				<div class="decision" style="background:var(--surface-muted)">
+					<span class="area">Media · decisión 1</span>
+					<div class="q">¿Esta pieza sale?</div>
+					<div class="outs">
+						<span class="route approve">Se publica</span>
+						<span class="route enrich">Se mejora con IA</span>
+						<span class="route human">La revisa una persona</span>
+						<span class="route reject">Se descarta</span>
+					</div>
+					<p class="extra">Si la mejora la IA, <strong>JEV la vuelve a revisar</strong> antes de que salga.</p>
 				</div>
-				<div class="outcome enrich">
-					<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-spark"/></svg></span>
-					<h3>Mejorar con IA</h3>
-					<p>Le falta algo. La IA la arregla con un clic.</p>
-				</div>
-				<div class="outcome human">
-					<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-eye"/></svg></span>
-					<h3>La revisas tú</h3>
-					<p>Hay un riesgo o una duda real. Decide una persona.</p>
-				</div>
-				<div class="outcome reject">
-					<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-x"/></svg></span>
-					<h3>Se descarta</h3>
-					<p>Spam o fuera de la marca. No sale.</p>
+				<div class="decision" style="background:var(--surface-muted)">
+					<span class="area">Comercial · decisión 2</span>
+					<div class="q">¿A qué programa va este inscrito y lo llamamos ya?</div>
+					<div class="outs">
+						<span class="route approve">Pasar a un asesor</span>
+						<span class="route enrich">Enviar la propuesta</span>
+						<span class="route reject">Nutrir con contenido</span>
+						<span class="route human">Revisión humana</span>
+					</div>
+					<p class="extra">Con su programa, su cargo y su madurez en IA. <strong>Se recalcula</strong> si cambia su situación.</p>
 				</div>
 			</div>
-			<p class="lede mt" style="font-size:19px">Y siempre te dice <strong style="color:var(--ink)">por qué</strong>, en palabras simples.</p>
+			<p class="lede mt" style="font-size:19px; max-width:none">Siempre dice <strong style="color:var(--ink)">por qué</strong>, en palabras simples. Si duda, decide una persona.</p>
 		</div>
-		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>3 / 9</span></div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>3 / 10</span></div>
 	</section>
 
 	<!-- ═══════════════════════════ 04 · Cómo se vive ═══════════════════════════ -->
-	<section class="slide" data-notes="Así se vive. Uno: diseño o copy sube la pieza. Dos: al instante aparece la decisión con su motivo, por ejemplo, promete más de lo que aporta. Tres: un clic en Regenerar con IA reescribe el texto y rehace la imagen con la voz de la marca, y el sistema la vuelve a revisar. Cuatro: se aprueba. Todo queda en un tablero con historial y versiones, y el editor solo ve lo que le toca.">
+	<section class="slide" data-notes="Así se vive en Media. Uno: diseño o copy sube la pieza. Dos: JEV decide al instante y dice el motivo, por ejemplo, promete más de lo que aporta. Tres: un clic en Regenerar con IA reescribe el texto y rehace la imagen con la voz de la marca, y JEV la vuelve a revisar. Cuatro: se aprueba. Todo queda en un tablero con historial y versiones, y el editor solo ve lo que le toca.">
 		<div class="head">
 			<span class="num">04</span>
-			<span class="eyebrow">Cómo se vive</span>
+			<span class="eyebrow">Decisión 1 · cómo se vive en Media</span>
 		</div>
 		<div class="body">
-			<h2>Cuatro pasos. El editor solo entra cuando hace falta.</h2>
+			<h2>Cuatro pasos. <span class="hl-text">JEV decide</span>; el editor solo entra cuando hace falta.</h2>
 			<div class="walk mt-l">
 				<div class="walk-step">
 					<div class="n"><i>1</i>Sube</div>
@@ -171,7 +180,7 @@
 					<div class="cap">Diseño o copy sube la pieza, como captura o texto.</div>
 				</div>
 				<div class="walk-step">
-					<div class="n"><i>2</i>Decide</div>
+					<div class="n"><i>2</i>JEV decide</div>
 					<div class="mock card muted-bg">
 						<div class="verdict">
 							<span class="route enrich" style="justify-self:start">Mejorar con IA</span>
@@ -179,7 +188,7 @@
 						</div>
 						<div class="small" style="text-align:center"><svg aria-hidden="true" class="icon" style="width:15px;height:15px;vertical-align:-3px"><use href="#i-clock"/></svg> menos de 1 segundo</div>
 					</div>
-					<div class="cap">La decisión llega al instante, con su motivo.</div>
+					<div class="cap">JEV decide al instante y dice el motivo.</div>
 				</div>
 				<div class="walk-step">
 					<div class="n"><i>3</i>Arregla</div>
@@ -187,10 +196,10 @@
 						<span class="btn-dark"><svg aria-hidden="true" class="icon"><use href="#i-spark"/></svg>Regenerar con IA</span>
 						<div class="verdict" style="gap:6px">
 							<div class="small" style="color:var(--ink)">Texto e imagen nuevos, con la voz de tu marca</div>
-							<div class="small"><svg aria-hidden="true" class="icon" style="width:15px;height:15px;vertical-align:-3px"><use href="#i-loop"/></svg> Revisada otra vez</div>
+							<div class="small"><svg aria-hidden="true" class="icon" style="width:15px;height:15px;vertical-align:-3px"><use href="#i-loop"/></svg> JEV la revisa otra vez</div>
 						</div>
 					</div>
-					<div class="cap">Un clic. La IA la reescribe y se vuelve a revisar.</div>
+					<div class="cap">Un clic. La IA la reescribe y JEV la vuelve a revisar.</div>
 				</div>
 				<div class="walk-step">
 					<div class="n"><i>4</i>Aprueba</div>
@@ -205,11 +214,11 @@
 				</div>
 			</div>
 		</div>
-		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>4 / 9</span></div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>4 / 10 · Media</span></div>
 	</section>
 
 	<!-- ═══════════════════════════ 05 · El caso real ═══════════════════════════ -->
-	<section class="slide" data-notes="Este caso es real, en producción. Subimos una captura de spam: gana cinco mil dólares al día, cripto, garantizado. El sistema la descartó y dijo por qué: promete dinero, parece spam y pone en riesgo la marca. Un clic en Regenerar con IA y quedó así: Encuentra el freno al crecimiento, una invitación a las clases gratis de 30X, con la imagen en el lima de la marca. Revisada otra vez, aprobada y guardada como versión dos.">
+	<section class="slide" data-notes="Este caso es real, en producción. Subimos una captura de spam: gana cinco mil dólares al día con cripto, garantizado. JEV la descartó y dijo por qué: promete dinero, parece spam y pone en riesgo la marca. Un clic en Regenerar con IA y quedó así: Encuentra el freno al crecimiento, una invitación a las clases gratis de 30X, con la imagen en el lima de la marca. JEV la revisó otra vez, la aprobó, y quedó como versión dos.">
 		<div class="head">
 			<span class="num">05</span>
 			<span class="eyebrow">Un caso real, en producción</span>
@@ -218,7 +227,7 @@
 			<h2>De spam a post de 30X, <span class="hl-text">con un clic</span></h2>
 			<div class="versus mt">
 				<div class="card">
-					<div class="card-label">Lo que subieron <span class="route reject">Se descarta</span></div>
+					<div class="card-label">Lo que subieron <span>JEV: <span class="route reject">Se descarta</span></span></div>
 					<div class="post antes mt-s" role="img" aria-label="Captura original subida al sistema">
 						<p class="post-title">GANA $5.000 AL DÍA</p>
 						<p>Sin experiencia. Método 100% garantizado.<br>Invierte en cripto hoy y hazte millonario en 30 días.<br>¡Últimos cupos! Haz click en el link de la bio</p>
@@ -235,7 +244,7 @@
 					<p class="small">Un clic.<br>Texto e imagen.</p>
 				</div>
 				<div class="card">
-					<div class="card-label">Lo que propuso la IA <span class="route approve">Se publica</span></div>
+					<div class="card-label">Lo que propuso la IA <span>JEV: <span class="route approve">Se publica</span></span></div>
 					<div class="post despues mt-s" role="img" aria-label="Versión regenerada por la IA">
 						<p class="post-title">Encuentra el freno al crecimiento</p>
 						<p>¿Quieres hacer crecer tu empresa? Primero, identifica dónde está el principal desafío: adquisición, producto o escalamiento. Elige un área y define una acción concreta para avanzar esta semana.</p>
@@ -244,16 +253,16 @@
 					<div class="flags">
 						<div class="flag">Texto con la voz de 30X<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--approve)"><use href="#i-check"/></svg></b></div>
 						<div class="flag">Imagen rehecha en el lima de la marca<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--approve)"><use href="#i-check"/></svg></b></div>
-						<div class="flag">Revisada otra vez · guardada como versión 2<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--approve)"><use href="#i-check"/></svg></b></div>
+						<div class="flag">JEV la revisó otra vez · versión 2<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--approve)"><use href="#i-check"/></svg></b></div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>5 / 9</span></div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>5 / 10</span></div>
 	</section>
 
 	<!-- ═══════════════════════════ 06 · Hecho para tu marca ═══════════════════════════ -->
-	<section class="slide" data-notes="Y no es solo para 30X. Para empezar, pegas la web de tu marca y en segundos el sistema la lee: qué vende, a quién le habla, cómo habla y cuáles son sus colores. Con eso arma las reglas de esa marca, incluido lo que nunca debe publicar, como promesas garantizadas u ofertas que no son suyas. Cada marca tiene sus propias reglas. Lo probamos con 30X, pero sirve igual para cualquier equipo que publique contenido.">
+	<section class="slide" data-notes="Y no es solo para 30X. Pegas la web de tu marca y en segundos el sistema la lee: qué vende, a quién le habla, cómo habla y sus colores. Con eso, las preguntas que contesta JEV son las de esa marca, incluido lo que nunca debe publicar. Lo probamos con 30X, pero sirve para cualquier equipo que publique contenido.">
 		<div class="head">
 			<span class="num">06</span>
 			<span class="eyebrow">Hecho para tu marca</span>
@@ -279,7 +288,7 @@
 						</div>
 						<div class="claim">
 							<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-layers"/></svg></span>
-							<div><h3>Cada marca, sus reglas</h3><p>Lo que está bien para una puede estar prohibido para otra.</p></div>
+							<div><h3>Cada marca, sus preguntas</h3><p>JEV juzga cada pieza contra esa marca, no contra reglas genéricas.</p></div>
 						</div>
 						<div class="claim">
 							<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-trend"/></svg></span>
@@ -289,53 +298,115 @@
 				</div>
 			</div>
 		</div>
-		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>6 / 9</span></div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>6 / 10</span></div>
 	</section>
 
-	<!-- ═══════════════════════════ 07 · Resultados ═══════════════════════════ -->
-	<section class="slide" data-notes="Esto lo medimos. Decide cada pieza en menos de un segundo, y revisar cien piezas cuesta menos de un centavo de dólar. Con cuarenta y cinco piezas simuladas de 30X acertó la decisión esperada entre el ochenta y el ochenta y siete por ciento de las veces. Cuatro de cada diez se resolvieron sin que nadie las tocara. Y lo más importante: cero piezas riesgosas aprobadas solas. Cuando se equivoca, se equivoca del lado prudente.">
+	<!-- ═══════════════════════════ 07 · Inscritos de Luma ═══════════════════════════ -->
+	<section class="slide" data-notes="La segunda decisión usa el mismo motor; es la idea número uno de 30X. Cada persona que se inscribe en Luma: JEV lee solo lo que dejó al inscribirse y decide en una pasada su programa, su cargo, su madurez en IA y si está lista para un asesor. Con doscientos perfiles anónimos de 30X coincide con el programa sugerido el cincuenta y cinco por ciento de las veces, y en AI Sales el noventa y cinco. De los que marca listos para un asesor, el ochenta y ocho por ciento tenía afinidad alta. Es una primera iteración, con perfiles que dicen muy poco; lo que ya sirve es saber a quién llamar primero.">
 		<div class="head">
 			<span class="num">07</span>
-			<span class="eyebrow">Resultados medidos</span>
+			<span class="eyebrow">Comercial · idea n.° 1 de 30X</span>
 		</div>
 		<div class="body">
-			<h2>Medido, no estimado</h2>
-			<div class="results mt">
-				<div class="card lilac">
-					<div class="card-label">Decide cada pieza en <svg aria-hidden="true" class="icon"><use href="#i-bolt"/></svg></div>
-					<div class="stat-big">&lt; 1 s</div>
-				</div>
+			<h2 style="font-size:36px">Inscritos de Luma: <span class="hl-text">el mismo motor, otra decisión</span></h2>
+			<div class="flow mt">
 				<div class="card aqua">
-					<div class="card-label">Revisar 100 piezas cuesta <svg aria-hidden="true" class="icon"><use href="#i-coin"/></svg></div>
-					<div class="stat-big">&lt; 1 ¢</div>
+					<div class="card-label">Lo que deja al inscribirse <svg aria-hidden="true" class="icon"><use href="#i-user"/></svg></div>
+					<div class="tags"><span class="tag">Rol</span><span class="tag">País</span><span class="tag">Dolor</span><span class="tag">Objetivo</span><span class="tag">Temas</span></div>
+					<p class="small" style="color:var(--ink)">Nada del CRM de 30X: eso solo se usa para medir.</p>
 				</div>
+				<div class="arrow"><svg aria-hidden="true" class="icon"><use href="#i-arrow"/></svg></div>
+				<div class="card dark">
+					<div class="card-label">JEV decide, en una pasada <svg aria-hidden="true" class="icon"><use href="#i-bolt"/></svg></div>
+					<div class="tags"><span class="tag">Programa</span><span class="tag">Cargo</span><span class="tag">Madurez en IA</span><span class="tag">¿Listo para un asesor?</span></div>
+					<p class="small">Ej.: Dueño · IA media · AI Sales. Se recalcula si cambia un dato.</p>
+				</div>
+				<div class="arrow"><svg aria-hidden="true" class="icon"><use href="#i-arrow"/></svg></div>
 				<div class="card peach">
-					<div class="card-label">Acierta la decisión esperada <svg aria-hidden="true" class="icon"><use href="#i-check"/></svg></div>
-					<div class="stat-big">80–87 %</div>
-				</div>
-				<div class="card wide">
-					<div class="card-label">Se resuelven sin una persona <svg aria-hidden="true" class="icon"><use href="#i-user"/></svg></div>
-					<div class="stat-big">4 de 10</div>
-					<p class="small" style="margin-top:8px">Las demás van a la IA o a una persona.</p>
-				</div>
-				<div class="card dark wide">
-					<div class="card-label">Piezas riesgosas aprobadas solas <svg aria-hidden="true" class="icon"><use href="#i-shield"/></svg></div>
-					<div class="stat-big">0</div>
-					<p class="small" style="margin-top:8px">Cuando se equivoca, se equivoca del lado prudente.</p>
+					<div class="card-label">Siguiente acción <svg aria-hidden="true" class="icon"><use href="#i-check"/></svg></div>
+					<span class="route approve">Pasar a un asesor</span>
+					<span class="route enrich">Enviar la propuesta</span>
+					<span class="route reject">Nutrir con contenido</span>
 				</div>
 			</div>
+			<div class="stat-row mt">
+				<div class="card">
+					<div class="card-label">Coincide con el programa de 30X</div>
+					<div class="stat-mid">55,5 %</div>
+					<div class="stat-note">60 % donde 30X sugirió uno · <strong>95 % en AI Sales</strong></div>
+				</div>
+				<div class="card dark">
+					<div class="card-label">«Listo para un asesor» acertado</div>
+					<div class="stat-mid">88 %</div>
+					<div class="stat-note">tenían afinidad alta según 30X</div>
+				</div>
+				<div class="card">
+					<div class="card-label">Por persona</div>
+					<div class="stat-mid">93<span class="unit">ms</span></div>
+					<div class="stat-note">decidido por JEV, 0 respaldos</div>
+				</div>
+				<div class="card">
+					<div class="card-label">200 inscritos costaron</div>
+					<div class="stat-mid">USD 0,009</div>
+					<div class="stat-note">menos de un centavo</div>
+				</div>
+			</div>
+			<p class="small mt-s">Primera iteración, sobre 200 de los 697 perfiles anónimos de 30X, que dicen muy poco (el 73 % no declara su rol). Lo que ya sirve: <strong style="color:var(--ink)">a quién llamar primero</strong>.</p>
 		</div>
-		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>7 / 9 · 45 piezas simuladas de 30X · el detalle está en el playbook</span></div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>7 / 10 · 200 perfiles anónimos de 30X · JEV en producción</span></div>
 	</section>
 
-	<!-- ═══════════════════════════ 08 · Qué gana 30X ═══════════════════════════ -->
-	<section class="slide" data-notes="¿Qué gana 30X? Tiempo: Media mira solo lo que importa. Una marca protegida: nada riesgoso sale sin una persona. Publicar más rápido. Y un sistema que aprende de cada corrección del editor. ¿Por qué ahora? Porque la IA ya multiplicó lo que se produce, y la revisión no puede seguir a mano. Y mañana el mismo motor puede decidir otras cosas: qué programa le sirve a cada inscrito, quién está por abandonar o si la respuesta de un agente puede salir.">
+	<!-- ═══════════════════════════ 08 · Resultados ═══════════════════════════ -->
+	<section class="slide" data-notes="Y esto responde al reto. Corrimos mil decisiones reales con JEV en producción: tardaron cuatro segundos y medio, doscientas veintidós por segundo, unos ciento treinta milisegundos cada una, y costaron seis centavos de dólar en total. Ninguna necesitó respaldo. A ese costo, diez mil piezas al día son unos sesenta centavos. En contenido acierta entre el ochenta y el ochenta y siete por ciento, cuatro de cada diez se resuelven sin nadie, y cero piezas riesgosas se aprueban solas: cuando se equivoca, se equivoca del lado prudente.">
 		<div class="head">
 			<span class="num">08</span>
+			<span class="eyebrow">Resultados medidos · JEV en producción</span>
+		</div>
+		<div class="body">
+			<h2 style="font-size:28px; max-width:none">Miles de veces al día, en milisegundos, por fracciones de centavo</h2>
+			<div class="hero-grid mt">
+				<div class="card dark" style="padding:20px 28px 22px">
+					<div class="card-label">Prueba de escala · decisiones reales de JEV <svg aria-hidden="true" class="icon"><use href="#i-bolt"/></svg></div>
+					<div class="hero-num"><em>1.000</em> decisiones<br>en 4,5 segundos</div>
+					<p class="hero-sub">222 por segundo · 128 ms cada una (el 95 % en menos de 250 ms) · <strong style="color:#fff">USD 0,06 en total</strong> · 0 respaldos</p>
+				</div>
+				<div class="card lilac" style="padding:24px 26px; display:grid; align-content:center">
+					<div class="card-label">Con ese costo <svg aria-hidden="true" class="icon"><use href="#i-coin"/></svg></div>
+					<div class="stat-big" style="margin-top:10px; font-size:52px">≈ USD 0,60</div>
+					<p class="small" style="margin-top:8px; color:var(--ink)">por <strong>10.000 piezas al día</strong></p>
+				</div>
+			</div>
+			<div class="pair mt">
+				<div class="card">
+					<div class="card-label">¿Esta pieza sale? · 45 piezas simuladas de 30X <svg aria-hidden="true" class="icon"><use href="#i-check"/></svg></div>
+					<div class="minis">
+						<div><b>80–87 %</b><span>acierta la decisión esperada, según la corrida</span></div>
+						<div><b>4 de 10</b><span>se resuelven sin una persona</span></div>
+						<div><b>0</b><span>piezas riesgosas aprobadas solas</span></div>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-label">¿A qué programa va? · 200 inscritos de 30X <svg aria-hidden="true" class="icon"><use href="#i-user"/></svg></div>
+					<div class="minis">
+						<div><b>55,5 %</b><span>coincide con 30X (95 % en AI Sales)</span></div>
+						<div><b>88 %</b><span>de los «listos para un asesor», bien elegidos</span></div>
+						<div><b>93 ms</b><span>por persona</span></div>
+					</div>
+				</div>
+			</div>
+			<p class="small mt-s">Una pieza con imagen tarda ~0,3 s. Cuando JEV se equivoca, se equivoca del lado prudente: lo dudoso llega a una persona.</p>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>8 / 10 · jev-1.13.0, 17 oct 2026 · el detalle está en el playbook</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 09 · Qué gana 30X ═══════════════════════════ -->
+	<section class="slide" data-notes="¿Qué gana 30X? Tiempo: Media mira solo lo que importa. Una marca protegida: nada riesgoso sale sin una persona. Comercial llama primero a quien está listo. Y todo por centavos al día, sin contratar. ¿Por qué ahora? Porque la IA ya multiplicó lo que se produce y lo que entra. Y el mismo motor puede tomar la siguiente decisión: quién está por abandonar o si la respuesta de un agente puede salir.">
+		<div class="head">
+			<span class="num">09</span>
 			<span class="eyebrow">Qué gana 30X · por qué ahora</span>
 		</div>
 		<div class="body">
-			<h2>La IA ya multiplicó lo que se produce. <span class="hl-text">La revisión no puede seguir a mano.</span></h2>
+			<h2>La IA ya multiplicó lo que se produce y lo que entra. <span class="hl-text">Decidir no puede seguir a mano.</span></h2>
 			<div class="gains mt">
 				<div class="card lilac">
 					<svg aria-hidden="true" class="icon" style="width:24px;height:24px"><use href="#i-clock"/></svg>
@@ -348,34 +419,34 @@
 					<p>Nada riesgoso sale sin que lo vea una persona.</p>
 				</div>
 				<div class="card peach">
-					<svg aria-hidden="true" class="icon" style="width:24px;height:24px"><use href="#i-bolt"/></svg>
-					<h3>Publica más rápido</h3>
-					<p>De la pieza dudosa a la lista para salir, en un clic.</p>
+					<svg aria-hidden="true" class="icon" style="width:24px;height:24px"><use href="#i-user"/></svg>
+					<h3>Llama primero</h3>
+					<p>Comercial llama primero a quien está listo para hablar.</p>
 				</div>
 				<div class="card dark">
-					<svg aria-hidden="true" class="icon" style="width:24px;height:24px"><use href="#i-loop"/></svg>
-					<h3>Aprende</h3>
-					<p class="muted">Cada corrección del editor afina el criterio.</p>
+					<svg aria-hidden="true" class="icon" style="width:24px;height:24px"><use href="#i-coin"/></svg>
+					<h3>Centavos al día</h3>
+					<p class="muted">Miles de decisiones diarias sin contratar a nadie.</p>
 				</div>
 			</div>
-			<p class="card-label mt" style="justify-content:flex-start">Y mañana, el mismo motor decide otras cosas de 30X</p>
+			<p class="card-label mt" style="justify-content:flex-start">La siguiente decisión es otro set de preguntas, no otro sistema</p>
 			<div class="next-uses mt-s">
-				<div class="use"><b>Inscritos</b>¿Qué programa le sirve a cada uno?</div>
+				<div class="use"><b>Ya funcionando</b>Contenido de Media e inscritos de Luma</div>
 				<div class="use"><b>Alumnos</b>¿Quién está por abandonar?</div>
 				<div class="use"><b>Agentes</b>¿Esta respuesta puede salir?</div>
 			</div>
 		</div>
-		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>8 / 9</span></div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>9 / 10</span></div>
 	</section>
 
-	<!-- ═══════════════════════════ 09 · Cierre ═══════════════════════════ -->
-	<section class="slide dark-slide" data-notes="Gatekeeper Editorial ya funciona en producción; no es una maqueta. Lo pueden probar hoy en esta dirección. Pegan su web, suben una pieza y en un segundo ven la decisión. El código es abierto, y si quieren el detalle de cómo decide, está en nuestro playbook. Somos DevGain, Michael Liendo y Haron Acosta. Publica lo bueno solo, arregla lo dudoso con IA, y revisa a mano solo lo que importa. Muchas gracias.">
+	<!-- ═══════════════════════════ 10 · Cierre ═══════════════════════════ -->
+	<section class="slide dark-slide" data-notes="JEV ya está tomando estas dos decisiones en producción; no es una maqueta. Lo pueden probar hoy en esta dirección: suban una pieza o segmenten inscritos y vean la decisión en milisegundos. El código es abierto y el detalle de cómo decide está en nuestro playbook. Somos DevGain, Michael Liendo y Haron Acosta. JEV decide, la IA escribe solo cuando hace falta, y una persona revisa lo que de verdad importa. Muchas gracias.">
 		<div class="head">
-			<span class="num">09</span>
+			<span class="num">10</span>
 			<span class="eyebrow">Pruébalo hoy</span>
 		</div>
 		<div class="body">
-			<h1>Ya está funcionando.<br>Pruébalo hoy.</h1>
+			<h1>JEV ya está decidiendo.<br>Pruébalo hoy.</h1>
 			<a class="live-url" href="https://gatekeeper-30x.michaelliendo.com">gatekeeper-30x.michaelliendo.com</a>
 			<div class="closing-meta">
 				<div><b>Equipo DevGain</b>Michael Liendo · Haron Acosta</div>
@@ -383,7 +454,7 @@
 				<div><b>Gracias</b>Hackathon 30X</div>
 			</div>
 		</div>
-		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>9 / 9</span></div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>10 / 10</span></div>
 	</section>
 </div>
 

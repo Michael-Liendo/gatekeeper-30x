@@ -1,39 +1,54 @@
-# Guion del video demo (2:30–3:00)
+# Guion del video demo (2:45–3:00)
 
 Demo en vivo sobre https://gatekeeper-30x.michaelliendo.com. Una sola toma de pantalla con voz
-en off. Frase guía: **"JEV decide, el LLM corrige, y el equipo solo revisa lo que de verdad importa."**
+en off. **JEV es el protagonista**: el video responde la pregunta del reto (¿qué decisiones de
+30X podría tomar JEV miles de veces al día, en milisegundos y por fracciones de centavo, y cómo
+se ve eso funcionando?). Frase guía: **"JEV decide; la IA generativa solo escribe cuando hace
+falta."**
+
+Orden: la escala en vivo → una pieza decidida con su porqué → la IA la corrige y JEV la verifica
+→ la segunda decisión (inscritos) → los números.
 
 ## Antes de grabar
 
 - [ ] Pantalla a **1920×1080**, navegador con zoom al 100–110 %, sin barra de favoritos ni extensiones a la vista.
-- [ ] **Cuenta de prueba nueva** (email nunca usado, por ejemplo `demo-video@ejemplo.com`) para que aparezca el onboarding. Nada de datos personales reales.
-- [ ] **Capturas listas en el escritorio**: una captura de spam (simulada) y, de respaldo, un post de ventas.
+- [ ] **Sesión ya iniciada** con una cuenta de prueba (por ejemplo `demo-video@ejemplo.com`) y la marca **30X** ya configurada (onboarding hecho con `30x.com`). Nada de datos personales reales.
+- [ ] En la Bandeja, **"Revisar contenido de ejemplo"** ya corrido, para que Métricas tenga las 45 piezas.
+- [ ] **No correr la prueba de escala en el minuto previo**: tiene una espera de 1 minuto entre corridas.
+- [ ] **Captura de spam lista en el escritorio** (simulada) y, de respaldo, un post de ventas.
 - [ ] Probar una vez el flujo completo antes de grabar (la regeneración de imagen tarda unos segundos; si tarda mucho, cortar en edición).
 - [ ] **Notificaciones silenciadas** (No molestar), otras pestañas y apps cerradas.
 - [ ] Micrófono probado; grabar la voz aparte si hace falta y montarla después.
 - [ ] Ventana de grabación solo del navegador.
 
-**Para no pasar de 3 min:** ensaya leyendo el texto en voz alta con cronómetro, corta en edición
-todas las esperas (análisis de la web, regeneración) y no expliques lo que ya se ve en pantalla.
-Si vas largo, recorta primero la escena 8 (Política) a una sola frase.
+**Para no pasar de 3 min:** ensaya leyendo el texto en voz alta con cronómetro y corta en edición
+las esperas de la regeneración y del lote de inscritos. **La prueba de escala no se corta**: que
+se vea el contador real es el punto. Si vas largo, recorta primero la escena 5 (Bandeja) a una
+sola frase o quítala.
 
 ## Escenas
 
 | Tiempo | Pantalla y clic | Voz en off |
 |---|---|---|
-| **0:00–0:15** · Gancho | Portada de la app (`/ingresar`). | "30X produce cada vez más contenido, y mucho con IA. Revisarlo a mano es lento y pasarlo todo por un LLM es caro. Gatekeeper Editorial pone a JEV a decidir qué se publica, en milisegundos." |
-| **0:15–0:30** · Ingreso | Escribir el email de prueba → **Continuar**; escribir el nombre → **Crear mi cuenta**. | "Entro solo con mi email. Sin contraseñas: es una demo con cuentas de prueba." |
-| **0:30–0:50** · Onboarding | En `/bienvenida`, pegar `30x.com` → **Analizar mi marca** (cortar la espera). Mostrar el perfil prellenado: audiencia, tono, temas, lo que vende, temas prohibidos, colores → confirmar. | "La app lee la web de la marca y arma su perfil: a quién le habla, su tono, qué vende y qué nunca publica. Con esto JEV juzga cada pieza contra esta marca, no contra reglas genéricas." |
-| **0:50–1:10** · Bandeja | En la Bandeja, clic en **Revisar contenido de ejemplo**. Señalar los KPIs (Aprobado solo, Necesita tu revisión, Descartado) y abrir una pieza para ver el porqué. | "Estas son 45 piezas simuladas de 30X. JEV responde 12 preguntas tipadas por pieza y el código aplica los umbrales. Lo claro se aprueba o se descarta solo; aquí me queda únicamente lo que necesita mi ojo, y cada decisión dice qué regla falló." |
-| **1:10–1:30** · Nueva pieza | **Nueva pieza** → arrastrar la captura de spam → **Revisar pieza**. Se abre el resultado: **Descartado**. | "Ahora subo una captura, como lo haría un diseñador. JEV lee la imagen y en unos cientos de milisegundos la descarta como spam." |
-| **1:30–2:05** · Regenerar | En la pieza, **Regenerar con IA** (cortar la espera). Mostrar antes/después: texto reescrito, imagen redibujada en el lima de la marca y el nuevo veredicto de JEV: **Aprobado**. Clic en **Guardar como nueva versión** → aparece **Versión 2**. | "Si una pieza no pasa, la IA la reescribe con la voz de 30X corrigiendo solo lo que JEV marcó, y redibuja la imagen. Pero no confiamos a ciegas: JEV vuelve a revisar la versión nueva. Aprobada. La guardo como versión 2." |
-| **2:05–2:20** · Tablero e historial | **Tablero**: columnas Por revisar, Por mejorar, Aprobado, Rechazado. Volver a la pieza y mostrar la línea de tiempo (subida, revisión de JEV, nueva versión). | "Todo el equipo trabaja en un tablero por estado, y cada pieza guarda su historial y sus versiones." |
-| **2:20–2:35** · Política | **Política**: pasar de **Equilibrado** a **Estricto** y ver cómo cambia lo que llega a revisión; volver a Equilibrado. | "Media decide qué tan exigente es el filtro con un clic. Los umbrales son datos: cambian al instante, sin programar ni desplegar." |
-| **2:35–2:55** · Cierre | **Métricas** (o slide final con los números). | "Con JEV real: de 53 a 82 % de acierto tras calibrar, 40 % resuelto sin una persona, cero piezas riesgosas aprobadas solas, unos 100 a 200 milisegundos por pieza y menos de 5 centavos de dólar por mil piezas. JEV decide, el LLM corrige, y el equipo solo revisa lo que de verdad importa. Equipo DevGain." |
+| **0:00–0:30** · 1. La escala, en vivo | Abrir **Métricas** (`/metricas`), bajar a **"Prueba de escala: 1.000 decisiones reales"** → clic en **Correr 1.000 decisiones**. Dejar correr el contador sin cortar y mostrar el resultado. | "¿Qué decisiones de 30X podría tomar JEV miles de veces al día? Empecemos por la escala: mil decisiones reales, en vivo, contra JEV en producción. Listo: unos cuatro segundos y medio. Más de doscientas por segundo, unos ciento treinta milisegundos cada una, y unos seis centavos de dólar por las mil." |
+| **0:30–0:40** · 2. Las dos decisiones | Señalar en el menú **Bandeja** y luego **Inscritos**. | "Construimos dos decisiones sobre ese motor. Para Media: ¿esta pieza sale? Para Comercial: ¿a qué programa va este inscrito y lo llamamos ya?" |
+| **0:40–1:05** · 3. Una pieza, decidida con su porqué | **Nueva pieza** → arrastrar la captura de spam → **Revisar pieza**. Se abre el resultado: **Descartado**. Señalar los motivos (spam, riesgo de marca, promesas exageradas) y el tiempo. | "Subo una captura, como lo haría un diseñador. JEV la lee contra la marca 30X, responde doce preguntas en una sola pasada y el código aplica los umbrales: descartada, en menos de un segundo, y con su porqué. Promete dinero, parece spam y pone en riesgo la marca." |
+| **1:05–1:40** · 4. La IA corrige, JEV verifica | En la pieza, **Regenerar con IA** (cortar la espera). Mostrar antes/después: texto reescrito, imagen redibujada en el lima de la marca y el nuevo veredicto de JEV: **Aprobado**. Clic en **Guardar como nueva versión** → aparece **Versión 2**. | "Aquí entra la IA generativa, y solo aquí: reescribe el texto con la voz de 30X corrigiendo solo lo que JEV marcó, y redibuja la imagen. Pero no confiamos a ciegas: JEV vuelve a revisar la versión nueva. Aprobada. La guardo como versión dos." |
+| **1:40–1:50** · 5. Bandeja *(opcional)* | **Bandeja**: señalar los KPIs (Aprobado solo, Necesita tu revisión, Descartado). | "Con las 45 piezas de ejemplo, el editor solo ve lo que de verdad necesita su ojo." |
+| **1:50–2:15** · 6. Inscritos: segmentar 100 | **Inscritos** (`/segmentos`) → **Segmentar 100 inscritos de ejemplo** (cortar la espera). Señalar el resumen: coincide con el programa de 30X, listos para un asesor, tiempo del lote. Abrir una fila. | "La segunda decisión usa el mismo motor: los inscritos de Luma. Cien perfiles anónimos que compartió 30X. Para cada uno, JEV decide programa, cargo, madurez en IA y si está listo para un asesor; el código elige qué hacer: pasarlo a un asesor, enviarle la propuesta o nutrirlo con contenido." |
+| **2:15–2:35** · 7. Inscritos: recalcular uno | En esa fila, **Cambió su situación** → elegir un campo (por ejemplo, rol) y un valor nuevo → **Recalcular**. Mostrar **Antes** y **Ahora**. | "Si cambia su situación, se recalcula en milisegundos y se ve el antes y el ahora. Así Comercial sabe a quién llamar primero." |
+| **2:35–3:00** · 8. Los números | Volver a **Métricas** con el resultado de la prueba de escala, o la lámina 08 del pitch. | "Medido con JEV en producción: mil decisiones en cuatro segundos y medio por seis centavos; diez mil piezas al día costarían unos sesenta centavos. En contenido acierta entre el 80 y el 87 por ciento, cuatro de cada diez se resuelven sin nadie y cero piezas riesgosas se aprueban solas. En inscritos, el 88 por ciento de los que marca listos para un asesor lo estaban. JEV decide; la IA solo escribe cuando hace falta. Equipo DevGain." |
 
 ## Texto en pantalla sugerido (opcional, en edición)
 
-- 0:50 · "12 preguntas tipadas · 1 llamada a JEV"
-- 1:25 · "Descartado en milisegundos"
-- 2:00 · "JEV verifica lo que corrige el LLM"
-- 2:45 · "53 % → 82 % de acierto · 40 % sin persona · 0 riesgos aprobados · ~USD 0,046 / 1.000 piezas"
+- 0:25 · "1.000 decisiones reales · 4,5 s · USD 0,06 · JEV en producción"
+- 0:55 · "12 preguntas tipadas · 1 llamada a JEV · decidido en milisegundos"
+- 1:35 · "JEV verifica lo que corrige la IA"
+- 2:10 · "Mismo motor, otra decisión: programa + cargo + madurez en IA + ¿listo para un asesor?"
+- 2:50 · "80–87 % de acierto en contenido · 0 riesgos aprobados · 88 % de precisión en «listo para un asesor» · 10.000 piezas/día ≈ USD 0,60"
+
+## Si la prueba de escala no da lo mismo en vivo
+
+Los números cambian un poco en cada corrida. Lee **los que salen en pantalla** en la escena 1 y
+usa los medidos (4,5 s · 222 por segundo · 128 ms · USD 0,06) solo en la escena 8, diciendo
+"medido". Fuente: [05-calibracion.md](05-calibracion.md) y [12-segmentacion.md](12-segmentacion.md).

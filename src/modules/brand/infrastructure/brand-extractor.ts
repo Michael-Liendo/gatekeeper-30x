@@ -6,7 +6,7 @@ import { OPENAI_LLM_MODEL } from "@/modules/content-review/infrastructure/openai
 import { env } from "@/shared/config/env";
 import type { BrandProfileDraft } from "../domain/brand-profile";
 import { type ColorMention, rankColorCandidates } from "../domain/color-candidates";
-import { fetchSiteHtml, SiteFetchError } from "./site-fetcher";
+import { fetchSiteHtml, PREVIEW_USER_AGENT, SiteFetchError } from "./site-fetcher";
 import { type ParsedSite, parseSite } from "./site-parser";
 
 /** Tunables for "Analizar mi marca". */
@@ -74,10 +74,65 @@ export function normalizeSiteUrl(raw: string): string | null {
 	}
 }
 
+const SOCIAL_HOSTS = [
+	"instagram.com",
+	"linkedin.com",
+	"facebook.com",
+	"tiktok.com",
+	"x.com",
+	"twitter.com",
+	"youtube.com",
+	"threads.net",
+];
+
+/** Social profile links: only their preview tags describe the brand, never the network's home. */
+export function socialNetworkOf(url: string): string | null {
+	try {
+		const host = new URL(url).hostname.replace(/^www\./, "");
+		const match = SOCIAL_HOSTS.find((h) => host === h || host.endsWith(`.${h}`));
+		return match ? match.split(".")[0] : null;
+	} catch {
+		return null;
+	}
+}
+
+const SOCIAL_LABEL: Record<string, string> = {
+	instagram: "Instagram",
+	linkedin: "LinkedIn",
+	facebook: "Facebook",
+	tiktok: "TikTok",
+	x: "X",
+	twitter: "X",
+	youtube: "YouTube",
+	threads: "Threads",
+};
+
+/**
+ * A social profile page is the network's own app shell: keep only the profile's preview
+ * tags (name, bio, picture) and drop the network's text, nav, colors and icons.
+ */
+function profilePreview(site: ParsedSite): ParsedSite {
+	const bio = site.ogDescription ?? site.description ?? "";
+	return {
+		...site,
+		siteName: undefined,
+		themeColor: undefined,
+		icons: [],
+		logoCandidates: site.ogImage ? [site.ogImage] : [],
+		h1: [],
+		h2: [],
+		navLinks: [],
+		textSample: [site.ogTitle, bio].filter(Boolean).join(". "),
+		colorMentions: [],
+		colors: [],
+	};
+}
+
 /** Input URLs (deduped, capped), plus the site root when the first one is a deep link. */
 function pagesToFetch(urls: string[]): string[] {
 	const pages = [...urls];
 	try {
+		if (socialNetworkOf(urls[0])) return pages;
 		const first = new URL(urls[0]);
 		const root = `${first.origin}/`;
 		if ((first.pathname !== "/" || first.search) && !pages.includes(root)) {
@@ -180,8 +235,19 @@ export async function extractBrandDraft(urls: string[]): Promise<BrandProfileDra
 	const targets = pagesToFetch(inputLinks);
 	const results = await Promise.allSettled(
 		targets.map(async (target) => {
-			const page = await fetchSiteHtml(target);
-			return parseSite(page.html, page.url);
+			const social = socialNetworkOf(target);
+			const page = await fetchSiteHtml(target, social ? PREVIEW_USER_AGENT : undefined);
+			const site = parseSite(page.html, page.url);
+			if (!social) return site;
+			// Logged-out walls and the network's own home don't describe the brand.
+			if (
+				!site.ogTitle ||
+				socialNetworkOf(page.url) !== social ||
+				new URL(page.url).pathname === "/"
+			) {
+				throw new SiteFetchError("la red social no mostró el perfil");
+			}
+			return profilePreview(site);
 		}),
 	);
 
@@ -200,7 +266,12 @@ export async function extractBrandDraft(urls: string[]): Promise<BrandProfileDra
 			console.warn(`[brand-extract] failed to read ${targets[i]}:`, result.reason);
 		}
 		// The site root is our own extra try (always last): report it only if nothing loaded.
-		if (inputLinks.includes(targets[i]) || pages.length === 0) {
+		const social = socialNetworkOf(targets[i]);
+		if (social) {
+			failures.push(
+				`${SOCIAL_LABEL[social] ?? "La red social"} no deja leer perfiles desde nuestro servidor; agrega también tu sitio web o completa los datos a mano.`,
+			);
+		} else if (inputLinks.includes(targets[i]) || pages.length === 0) {
 			failures.push(`No pudimos leer ${targets[i]}: ${reason}.`);
 		}
 	});

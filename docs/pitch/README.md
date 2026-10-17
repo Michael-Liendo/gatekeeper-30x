@@ -1,14 +1,34 @@
 # El pitch
 
-Nueve láminas para la final del Hackathon 30X, pensadas para la dirección de 30X
-y jurados de negocio. Hablan de decisiones, tiempo, riesgo, marca y dinero; lo
-técnico vive en el [playbook](../playbook/) y aquí solo se le menciona una vez.
+Diez láminas para la final del Hackathon 30X, pensadas para la dirección de 30X
+y jurados de negocio. Responden la pregunta del reto (qué decisiones de 30X
+puede tomar JEV miles de veces al día, en milisegundos y por fracciones de
+centavo) con dos decisiones que ya funcionan y una prueba de escala real:
+
+1. **Media:** ¿esta pieza sale?
+2. **Comercial:** ¿a qué programa va este inscrito de Luma y lo llamamos ya?
+
+JEV es el protagonista: el motor que decide. Hablan de decisiones, tiempo,
+riesgo y dinero; lo técnico vive en el [playbook](../playbook/).
+
+| # | Lámina |
+|---|---|
+| 01 | Portada: decisiones de 30X que JEV toma miles de veces al día |
+| 02 | El problema: las mismas decisiones, a mano |
+| 03 | La solución: JEV decide, la IA generativa solo escribe cuando hace falta |
+| 04 | Decisión 1: cómo se vive en Media |
+| 05 | Un caso real: de spam a post de 30X |
+| 06 | Hecho para tu marca |
+| 07 | Inscritos de Luma: el mismo motor, otra decisión |
+| 08 | Resultados: 1.000 decisiones en 4,5 segundos · USD 0,06 |
+| 09 | Qué gana 30X · por qué ahora |
+| 10 | Cierre: JEV ya está decidiendo |
 
 - `index.html` — las láminas, con lo que se dice en voz alta en cada una.
 - `guion.md` — el mismo guion para leer de corrido y ensayar, con las frases que
   se pueden quitar si vas justo y respuestas cortas para el Q&A.
 - `deck.css` / `deck.js` — estilo y navegación, copiados del playbook.
-- `verificar.mjs` — mide las nueve láminas y saca capturas.
+- `verificar.mjs` — mide las diez láminas y saca capturas.
 
 ## Abrirlo
 
@@ -37,11 +57,12 @@ actual (`#5`).
 
 ## El tiempo
 
-El guion son ~670 palabras: **unos 4 minutos** a ritmo de pitch. La ventana de
-notas (`P`) calcula el tiempo a 150 palabras por minuto. Si vas justo, en
-`guion.md` cada lámina tiene una frase marcada que se puede quitar; sin ellas
-queda en unos 3:30. La **05** (el caso real) y la **07** (resultados) no se
-recortan: son las que convencen.
+El guion son ~770 palabras: **unos 4 minutos y medio** a ritmo de pitch. La
+ventana de notas (`P`) calcula el tiempo a 150 palabras por minuto, así que ahí
+marcará algo más. Si vas justo, en `guion.md` cada lámina tiene una frase
+marcada que se puede quitar; sin ellas queda en unos 4 minutos. La **05** (el
+caso real), la **07** (inscritos) y la **08** (resultados) no se recortan: son
+las que convencen.
 
 ## Las cifras
 
@@ -49,12 +70,14 @@ Solo estas, y ninguna inventada:
 
 | Cifra | De dónde sale |
 |---|---|
-| Menos de 1 segundo por pieza (0,1–0,2 s) | Medido en producción |
-| Menos de un centavo por cada 100 piezas (≈ USD 0,05 / 1.000) | Medido en producción |
-| 80–87 % de acierto, 4 de 10 sin persona, 0 riesgosas aprobadas solas | 45 piezas simuladas de 30X, [05-calibracion.md](../05-calibracion.md) |
+| 1.000 decisiones en 4,5 s · 222 por segundo · 128 ms cada una (p95 250 ms) · USD 0,06 en total · 0 respaldos | Prueba de escala con JEV `jev-1.13.0` en producción, 17 oct 2026, [05-calibracion.md](../05-calibracion.md) |
+| 10.000 piezas al día ≈ USD 0,60 | Proyección con el costo medido en la prueba de escala |
+| 80–87 % de acierto según la corrida, 4 de 10 sin persona (42 %), 0 riesgosas aprobadas solas, ~0,3 s con imagen | 45 piezas simuladas de 30X, [05-calibracion.md](../05-calibracion.md) |
+| 55,5 % coincide con el programa de 30X (60 % donde 30X sugirió uno; 95 % en AI Sales), 88 % de precisión en «listo para un asesor», 93 ms por persona, USD 0,009 por 200 | 200 de los 697 perfiles anónimos de inscritos de 30X, JEV en producción, [12-segmentacion.md](../12-segmentacion.md) |
+| 697 inscritos | Hoja anónima de inscritos que compartió 30X |
 | 425 mil seguidores, 1.500+ publicaciones | Perfil público de @crece30x en Instagram |
 
-Si cambia la calibración, se actualizan la lámina 07, `guion.md` y el playbook.
+Si cambia una medición, se actualizan las láminas 07 y 08, `guion.md` y el playbook.
 
 ## PDF
 
