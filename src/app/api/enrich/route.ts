@@ -1,4 +1,6 @@
 import { z } from "zod";
+import type { BrandProfile } from "@/modules/brand/domain/brand-profile";
+import { getCurrentBrand, getDefaultBrand } from "@/modules/brand/infrastructure/current-brand";
 import {
 	SuggestionsNotConfiguredError,
 	suggestFixesForPiece,
@@ -11,7 +13,10 @@ import {
 import type { ContentPiece } from "@/modules/content-review/domain/content-piece";
 import { getReviewDeps } from "@/modules/content-review/infrastructure/review-deps";
 
-/** On-demand LLM suggestions ("System Two") for one piece, by sample id or full piece. */
+/**
+ * On-demand LLM suggestions ("System Two") for one piece, by sample id or full piece.
+ * Sample pieces are 30X content (default brand); pasted pieces use the user's brand.
+ */
 export async function POST(request: Request) {
 	let json: unknown;
 	try {
@@ -43,12 +48,15 @@ export async function POST(request: Request) {
 
 	const { policy, ...input } = parsed.data;
 	let piece: ContentPiece | undefined;
+	let brand: BrandProfile;
 	if ("id" in input) {
 		piece = deps.content.find((p) => p.id === input.id);
 		if (!piece) {
 			return Response.json({ error: `Pieza desconocida: ${input.id}.` }, { status: 404 });
 		}
+		brand = getDefaultBrand();
 	} else {
+		brand = (await getCurrentBrand()) ?? getDefaultBrand();
 		const now = new Date();
 		piece = {
 			id: `custom-${now.getTime()}`,
@@ -59,7 +67,7 @@ export async function POST(request: Request) {
 	}
 
 	try {
-		return Response.json(await suggestFixesForPiece(piece, { policy }, deps));
+		return Response.json(await suggestFixesForPiece(piece, { policy, brand }, deps));
 	} catch (error) {
 		if (error instanceof SuggestionsNotConfiguredError) {
 			return Response.json(

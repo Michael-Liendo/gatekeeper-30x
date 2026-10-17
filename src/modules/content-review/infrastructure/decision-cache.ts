@@ -14,7 +14,8 @@ const MAX_ENTRIES = 500;
  */
 const cache = new Map<string, Promise<DecisionResult>>();
 
-function cacheKey(request: DecisionRequest, pieceId: string | undefined): string {
+/** `scope` is the piece + brand version (`decisionCacheKey`); the hash covers the request. */
+function cacheKey(request: DecisionRequest, scope: string | undefined): string {
 	// Hash the image separately so the key doesn't embed megabytes of base64.
 	const image = request.image
 		? `${request.image.mimeType}:${createHash("sha256").update(request.image.base64).digest("hex")}`
@@ -22,15 +23,15 @@ function cacheKey(request: DecisionRequest, pieceId: string | undefined): string
 	const hash = createHash("sha256")
 		.update(JSON.stringify({ input: request.input, questions: request.questions, image }))
 		.digest("hex");
-	return `${pieceId ?? "anonymous"}:${hash}`;
+	return `${scope ?? "anonymous"}:${hash}`;
 }
 
 export function cachedDecide(
 	request: DecisionRequest,
-	pieceId: string | undefined,
+	scope: string | undefined,
 	decide: (request: DecisionRequest) => Promise<DecisionResult>,
 ): Promise<DecisionResult> {
-	const key = cacheKey(request, pieceId);
+	const key = cacheKey(request, scope);
 	const hit = cache.get(key);
 	if (hit) return hit;
 

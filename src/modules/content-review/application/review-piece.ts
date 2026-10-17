@@ -1,3 +1,6 @@
+// Relative imports (not "@/") so `node --test` can load this file without a bundler.
+import type { BrandProfile } from "../../brand/domain/brand-profile";
+import { defaultBrand } from "../../brand/domain/default-brand";
 import { parseImageDataUrl } from "../domain/content-image";
 import type { ContentPiece } from "../domain/content-piece";
 import type { DecisionImage, DecisionRequest, DecisionResult } from "../domain/decision";
@@ -7,7 +10,7 @@ import {
 	type EditorialPolicy,
 	failedChecks,
 } from "../domain/editorial-policy";
-import { buildContentInput, editorialQuestions } from "../domain/editorial-questions";
+import { buildContentInput, buildEditorialQuestions } from "../domain/editorial-questions";
 import type { EditorialSuggestions, ReviewResult } from "../domain/review";
 
 /** Input for the "System Two" LLM that proposes editorial fixes. */
@@ -18,12 +21,17 @@ export interface SuggestInput {
 	failedChecks: string[];
 	/** Screenshot of the piece, when it was submitted as an image. */
 	image?: DecisionImage;
+	/** The brand whose voice and offer the suggestions must respect. */
+	brand: BrandProfile;
 }
 
 /** Ports the review use cases depend on. Infrastructure wires the real ones. */
 export interface ReviewDeps {
-	/** Answers the editorial questions. `pieceId` lets the adapter cache per piece. */
-	decide(request: DecisionRequest, pieceId?: string): Promise<DecisionResult>;
+	/**
+	 * Answers the editorial questions. `cacheKey` (see `decisionCacheKey`) scopes the
+	 * adapter's cache to the piece and the brand version.
+	 */
+	decide(request: DecisionRequest, cacheKey?: string): Promise<DecisionResult>;
 	/** Absent when no LLM is configured; enrichment is then skipped. */
 	suggest?(input: SuggestInput): Promise<EditorialSuggestions>;
 }
@@ -33,6 +41,8 @@ export interface ReviewOptions {
 	policy?: PolicyOverrides;
 	/** Ask the LLM for suggestions when the route is ENRICH_WITH_LLM. Default false. */
 	enrich?: boolean;
+	/** Brand the piece is judged against. Defaults to the 30X brand (simulated dataset). */
+	brand?: BrandProfile;
 }
 
 /** Like `Partial<EditorialPolicy>`, but weights can also be overridden one by one. */
@@ -69,17 +79,33 @@ function pieceImage(piece: ContentPiece): DecisionImage | undefined {
 	return piece.imageDataUrl ? (parseImageDataUrl(piece.imageDataUrl) ?? undefined) : undefined;
 }
 
-function buildRequest(piece: ContentPiece): DecisionRequest {
+/**
+ * Cache scope for one decision: the piece plus the brand version, so editing the brand
+ * (new `updatedAt`) or switching brands never reuses stale answers. Pasted pieces get a
+ * fresh `custom-<timestamp>` id on every request; they share one namespace so reviewing
+ * and then enriching the same text hits the cache (the adapter also hashes the request).
+ */
+export function decisionCacheKey(pieceId: string, brand: BrandProfile): string {
+	const namespace = pieceId.startsWith("custom-") ? "custom" : pieceId;
+	return `${namespace}|${brand.id}@${brand.updatedAt}`;
+}
+
+function buildRequest(piece: ContentPiece, brand: BrandProfile): DecisionRequest {
 	const request: DecisionRequest = {
-		input: buildContentInput(piece),
-		questions: editorialQuestions,
+		input: buildContentInput(piece, brand),
+		questions: buildEditorialQuestions(brand),
 	};
 	const image = pieceImage(piece);
 	return image ? { ...request, image } : request;
 }
 
-function suggestInput(piece: ContentPiece, failed: string[]): SuggestInput {
-	const input: SuggestInput = { title: piece.title, body: piece.body, failedChecks: failed };
+function suggestInput(piece: ContentPiece, failed: string[], brand: BrandProfile): SuggestInput {
+	const input: SuggestInput = {
+		title: piece.title,
+		body: piece.body,
+		failedChecks: failed,
+		brand,
+	};
 	const image = pieceImage(piece);
 	return image ? { ...input, image } : input;
 }
@@ -101,9 +127,10 @@ export async function reviewPiece(
 	options: ReviewOptions,
 	deps: ReviewDeps,
 ): Promise<ReviewResult> {
+	const brand = options.brand ?? defaultBrand;
 	let decision: DecisionResult;
 	try {
-		decision = await deps.decide(buildRequest(piece), piece.id);
+		decision = await deps.decide(buildRequest(piece, brand), decisionCacheKey(piece.id, brand));
 	} catch (error) {
 		// Log only the error, never the content under review.
 		console.warn(`[review] decision failed for ${piece.id}: ${describeError(error)}`);
@@ -120,6 +147,7 @@ export async function reviewPiece(
 			latencyMs: 0,
 			inputTokens: null,
 			costUsd: null,
+			brandId: brand.id,
 			error: DECISION_UNAVAILABLE_MESSAGE,
 		});
 	}
@@ -138,11 +166,14 @@ export async function reviewPiece(
 		latencyMs: decision.latencyMs,
 		inputTokens: decision.inputTokens,
 		costUsd: decision.costUsd,
+		brandId: brand.id,
 	};
 
 	if (options.enrich && outcome.route === "ENRICH_WITH_LLM" && deps.suggest) {
 		try {
-			result.suggestions = await deps.suggest(suggestInput(piece, failedChecks(outcome.reasons)));
+			result.suggestions = await deps.suggest(
+				suggestInput(piece, failedChecks(outcome.reasons), brand),
+			);
 		} catch (error) {
 			console.warn(`[review] suggestions failed for ${piece.id}: ${describeError(error)}`);
 		}
@@ -160,11 +191,12 @@ export async function reviewPiece(
  */
 export async function suggestFixesForPiece(
 	piece: ContentPiece,
-	options: Pick<ReviewOptions, "policy">,
+	options: Pick<ReviewOptions, "policy" | "brand">,
 	deps: ReviewDeps,
 ): Promise<EditorialSuggestions> {
 	if (!deps.suggest) throw new SuggestionsNotConfiguredError();
-	const decision = await deps.decide(buildRequest(piece), piece.id);
+	const brand = options.brand ?? defaultBrand;
+	const decision = await deps.decide(buildRequest(piece, brand), decisionCacheKey(piece.id, brand));
 	const outcome = decideRoute(decision.answers, mergePolicy(options.policy));
-	return deps.suggest(suggestInput(piece, failedChecks(outcome.reasons)));
+	return deps.suggest(suggestInput(piece, failedChecks(outcome.reasons), brand));
 }

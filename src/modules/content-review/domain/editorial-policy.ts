@@ -87,7 +87,7 @@ const FLAG_LABELS: Record<YesNoKey, string> = {
 	exaggerated_promises: "Promesas exageradas",
 	unsourced_claims: "Datos sin fuente",
 	brand_risk: "Riesgo de marca",
-	offers_unsold_product: "Ofrece algo que 30X no vende",
+	offers_unsold_product: "Ofrece algo que la marca no vende",
 	is_spam: "Spam",
 };
 

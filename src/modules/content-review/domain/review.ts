@@ -30,6 +30,8 @@ export interface ReviewResult {
 	error?: string;
 	/** Matches the simulated `expectedRoute`, when there is one. */
 	matchesExpected?: boolean;
+	/** Id of the brand the piece was judged against. */
+	brandId?: string;
 }
 
 /** Aggregate KPIs for a batch of reviews. */

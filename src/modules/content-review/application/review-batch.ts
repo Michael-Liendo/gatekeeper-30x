@@ -1,10 +1,17 @@
+import type { BrandProfile } from "../../brand/domain/brand-profile";
 import type { ContentPiece } from "../domain/content-piece";
 import { computeMetrics } from "../domain/metrics";
 import type { ReviewBatchRequest, ReviewBatchResponse } from "../domain/review";
 import { type PolicyOverrides, type ReviewDeps, reviewPiece } from "./review-piece";
 
-/** `ReviewBatchRequest` whose policy may also override weights one by one. */
-export type ReviewBatchInput = Omit<ReviewBatchRequest, "policy"> & { policy?: PolicyOverrides };
+/**
+ * `ReviewBatchRequest` whose policy may also override weights one by one, plus the brand
+ * the pieces are judged against (defaults to 30X, the simulated dataset's brand).
+ */
+export type ReviewBatchInput = Omit<ReviewBatchRequest, "policy"> & {
+	policy?: PolicyOverrides;
+	brand?: BrandProfile;
+};
 
 /** Max pieces reviewed at the same time, to stay under provider rate limits. */
 const CONCURRENCY = 8;
@@ -39,7 +46,7 @@ export async function reviewBatch(
 ): Promise<ReviewBatchResponse> {
 	const ids = request.ids ? new Set(request.ids) : null;
 	const pieces = ids ? deps.content.filter((piece) => ids.has(piece.id)) : deps.content;
-	const options = { policy: request.policy, enrich: request.enrich ?? false };
+	const options = { policy: request.policy, enrich: request.enrich ?? false, brand: request.brand };
 
 	const results = await mapWithConcurrency(pieces, CONCURRENCY, (piece) =>
 		reviewPiece(piece, options, deps),
