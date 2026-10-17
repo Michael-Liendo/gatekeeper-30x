@@ -47,3 +47,19 @@ export function formatUsd(value: number | null | undefined): string {
 	if (value === 0) return "0 USD";
 	return `${(value < 0.01 ? usdSmall : usdRegular).format(value)} USD`;
 }
+
+/** True when the ISO date falls on the viewer's current day. */
+export function isToday(iso: string, now: Date = new Date()): boolean {
+	const date = new Date(iso);
+	return (
+		date.getFullYear() === now.getFullYear() &&
+		date.getMonth() === now.getMonth() &&
+		date.getDate() === now.getDate()
+	);
+}
+
+/** Card note: "+3 hoy" when something arrived today, otherwise the share of the total. */
+export function todayNote(today: number, count: number, total: number): string {
+	if (today > 0) return `+${today} hoy`;
+	return total > 0 ? `${formatPercent(count / total)} del total` : "";
+}

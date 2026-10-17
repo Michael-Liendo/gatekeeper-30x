@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { type ClipboardEvent, type DragEvent, useId, useRef, useState } from "react";
+import { UploadIcon } from "./icons";
 
 interface ImageDropZoneProps {
 	/** Current image as a data URL, or null. */
@@ -84,13 +85,13 @@ export function ImageDropZone({
 					width={1200}
 					height={900}
 					unoptimized
-					className="max-h-72 w-full rounded-lg border border-line bg-surface-muted object-contain"
+					className="max-h-80 w-full rounded-card bg-surface-muted object-contain"
 				/>
 				<button
 					type="button"
 					onClick={() => onChange(null)}
 					disabled={disabled}
-					className="inline-flex min-h-11 items-center justify-self-start rounded-lg border border-line-strong bg-surface px-4 text-sm font-semibold hover:bg-surface-muted"
+					className="inline-flex min-h-11 items-center justify-self-start rounded-full border border-line-strong bg-surface px-5 text-sm font-medium hover:bg-surface-muted"
 				>
 					Quitar captura
 				</button>
@@ -112,15 +113,27 @@ export function ImageDropZone({
 				}}
 				onDragLeave={() => setDragging(false)}
 				onDrop={handleDrop}
-				className={`grid min-h-40 w-full place-items-center gap-1 rounded-lg border-2 border-dashed px-4 py-8 text-center ${
+				className={`group block w-full rounded-card bg-linear-to-br p-[3px] text-center disabled:cursor-progress ${
 					dragging
-						? "border-focus bg-suggest"
-						: "border-line-strong bg-surface-muted hover:bg-surface"
+						? "from-lilac-to via-lilac-from to-aqua-to"
+						: "from-lilac-from via-lilac-to to-aqua-from"
 				}`}
 			>
-				<span className="font-semibold">{label}</span>
-				<span id={hintId} className="text-sm text-ink-muted">
-					{hint}
+				<span
+					className={`grid min-h-56 place-items-center content-center gap-3 rounded-[22px] px-6 py-10 transition-colors ${
+						dragging ? "bg-surface/70" : "bg-surface group-hover:bg-surface/85"
+					}`}
+				>
+					<span
+						aria-hidden="true"
+						className="grid size-14 place-items-center rounded-full bg-linear-to-br from-lilac-from to-lilac-to"
+					>
+						<UploadIcon size={24} />
+					</span>
+					<span className="text-lg font-normal">{label}</span>
+					<span id={hintId} className="max-w-sm text-sm text-ink-muted">
+						{hint}
+					</span>
 				</span>
 			</button>
 			<input

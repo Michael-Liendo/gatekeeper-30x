@@ -17,15 +17,15 @@ export const ROUTES: readonly Route[] = [
 
 export const ROUTE_LABEL: Record<Route, string> = {
 	AUTO_APPROVE: "Aprobado",
-	ENRICH_WITH_LLM: "Ajustar con IA",
-	HUMAN_REVIEW: "Revisión humana",
+	ENRICH_WITH_LLM: "Mejorar con IA",
+	HUMAN_REVIEW: "Revisar",
 	REJECT: "Descartado",
 };
 
 export const ROUTE_HINT: Record<Route, string> = {
-	AUTO_APPROVE: "Se publica sin tocarla",
-	ENRICH_WITH_LLM: "El LLM propone ajustes",
-	HUMAN_REVIEW: "La decide una persona",
+	AUTO_APPROVE: "Se publica sin que hagas nada",
+	ENRICH_WITH_LLM: "Casi lista: la IA propone cambios",
+	HUMAN_REVIEW: "La decides tú",
 	REJECT: "No se publica",
 };
 
@@ -150,7 +150,7 @@ export function flagMarkers(
 	return markers;
 }
 
-/** Slider definitions for the editorial policy panel. */
+/** Slider definitions for "Ajustes avanzados" in the policy screen, in plain words. */
 export const POLICY_FIELDS: readonly {
 	key: Exclude<keyof EditorialPolicy, "weights">;
 	label: string;
@@ -158,36 +158,35 @@ export const POLICY_FIELDS: readonly {
 }[] = [
 	{
 		key: "autoApproveConfidence",
-		label: "Confianza para aprobar sola",
-		description:
-			"Todas las respuestas de JEV deben llegar a este nivel para publicar sin intervención.",
+		label: "Qué tan seguro debe estar para aprobar solo",
+		description: "Más alto: aprueba solo cuando lo tiene muy claro y te llegan más piezas.",
 	},
 	{
 		key: "grayZoneFloor",
-		label: "Piso de la zona gris",
+		label: "Cuándo te la pasa a ti",
 		description:
-			"Por debajo decide una persona. Entre este piso y la confianza para aprobar, ajusta el LLM.",
+			"Si está menos seguro que esto, la decides tú. Entre medias, la IA propone mejoras.",
 	},
 	{
 		key: "minEditorialScore",
-		label: "Puntaje editorial mínimo",
-		description: "Relevancia y utilidad, menos tono promocional y datos sin fuente.",
+		label: "Calidad mínima para aprobar",
+		description: "Cuánto valor debe aportar a tu audiencia: útil, relevante y sin tono de anuncio.",
 	},
 	{
 		key: "flagThreshold",
-		label: "Umbral de alerta",
-		description: "Una señal de sí/no desde este valor impide la aprobación automática.",
+		label: "Sensibilidad a señales de alerta",
+		description:
+			"Más bajo: cualquier señal (tono de anuncio, datos sin fuente) frena la aprobación.",
 	},
 	{
 		key: "riskBlock",
-		label: "Bloqueo por riesgo",
-		description:
-			"Riesgo de marca, promesas exageradas o productos que la marca no vende van a una persona.",
+		label: "Riesgo para tu marca",
+		description: "Desde aquí, promesas exageradas o productos que no vendes llegan a ti.",
 	},
 	{
 		key: "spamReject",
 		label: "Descartar spam desde",
-		description: "Con esta probabilidad de spam la pieza se descarta sin revisión.",
+		description: "Desde aquí, lo que parece spam se descarta sin pasar por ti.",
 	},
 ];
 
@@ -198,7 +197,43 @@ export function pieceImage(piece: ContentPiece): string | null {
 }
 
 export const EDITOR_ACTION_LABEL = {
-	approved: "Excepción aprobada",
-	rejected: "Rechazada por el editor",
-	adjusted: "Aprobada con ajustes de IA",
+	approved: "Aprobada por ti",
+	rejected: "Rechazada por ti",
+	adjusted: "Aprobada con mejoras de la IA",
 } as const;
+
+/** Short, friendly sentence for each rule that can fire (see decideRoute). */
+const REASON_TEXT: Record<string, string> = {
+	is_spam: "Parece spam",
+	brand_risk: "Podría dañar la imagen de tu marca",
+	exaggerated_promises: "Promete resultados exagerados",
+	offers_unsold_product: "Vende algo que tu marca no ofrece",
+	too_promotional: "Suena demasiado a anuncio",
+	unsourced_claims: "Da datos sin decir de dónde salen",
+	topic: "No encaja con los temas de tu marca",
+	editorial_score: "Aporta poco valor a tu audiencia",
+	min_confidence: "La IA no lo tiene del todo claro",
+};
+
+/** At most `limit` plain-language reasons, without duplicates or numbers. */
+export function friendlyReasons(
+	result: Pick<ReviewResult, "reasons" | "error">,
+	limit = 3,
+): string[] {
+	if (result.error) return ["No pudimos analizarla por completo"];
+	const texts = result.reasons.map((reason) =>
+		reason.check.startsWith("missing_")
+			? "No pudimos analizarla por completo"
+			: (REASON_TEXT[reason.check] ?? reason.message.replace(/\s*\([\d,.]+\)$/, "")),
+	);
+	return [...new Set(texts)].slice(0, limit);
+}
+
+export type Certainty = "alta" | "media" | "baja";
+
+/** "Seguridad de la decisión" in words, against the current policy's confidence gates. */
+export function decisionCertainty(minConfidence: number, policy: EditorialPolicy): Certainty {
+	if (minConfidence >= policy.autoApproveConfidence) return "alta";
+	if (minConfidence >= policy.grayZoneFloor) return "media";
+	return "baja";
+}
