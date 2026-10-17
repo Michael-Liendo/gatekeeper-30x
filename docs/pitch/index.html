@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gatekeeper Editorial · pitch</title>
+<link rel="stylesheet" href="deck.css" />
+</head>
+<body>
+
+<!--
+	Pitch de la final del Hackathon 30X. Nueve láminas, unos cuatro minutos.
+
+	Es para la dirección de 30X y jurados de negocio: habla de decisiones,
+	tiempo, riesgo, marca, equipo y dinero. Nada de modelos, umbrales ni
+	arquitectura: eso vive en docs/playbook/, y aquí solo se le señala una vez.
+
+	Ninguna cifra inventada. Las de producto salen de docs/05-calibracion.md y de
+	pruebas en producción; las de 30X son las públicas del perfil @crece30x.
+
+	Ninguna lámina puede desbordarse: `verificar.mjs` las mide todas.
+	Cada `data-notes` es lo que se dice en voz alta; se abren con P.
+-->
+
+<div id="stage">
+	<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+		<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+		<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></symbol>
+		<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+		<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+		<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5L4.5 13.5H12L11 21.5l8.5-11H12z"/></symbol>
+		<symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M14.5 9.2c-.6-.8-1.5-1.2-2.5-1.2-1.4 0-2.5.8-2.5 2s1.1 1.6 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-1.9-.4-2.5-1.2M12 6.5v11"/></symbol>
+		<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4.5M7.5 9L12 4.5 16.5 9M4.5 15.5v3a1.5 1.5 0 001.5 1.5h12a1.5 1.5 0 001.5-1.5v-3"/></symbol>
+		<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c1.3-3.8 4.2-5.5 7.5-5.5s6.2 1.7 7.5 5.5"/></symbol>
+		<symbol id="i-gate" viewBox="0 0 24 24"><path d="M5 20V8l7-4.5L19 8v12M9 20v-6h6v6"/></symbol>
+		<symbol id="i-loop" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 0113-5.1L19.5 9M19.5 4.5V9H15M19.5 12a7.5 7.5 0 01-13 5.1L4.5 15M4.5 19.5V15H9"/></symbol>
+		<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+		<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.8 12l2.2 2.2 4.2-4.4"/></symbol>
+		<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></symbol>
+		<symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.4 3.5 5.2 3.5 8.5s-1.1 6.1-3.5 8.5c-2.4-2.4-3.5-5.2-3.5-8.5s1.1-6.1 3.5-8.5z"/></symbol>
+		<symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"/></symbol>
+		<symbol id="i-trend" viewBox="0 0 24 24"><path d="M3.5 17l5.5-5.5 4 4 7.5-7.5M15 8h5.5v5.5"/></symbol>
+		<symbol id="i-scale" viewBox="0 0 24 24"><path d="M12 4v16M7 20h10M5 8h14M5 8l-2.5 6a3 3 0 005 0zM19 8l-2.5 6a3 3 0 005 0z"/></symbol>
+	</svg>
+
+	<!-- ═══════════════════════════ 01 · Portada ═══════════════════════════ -->
+	<section class="slide" data-notes="Hola, somos DevGain: Michael Liendo y Haron Acosta, y les traemos Gatekeeper Editorial. La idea cabe en una frase: lo que está bien se publica solo, lo que está dudoso lo arregla la IA, y una persona revisa a mano solo lo que de verdad importa. Lo pensamos para el equipo de Media de 30X, que se hace la misma pregunta decenas de veces al día: ¿esta pieza está lista para salir?">
+		<div class="head">
+			<span class="num">01</span>
+			<span class="eyebrow">Hackathon 30X · Final</span>
+		</div>
+		<div class="body">
+			<div class="split" style="grid-template-columns: 1.2fr 1fr; align-items: center; gap: 48px">
+				<div>
+					<h1>Gatekeeper Editorial</h1>
+					<div class="tagline">
+						<span class="t1">Publica lo bueno solo.</span>
+						<span class="t2">Arregla lo dudoso con IA.</span>
+						<span class="t3">Revisa a mano solo lo que importa.</span>
+					</div>
+					<p class="team-line">Equipo <strong>DevGain</strong> · Michael Liendo y Haron Acosta</p>
+				</div>
+				<div class="card lilac" style="padding: 26px">
+					<div class="card-label">Pieza nueva del equipo creativo <svg aria-hidden="true" class="icon"><use href="#i-upload"/></svg></div>
+					<div class="verdict" style="margin-top:14px">
+						<div style="font-size:16px; font-weight:500">3 preguntas antes de subir el precio</div>
+						<div class="mini-line"></div>
+						<div class="mini-line short"></div>
+					</div>
+					<div class="verdict" style="margin-top:12px">
+						<span class="route approve" style="justify-self:start">Lista para publicar</span>
+						<div class="why">Aporta algo útil, habla como la marca y no promete de más.</div>
+					</div>
+					<p class="small" style="margin-top:14px; color: var(--ink)"><svg aria-hidden="true" class="icon" style="width:16px;height:16px;vertical-align:-3px"><use href="#i-clock"/></svg> Decidido en menos de un segundo</p>
+				</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>1 / 9</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 02 · El problema ═══════════════════════════ -->
+	<section class="slide" data-notes="30X forma a fundadores y ejecutivos en Latinoamérica, y su marca vive en redes: en Instagram, @crece30x tiene unos cuatrocientos veinticinco mil seguidores y más de mil quinientas publicaciones. Con IA, producir una pieza ya toma minutos. Revisarla, no: alguien tiene que leerla, decidir y corregir. Eso es lento, cada editor usa su propio criterio, y basta un post equivocado para que la marca lo pague delante de cientos de miles de personas.">
+		<div class="head">
+			<span class="num">02</span>
+			<span class="eyebrow">El problema</span>
+		</div>
+		<div class="body">
+			<h2>Producir contenido ya es rápido. <span class="hl-text">Revisarlo sigue siendo a mano.</span></h2>
+			<div class="row mt-l">
+				<div class="card lilac">
+					<div class="card-label">Seguidores de @crece30x en Instagram</div>
+					<div class="stat-big" style="margin-top:12px">425 mil</div>
+				</div>
+				<div class="card aqua">
+					<div class="card-label">Publicaciones en ese perfil</div>
+					<div class="stat-big" style="margin-top:12px">1.500+</div>
+				</div>
+				<div class="card peach">
+					<div class="card-label">Y la IA multiplica lo que se produce</div>
+					<div class="stat-big" style="margin-top:12px">× IA</div>
+				</div>
+			</div>
+			<div class="row mt">
+				<div class="card muted-bg">
+					<h3><svg aria-hidden="true" class="icon" style="vertical-align:-4px; margin-right:6px"><use href="#i-clock"/></svg>Lento</h3>
+					<p class="small mt-s">Cada pieza espera a que alguien la lea y decida.</p>
+				</div>
+				<div class="card muted-bg">
+					<h3><svg aria-hidden="true" class="icon" style="vertical-align:-4px; margin-right:6px"><use href="#i-scale"/></svg>Inconsistente</h3>
+					<p class="small mt-s">Dos editores, dos criterios distintos.</p>
+				</div>
+				<div class="card muted-bg">
+					<h3><svg aria-hidden="true" class="icon" style="vertical-align:-4px; margin-right:6px"><use href="#i-shield"/></svg>Caro si falla</h3>
+					<p class="small mt-s">Un post equivocado lo paga la marca, en público.</p>
+				</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>2 / 9 · cifras públicas del perfil @crece30x</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 03 · La solución ═══════════════════════════ -->
+	<section class="slide" data-notes="Gatekeeper es un filtro editorial. El equipo sube la pieza, como captura o como texto, y en menos de un segundo el sistema dice una de cuatro cosas: se publica tal cual, se mejora con IA, la revisa una persona, o se descarta. Y siempre explica por qué, en palabras simples. Por dentro decide el motor de decisión JEV, de TypeSafe; para el equipo, es subir una pieza y recibir una respuesta clara.">
+		<div class="head">
+			<span class="num">03</span>
+			<span class="eyebrow">La solución</span>
+		</div>
+		<div class="body">
+			<h2>Subes la pieza. En menos de un segundo sabes <span class="hl-text">qué hacer con ella</span>.</h2>
+			<div class="outcomes mt-l">
+				<div class="outcome approve">
+					<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-check"/></svg></span>
+					<h3>Se publica</h3>
+					<p>Está lista. Nadie tiene que tocarla.</p>
+				</div>
+				<div class="outcome enrich">
+					<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-spark"/></svg></span>
+					<h3>Mejorar con IA</h3>
+					<p>Le falta algo. La IA la arregla con un clic.</p>
+				</div>
+				<div class="outcome human">
+					<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-eye"/></svg></span>
+					<h3>La revisas tú</h3>
+					<p>Hay un riesgo o una duda real. Decide una persona.</p>
+				</div>
+				<div class="outcome reject">
+					<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-x"/></svg></span>
+					<h3>Se descarta</h3>
+					<p>Spam o fuera de la marca. No sale.</p>
+				</div>
+			</div>
+			<p class="lede mt" style="font-size:19px">Y siempre te dice <strong style="color:var(--ink)">por qué</strong>, en palabras simples.</p>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>3 / 9</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 04 · Cómo se vive ═══════════════════════════ -->
+	<section class="slide" data-notes="Así se vive. Uno: diseño o copy sube la pieza. Dos: al instante aparece la decisión con su motivo, por ejemplo, promete más de lo que aporta. Tres: un clic en Regenerar con IA reescribe el texto y rehace la imagen con la voz de la marca, y el sistema la vuelve a revisar. Cuatro: se aprueba. Todo queda en un tablero con historial y versiones, y el editor solo ve lo que le toca.">
+		<div class="head">
+			<span class="num">04</span>
+			<span class="eyebrow">Cómo se vive</span>
+		</div>
+		<div class="body">
+			<h2>Cuatro pasos. El editor solo entra cuando hace falta.</h2>
+			<div class="walk mt-l">
+				<div class="walk-step">
+					<div class="n"><i>1</i>Sube</div>
+					<div class="mock lilac card">
+						<div class="drop"><svg aria-hidden="true" class="icon"><use href="#i-upload"/></svg>Arrastra una captura<br>o pega el texto</div>
+						<div class="file"><span class="thumb"></span>post-precios.png</div>
+					</div>
+					<div class="cap">Diseño o copy sube la pieza, como captura o texto.</div>
+				</div>
+				<div class="walk-step">
+					<div class="n"><i>2</i>Decide</div>
+					<div class="mock card muted-bg">
+						<div class="verdict">
+							<span class="route enrich" style="justify-self:start">Mejorar con IA</span>
+							<div class="why">Promete más de lo que aporta. Falta un consejo concreto.</div>
+						</div>
+						<div class="small" style="text-align:center"><svg aria-hidden="true" class="icon" style="width:15px;height:15px;vertical-align:-3px"><use href="#i-clock"/></svg> menos de 1 segundo</div>
+					</div>
+					<div class="cap">La decisión llega al instante, con su motivo.</div>
+				</div>
+				<div class="walk-step">
+					<div class="n"><i>3</i>Arregla</div>
+					<div class="mock card aqua">
+						<span class="btn-dark"><svg aria-hidden="true" class="icon"><use href="#i-spark"/></svg>Regenerar con IA</span>
+						<div class="verdict" style="gap:6px">
+							<div class="small" style="color:var(--ink)">Texto e imagen nuevos, con la voz de tu marca</div>
+							<div class="small"><svg aria-hidden="true" class="icon" style="width:15px;height:15px;vertical-align:-3px"><use href="#i-loop"/></svg> Revisada otra vez</div>
+						</div>
+					</div>
+					<div class="cap">Un clic. La IA la reescribe y se vuelve a revisar.</div>
+				</div>
+				<div class="walk-step">
+					<div class="n"><i>4</i>Aprueba</div>
+					<div class="mock card peach">
+						<div class="verdict">
+							<span class="route approve" style="justify-self:start">Aprobado</span>
+							<div class="why" style="color:var(--ink)">Post: precios · <strong>versión 2</strong></div>
+							<div class="why">Historial guardado en el tablero</div>
+						</div>
+					</div>
+					<div class="cap">Queda en el tablero del equipo, con sus versiones.</div>
+				</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>4 / 9</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 05 · El caso real ═══════════════════════════ -->
+	<section class="slide" data-notes="Este caso es real, en producción. Subimos una captura de spam: gana cinco mil dólares al día, cripto, garantizado. El sistema la descartó y dijo por qué: promete dinero, parece spam y pone en riesgo la marca. Un clic en Regenerar con IA y quedó así: Encuentra el freno al crecimiento, una invitación a las clases gratis de 30X, con la imagen en el lima de la marca. Revisada otra vez, aprobada y guardada como versión dos.">
+		<div class="head">
+			<span class="num">05</span>
+			<span class="eyebrow">Un caso real, en producción</span>
+		</div>
+		<div class="body">
+			<h2>De spam a post de 30X, <span class="hl-text">con un clic</span></h2>
+			<div class="versus mt">
+				<div class="card">
+					<div class="card-label">Lo que subieron <span class="route reject">Se descarta</span></div>
+					<div class="post antes mt-s" role="img" aria-label="Captura original subida al sistema">
+						<p class="post-title">GANA $5.000 AL DÍA</p>
+						<p>Sin experiencia. Método 100% garantizado.<br>Invierte en cripto hoy y hazte millonario en 30 días.<br>¡Últimos cupos! Haz click en el link de la bio</p>
+					</div>
+					<div class="flags">
+						<div class="flag">Promete dinero garantizado<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--ink-muted)"><use href="#i-x"/></svg></b></div>
+						<div class="flag">Parece spam<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--ink-muted)"><use href="#i-x"/></svg></b></div>
+						<div class="flag">Pone en riesgo la marca<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--ink-muted)"><use href="#i-x"/></svg></b></div>
+					</div>
+				</div>
+				<div class="bridge">
+					<span class="btn"><svg aria-hidden="true" class="icon" style="width:16px;height:16px"><use href="#i-spark"/></svg>Regenerar con IA</span>
+					<svg aria-hidden="true" class="icon" style="width:34px;height:34px; color: var(--ink-muted)"><use href="#i-arrow"/></svg>
+					<p class="small">Un clic.<br>Texto e imagen.</p>
+				</div>
+				<div class="card">
+					<div class="card-label">Lo que propuso la IA <span class="route approve">Se publica</span></div>
+					<div class="post despues mt-s" role="img" aria-label="Versión regenerada por la IA">
+						<p class="post-title">Encuentra el freno al crecimiento</p>
+						<p>¿Quieres hacer crecer tu empresa? Primero, identifica dónde está el principal desafío: adquisición, producto o escalamiento. Elige un área y define una acción concreta para avanzar esta semana.</p>
+						<p class="post-close">Explora estos temas en las clases gratuitas de 30X.</p>
+					</div>
+					<div class="flags">
+						<div class="flag">Texto con la voz de 30X<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--approve)"><use href="#i-check"/></svg></b></div>
+						<div class="flag">Imagen rehecha en el lima de la marca<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--approve)"><use href="#i-check"/></svg></b></div>
+						<div class="flag">Revisada otra vez · guardada como versión 2<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--approve)"><use href="#i-check"/></svg></b></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>5 / 9</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 06 · Hecho para tu marca ═══════════════════════════ -->
+	<section class="slide" data-notes="Y no es solo para 30X. Para empezar, pegas la web de tu marca y en segundos el sistema la lee: qué vende, a quién le habla, cómo habla y cuáles son sus colores. Con eso arma las reglas de esa marca, incluido lo que nunca debe publicar, como promesas garantizadas u ofertas que no son suyas. Cada marca tiene sus propias reglas. Lo probamos con 30X, pero sirve igual para cualquier equipo que publique contenido.">
+		<div class="head">
+			<span class="num">06</span>
+			<span class="eyebrow">Hecho para tu marca</span>
+		</div>
+		<div class="body">
+			<div class="split" style="grid-template-columns: 1.25fr 1fr; gap: 40px; align-items: center">
+				<div class="card lilac" style="padding:24px">
+					<div class="urlbar"><svg aria-hidden="true" class="icon"><use href="#i-globe"/></svg><span class="url">Pega la web de tu marca</span><span class="btn-dark">Leer mi marca</span></div>
+					<div class="card-label" style="margin-top:16px">Ejemplo: así queda la marca 30X</div>
+					<div class="brandrows" style="margin-top:8px">
+						<div class="brandrow"><b>Qué vende</b><span>Inmersiones Ejecutivas, programas de Ventas, Growth e IA, clases gratis</span></div>
+						<div class="brandrow"><b>A quién</b><span>Fundadores y ejecutivos en Latinoamérica</span></div>
+						<div class="brandrow"><b>Sus colores</b><span><span class="swatch" style="background:#EBFF6F"></span><span class="swatch" style="background:#111111"></span><span class="swatch" style="background:#EFEBE2"></span></span></div>
+						<div class="brandrow"><b>Nunca publica</b><span>Promesas garantizadas u ofertas que no son suyas</span></div>
+					</div>
+				</div>
+				<div>
+					<h2 style="font-size:36px">Lee tu marca <span class="hl-text">en segundos</span></h2>
+					<div class="claims mt">
+						<div class="claim">
+							<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-globe"/></svg></span>
+							<div><h3>Sin configurar a mano</h3><p>Pegas tu web y listo: lo que vende, su público, su tono y sus colores.</p></div>
+						</div>
+						<div class="claim">
+							<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-layers"/></svg></span>
+							<div><h3>Cada marca, sus reglas</h3><p>Lo que está bien para una puede estar prohibido para otra.</p></div>
+						</div>
+						<div class="claim">
+							<span class="badge"><svg aria-hidden="true" class="icon"><use href="#i-trend"/></svg></span>
+							<div><h3>No solo para 30X</h3><p>Sirve para cualquier equipo que publique contenido.</p></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>6 / 9</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 07 · Resultados ═══════════════════════════ -->
+	<section class="slide" data-notes="Esto lo medimos. Decide cada pieza en menos de un segundo, y revisar cien piezas cuesta menos de un centavo de dólar. Con cuarenta y cinco piezas simuladas de 30X acertó la decisión esperada entre el ochenta y el ochenta y siete por ciento de las veces. Cuatro de cada diez se resolvieron sin que nadie las tocara. Y lo más importante: cero piezas riesgosas aprobadas solas. Cuando se equivoca, se equivoca del lado prudente.">
+		<div class="head">
+			<span class="num">07</span>
+			<span class="eyebrow">Resultados medidos</span>
+		</div>
+		<div class="body">
+			<h2>Medido, no estimado</h2>
+			<div class="results mt">
+				<div class="card lilac">
+					<div class="card-label">Decide cada pieza en <svg aria-hidden="true" class="icon"><use href="#i-bolt"/></svg></div>
+					<div class="stat-big">&lt; 1 s</div>
+				</div>
+				<div class="card aqua">
+					<div class="card-label">Revisar 100 piezas cuesta <svg aria-hidden="true" class="icon"><use href="#i-coin"/></svg></div>
+					<div class="stat-big">&lt; 1 ¢</div>
+				</div>
+				<div class="card peach">
+					<div class="card-label">Acierta la decisión esperada <svg aria-hidden="true" class="icon"><use href="#i-check"/></svg></div>
+					<div class="stat-big">80–87 %</div>
+				</div>
+				<div class="card wide">
+					<div class="card-label">Se resuelven sin una persona <svg aria-hidden="true" class="icon"><use href="#i-user"/></svg></div>
+					<div class="stat-big">4 de 10</div>
+					<p class="small" style="margin-top:8px">Las demás van a la IA o a una persona.</p>
+				</div>
+				<div class="card dark wide">
+					<div class="card-label">Piezas riesgosas aprobadas solas <svg aria-hidden="true" class="icon"><use href="#i-shield"/></svg></div>
+					<div class="stat-big">0</div>
+					<p class="small" style="margin-top:8px">Cuando se equivoca, se equivoca del lado prudente.</p>
+				</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>7 / 9 · 45 piezas simuladas de 30X · el detalle está en el playbook</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 08 · Qué gana 30X ═══════════════════════════ -->
+	<section class="slide" data-notes="¿Qué gana 30X? Tiempo: Media mira solo lo que importa. Una marca protegida: nada riesgoso sale sin una persona. Publicar más rápido. Y un sistema que aprende de cada corrección del editor. ¿Por qué ahora? Porque la IA ya multiplicó lo que se produce, y la revisión no puede seguir a mano. Y mañana el mismo motor puede decidir otras cosas: qué programa le sirve a cada inscrito, quién está por abandonar o si la respuesta de un agente puede salir.">
+		<div class="head">
+			<span class="num">08</span>
+			<span class="eyebrow">Qué gana 30X · por qué ahora</span>
+		</div>
+		<div class="body">
+			<h2>La IA ya multiplicó lo que se produce. <span class="hl-text">La revisión no puede seguir a mano.</span></h2>
+			<div class="gains mt">
+				<div class="card lilac">
+					<svg aria-hidden="true" class="icon" style="width:24px;height:24px"><use href="#i-clock"/></svg>
+					<h3>Tiempo</h3>
+					<p>Media deja de revisarlo todo y mira solo lo que importa.</p>
+				</div>
+				<div class="card aqua">
+					<svg aria-hidden="true" class="icon" style="width:24px;height:24px"><use href="#i-shield"/></svg>
+					<h3>Marca protegida</h3>
+					<p>Nada riesgoso sale sin que lo vea una persona.</p>
+				</div>
+				<div class="card peach">
+					<svg aria-hidden="true" class="icon" style="width:24px;height:24px"><use href="#i-bolt"/></svg>
+					<h3>Publica más rápido</h3>
+					<p>De la pieza dudosa a la lista para salir, en un clic.</p>
+				</div>
+				<div class="card dark">
+					<svg aria-hidden="true" class="icon" style="width:24px;height:24px"><use href="#i-loop"/></svg>
+					<h3>Aprende</h3>
+					<p class="muted">Cada corrección del editor afina el criterio.</p>
+				</div>
+			</div>
+			<p class="card-label mt" style="justify-content:flex-start">Y mañana, el mismo motor decide otras cosas de 30X</p>
+			<div class="next-uses mt-s">
+				<div class="use"><b>Inscritos</b>¿Qué programa le sirve a cada uno?</div>
+				<div class="use"><b>Alumnos</b>¿Quién está por abandonar?</div>
+				<div class="use"><b>Agentes</b>¿Esta respuesta puede salir?</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>8 / 9</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 09 · Cierre ═══════════════════════════ -->
+	<section class="slide dark-slide" data-notes="Gatekeeper Editorial ya funciona en producción; no es una maqueta. Lo pueden probar hoy en esta dirección. Pegan su web, suben una pieza y en un segundo ven la decisión. El código es abierto, y si quieren el detalle de cómo decide, está en nuestro playbook. Somos DevGain, Michael Liendo y Haron Acosta. Publica lo bueno solo, arregla lo dudoso con IA, y revisa a mano solo lo que importa. Muchas gracias.">
+		<div class="head">
+			<span class="num">09</span>
+			<span class="eyebrow">Pruébalo hoy</span>
+		</div>
+		<div class="body">
+			<h1>Ya está funcionando.<br>Pruébalo hoy.</h1>
+			<a class="live-url" href="https://gatekeeper-30x.michaelliendo.com">gatekeeper-30x.michaelliendo.com</a>
+			<div class="closing-meta">
+				<div><b>Equipo DevGain</b>Michael Liendo · Haron Acosta</div>
+				<div><b>Código abierto</b>github.com/Michael-Liendo/gatekeeper-30x · AGPL-3.0</div>
+				<div><b>Gracias</b>Hackathon 30X</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial</span><span>9 / 9</span></div>
+	</section>
+</div>
+
+<div id="notes"></div>
+<div id="help">← → pasar · P notas aparte · F pantalla completa</div>
+
+<script src="deck.js"></script>
+</body>
+</html>
