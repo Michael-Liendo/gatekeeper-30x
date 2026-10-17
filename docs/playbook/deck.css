@@ -777,3 +777,36 @@ body.notes #notes {
 	padding: 3px 12px;
 	font-size: 13px;
 }
+
+/* Slide 6: the real before/after copy, set as type so it stays crisp and fills the card. */
+.post {
+	height: 168px;
+	border-radius: 16px;
+	padding: 18px 22px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 6px;
+	font-family: "Arial", "Helvetica Neue", sans-serif;
+	color: #111;
+	font-size: 14px;
+	line-height: 1.4;
+}
+.post p {
+	margin: 0;
+}
+.post .post-title {
+	font-weight: 800;
+	font-size: 24px;
+	line-height: 1.1;
+	letter-spacing: -0.01em;
+}
+.post .post-close {
+	font-weight: 700;
+}
+.post.antes {
+	background: #ffde00;
+}
+.post.despues {
+	background: #e3f64d;
+}
