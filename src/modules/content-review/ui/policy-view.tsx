@@ -1,131 +1,136 @@
 "use client";
 
-import type { Route } from "../domain/editorial-policy";
-import { ROUTE_LABEL, ROUTE_STYLE, ROUTES } from "./labels";
+import { ChevronDownIcon } from "@/shared/ui/icons";
+import type { EditorialPolicy } from "../domain/editorial-policy";
+import type { ReviewResult } from "../domain/review";
+import { applyPolicy } from "./apply-policy";
 import { PageHeader } from "./page-header";
 import { PolicyPanel } from "./policy-panel";
+import { matchingPreset, POLICY_PRESETS, type PresetId } from "./policy-presets";
 import { useReview } from "./review-session-provider";
 import { RouteBadge } from "./route-badge";
 
-/** Threshold tuning with an instant preview of what moves where. */
+/** Literal classes so Tailwind sees them: one soft surface per preset. */
+const PRESET_SURFACE: Record<PresetId, string> = {
+	strict: "border border-line bg-surface",
+	balanced: "bg-linear-to-br from-lilac-from to-lilac-to",
+	flexible: "bg-linear-to-br from-aqua-from to-aqua-to",
+};
+
+/** "~4 de cada 10 piezas se aprueban solas", from the answers already on hand. */
+function expectedEffect(results: readonly ReviewResult[], policy: EditorialPolicy): string {
+	if (results.length === 0) return "";
+	const routed = results.map((r) => applyPolicy(r, policy).route);
+	const share = (count: number) => Math.round((count / routed.length) * 10);
+	const approved = share(routed.filter((route) => route === "AUTO_APPROVE").length);
+	const toYou = share(
+		routed.filter((route) => route === "HUMAN_REVIEW" || route === "ENRICH_WITH_LLM").length,
+	);
+	return `~${approved} de cada 10 piezas se aprueban solas y ~${toYou} te llegan a ti.`;
+}
+
+/** Choose how strict the gatekeeper is; raw thresholds stay under "Ajustes avanzados". */
 export function PolicyView() {
 	const { policy, setPolicy, resetPolicy, results, originalRoutes, changedIds, hydrated } =
 		useReview();
-
-	const before = new Map<Route, number>(ROUTES.map((r) => [r, 0]));
-	const after = new Map<Route, number>(ROUTES.map((r) => [r, 0]));
-	for (const result of results) {
-		const original = originalRoutes.get(result.piece.id) ?? result.route;
-		before.set(original, (before.get(original) ?? 0) + 1);
-		after.set(result.route, (after.get(result.route) ?? 0) + 1);
-	}
+	const current = matchingPreset(policy);
+	const hasResults = hydrated && results.length > 0;
 	const changed = results.filter((r) => changedIds.has(r.piece.id));
 
 	return (
 		<>
 			<PageHeader
-				title="Política editorial"
-				description="Los umbrales son datos, no código. Al moverlos, las rutas se recalculan con las respuestas que JEV ya dio: sin otra llamada al modelo y sin desplegar nada."
+				title="Decide qué tan exigente es tu filtro"
+				description="Elige un estilo. Los cambios se aplican al momento sobre el contenido que ya revisaste."
 			/>
-			<div className="grid items-start gap-6 xl:grid-cols-[minmax(0,28rem)_minmax(0,1fr)]">
-				<PolicyPanel
-					policy={policy}
-					hasResults={hydrated && results.length > 0}
-					changedCount={changedIds.size}
-					onChange={setPolicy}
-					onReset={resetPolicy}
-				/>
-				<section
-					aria-labelledby="impact-title"
-					className="grid gap-4 rounded-card border border-line bg-surface p-5"
-				>
-					<h2 id="impact-title" className="text-lg font-semibold">
-						Impacto
+
+			<fieldset className="grid gap-4">
+				<legend className="sr-only">Estilo de revisión</legend>
+				<div className="grid gap-3 md:grid-cols-3 md:gap-4">
+					{POLICY_PRESETS.map((preset) => {
+						const selected = current?.id === preset.id;
+						const effect = hasResults ? expectedEffect(results, preset.policy) : "";
+						return (
+							<label
+								key={preset.id}
+								className={`relative flex min-h-44 cursor-pointer flex-col justify-between gap-6 rounded-card p-6 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus ${PRESET_SURFACE[preset.id]} ${
+									selected ? "ring-2 ring-ink ring-offset-2 ring-offset-surface" : ""
+								}`}
+							>
+								<input
+									type="radio"
+									name="policy-preset"
+									value={preset.id}
+									checked={selected}
+									onChange={() => setPolicy(preset.policy)}
+									className="sr-only"
+								/>
+								<span className="grid gap-2">
+									<span className="flex items-center justify-between gap-3">
+										<span className="text-2xl font-normal">{preset.name}</span>
+										<span
+											aria-hidden="true"
+											className={`grid size-6 place-items-center rounded-full border ${
+												selected ? "border-ink bg-ink" : "border-ink/30 bg-surface/50"
+											}`}
+										>
+											{selected ? <span className="size-2 rounded-full bg-surface" /> : null}
+										</span>
+									</span>
+									<span className="text-sm leading-relaxed text-ink/75">{preset.summary}</span>
+								</span>
+								{effect ? <span className="text-sm font-medium">{effect}</span> : null}
+							</label>
+						);
+					})}
+				</div>
+				<p aria-live="polite" className="text-sm text-ink-muted">
+					{current
+						? hasResults
+							? changed.length === 0
+								? "Ninguna pieza cambió de destino."
+								: `${changed.length} ${changed.length === 1 ? "pieza cambió" : "piezas cambiaron"} de destino con este estilo.`
+							: "Revisa contenido para ver cuántas piezas se aprueban solas con cada estilo."
+						: "Usas ajustes personalizados. Elige un estilo para volver a uno predefinido."}
+				</p>
+			</fieldset>
+
+			{changed.length > 0 ? (
+				<section aria-labelledby="changed-title" className="mt-10 grid gap-4">
+					<h2 id="changed-title" className="text-lg font-normal">
+						Qué cambió
 					</h2>
-					{results.length === 0 ? (
-						<p className="text-sm text-ink-muted">
-							Analiza el contenido para ver cómo cada cambio mueve las piezas entre rutas.
-						</p>
-					) : (
-						<>
-							<table className="w-full text-sm">
-								<caption className="sr-only">
-									Piezas por ruta antes y después de tu política
-								</caption>
-								<thead>
-									<tr className="text-left text-xs text-ink-muted">
-										<th scope="col" className="py-2 font-medium">
-											Ruta
-										</th>
-										<th scope="col" className="py-2 text-right font-medium">
-											Al analizar
-										</th>
-										<th scope="col" className="py-2 text-right font-medium">
-											Con tu política
-										</th>
-									</tr>
-								</thead>
-								<tbody className="divide-y divide-line">
-									{ROUTES.map((route) => {
-										const a = before.get(route) ?? 0;
-										const b = after.get(route) ?? 0;
-										const delta = b - a;
-										return (
-											<tr key={route}>
-												<th scope="row" className="py-2 text-left font-medium">
-													<span className="flex items-center gap-2">
-														<span
-															aria-hidden="true"
-															className={`size-2 rounded-full ${ROUTE_STYLE[route].dot}`}
-														/>
-														{ROUTE_LABEL[route]}
-													</span>
-												</th>
-												<td className="py-2 text-right font-mono">{a}</td>
-												<td className="py-2 text-right font-mono">
-													{b}
-													{delta !== 0 ? (
-														<span className="ml-1 text-xs text-ink-muted">
-															({delta > 0 ? "+" : ""}
-															{delta})
-														</span>
-													) : null}
-												</td>
-											</tr>
-										);
-									})}
-								</tbody>
-							</table>
-							{changed.length > 0 ? (
-								<div className="grid gap-2">
-									<h3 className="text-sm font-semibold">Piezas que cambiaron de ruta</h3>
-									<ul className="grid gap-2">
-										{changed.map((result) => {
-											const original = originalRoutes.get(result.piece.id);
-											return (
-												<li
-													key={result.piece.id}
-													className="grid gap-1 rounded-lg bg-surface-muted p-3"
-												>
-													<span className="text-sm font-medium">{result.piece.title}</span>
-													<span className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
-														{original ? <RouteBadge route={original} /> : null}
-														<span aria-hidden="true">→</span>
-														<span className="sr-only">ahora</span>
-														<RouteBadge route={result.route} />
-													</span>
-												</li>
-											);
-										})}
-									</ul>
-								</div>
-							) : (
-								<p className="text-sm text-ink-muted">Ninguna pieza cambió de ruta todavía.</p>
-							)}
-						</>
-					)}
+					<ul className="grid gap-2">
+						{changed.map((result) => {
+							const original = originalRoutes.get(result.piece.id);
+							return (
+								<li
+									key={result.piece.id}
+									className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-[20px] bg-surface-muted px-4 py-3"
+								>
+									<span className="min-w-0 text-sm">{result.piece.title}</span>
+									<span className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+										{original ? <RouteBadge route={original} /> : null}
+										<span aria-hidden="true">→</span>
+										<span className="sr-only">ahora</span>
+										<RouteBadge route={result.route} />
+									</span>
+								</li>
+							);
+						})}
+					</ul>
 				</section>
-			</div>
+			) : null}
+
+			<details className="group mt-10 rounded-card border border-line">
+				<summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-6 text-sm font-medium [&::-webkit-details-marker]:hidden">
+					Ajustes avanzados
+					<ChevronDownIcon size={18} className="transition-transform group-open:rotate-180" />
+				</summary>
+				<div className="border-t border-line px-6 py-6">
+					<PolicyPanel policy={policy} onChange={setPolicy} onReset={resetPolicy} />
+				</div>
+			</details>
 		</>
 	);
 }

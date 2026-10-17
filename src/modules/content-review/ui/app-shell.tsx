@@ -1,52 +1,99 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { type ReactNode, Suspense } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { type CSSProperties, type ReactNode, Suspense, useState } from "react";
+import { signOut } from "@/modules/accounts/ui/auth-api";
 import { useSession } from "@/modules/accounts/ui/session-provider";
-import { SignOutButton } from "@/modules/accounts/ui/sign-out-button";
 import { primaryColor } from "@/modules/brand/ui/brand-input";
 import { BrandMark } from "@/modules/brand/ui/brand-mark";
-import { brandStyle } from "@/modules/brand/ui/brand-style";
-import { AnalyzeButton } from "./analyze-button";
-import { formatSeconds } from "./format";
+import { readableInk } from "@/shared/ui/contrast";
+import {
+	ChartIcon,
+	GridIcon,
+	InboxIcon,
+	PlusIcon,
+	SignOutIcon,
+	SlidersIcon,
+	TagIcon,
+} from "@/shared/ui/icons";
+import { useToast } from "@/shared/ui/toast";
 import { useReview } from "./review-session-provider";
 
+type Href = "/" | "/contenido" | "/nueva" | "/politica" | "/metricas" | "/marca";
+
 interface NavItem {
-	href: "/" | "/contenido" | "/nueva" | "/politica" | "/metricas" | "/marca";
+	href: Href;
 	label: string;
+	icon: (props: { size?: number }) => ReactNode;
 	badge?: "pending";
 }
 
 const NAV: readonly NavItem[] = [
-	{ href: "/", label: "Bandeja", badge: "pending" },
-	{ href: "/contenido", label: "Todo el contenido" },
-	{ href: "/nueva", label: "Nueva pieza" },
-	{ href: "/politica", label: "Política editorial" },
-	{ href: "/metricas", label: "Métricas" },
-	{ href: "/marca", label: "Mi marca" },
+	{ href: "/", label: "Bandeja", icon: InboxIcon, badge: "pending" },
+	{ href: "/contenido", label: "Contenido", icon: GridIcon },
+	{ href: "/nueva", label: "Nueva pieza", icon: PlusIcon },
+	{ href: "/politica", label: "Política", icon: SlidersIcon },
+	{ href: "/metricas", label: "Métricas", icon: ChartIcon },
+	{ href: "/marca", label: "Mi marca", icon: TagIcon },
 ];
 
-function NavLinks({ pendingCount, pathname }: { pendingCount: number; pathname: string | null }) {
+/** Hover/focus label to the right of a rail icon (desktop only). */
+function RailTooltip({ children }: { children: ReactNode }) {
+	return (
+		<span
+			aria-hidden="true"
+			className="pointer-events-none absolute top-1/2 left-full z-40 ml-3 hidden -translate-y-1/2 whitespace-nowrap rounded-xl bg-primary px-3 py-1.5 text-xs text-primary-ink group-focus-within:block group-hover:block"
+		>
+			{children}
+		</span>
+	);
+}
+
+function PendingBadge({ count }: { count: number }) {
+	if (count <= 0) return null;
+	return (
+		<span
+			aria-hidden="true"
+			className="absolute -top-1 -right-1 grid h-5 min-w-5 place-items-center rounded-full bg-human px-1 text-[0.6875rem] font-medium text-ink tabular-nums ring-2 ring-rail"
+		>
+			{count > 99 ? "99+" : count}
+		</span>
+	);
+}
+
+function NavIcons({
+	pendingCount,
+	pathname,
+	layout,
+}: {
+	pendingCount: number;
+	pathname: string | null;
+	layout: "rail" | "bar";
+}) {
 	return (
 		<>
 			{NAV.map((item) => {
 				const active = pathname === item.href;
+				const Icon = item.icon;
+				const pending = item.badge === "pending" ? pendingCount : 0;
+				const accessible = pending > 0 ? `${item.label}, ${pending} pendientes` : item.label;
 				return (
-					<li key={item.href} className="shrink-0">
+					<li key={item.href} className="group relative">
 						<Link
 							href={item.href}
 							aria-current={active ? "page" : undefined}
-							className="flex min-h-11 items-center justify-between gap-3 whitespace-nowrap rounded-lg px-3 text-sm font-medium text-ink-muted hover:bg-surface-muted hover:text-ink aria-[current=page]:bg-brand aria-[current=page]:text-brand-ink"
+							aria-label={accessible}
+							className={`relative grid size-11 place-items-center rounded-2xl transition-colors ${
+								active
+									? "bg-surface text-ink"
+									: "text-rail-muted hover:bg-surface/10 hover:text-rail-ink"
+							}`}
 						>
-							{item.label}
-							{item.badge === "pending" && pendingCount > 0 ? (
-								<span className="rounded-full bg-human-soft px-2 py-0.5 font-mono text-xs font-semibold text-human-ink">
-									<span className="sr-only">Pendientes: </span>
-									{pendingCount}
-								</span>
-							) : null}
+							<Icon size={22} />
+							<PendingBadge count={pending} />
 						</Link>
+						{layout === "rail" ? <RailTooltip>{item.label}</RailTooltip> : null}
 					</li>
 				);
 			})}
@@ -54,138 +101,170 @@ function NavLinks({ pendingCount, pathname }: { pendingCount: number; pathname: 
 	);
 }
 
-/** Reads the pathname for the active link; isolated so it can suspend on its own. */
-function ActiveNav({ pendingCount }: { pendingCount: number }) {
+/** Reads the pathname for the active icon; isolated so it can suspend on its own. */
+function ActiveNav({ pendingCount, layout }: { pendingCount: number; layout: "rail" | "bar" }) {
 	const pathname = usePathname();
-	return <NavLinks pendingCount={pendingCount} pathname={pathname} />;
+	return <NavIcons pendingCount={pendingCount} pathname={pathname} layout={layout} />;
 }
 
-function Nav({ pendingCount, className }: { pendingCount: number; className: string }) {
+function Nav({
+	pendingCount,
+	layout,
+	className,
+}: {
+	pendingCount: number;
+	layout: "rail" | "bar";
+	className: string;
+}) {
 	return (
-		<nav aria-label="Secciones" className="min-w-0">
+		<nav aria-label="Secciones">
 			<ul className={className}>
-				<Suspense fallback={<NavLinks pendingCount={pendingCount} pathname={null} />}>
-					<ActiveNav pendingCount={pendingCount} />
+				<Suspense
+					fallback={<NavIcons pendingCount={pendingCount} pathname={null} layout={layout} />}
+				>
+					<ActiveNav pendingCount={pendingCount} layout={layout} />
 				</Suspense>
 			</ul>
 		</nav>
 	);
 }
 
-/** The signed-in brand (logo or initial on its color); product name until it loads. */
-function Brand() {
+/** The signed-in brand's logo or initial; links home. */
+function BrandLink({ withName = false }: { withName?: boolean }) {
 	const { brand } = useSession();
-	if (!brand) {
-		return (
-			<Link href="/" className="grid gap-0.5 rounded-md">
-				<span className="font-semibold">Gatekeeper Editorial</span>
-				<span className="text-xs text-ink-muted">30X Media</span>
-			</Link>
-		);
-	}
+	const name = brand?.name ?? "Gatekeeper";
 	return (
-		<Link href="/" className="flex min-w-0 items-center gap-2.5 rounded-md">
-			<BrandMark name={brand.name} color={primaryColor(brand)} logoUrl={brand.logoUrl} />
-			<span className="grid min-w-0 gap-0.5">
-				<span className="truncate font-semibold">{brand.name}</span>
-				<span className="text-xs text-ink-muted">Gatekeeper Editorial</span>
-			</span>
+		<Link
+			href="/"
+			aria-label={`${name}: ir a la bandeja`}
+			className="flex min-w-0 items-center gap-2.5 rounded-xl"
+		>
+			{brand ? (
+				<BrandMark name={brand.name} color={primaryColor(brand)} logoUrl={brand.logoUrl} />
+			) : (
+				<span
+					aria-hidden="true"
+					className="grid size-9 place-items-center rounded-lg bg-surface font-semibold text-ink"
+				>
+					G
+				</span>
+			)}
+			{withName ? <span className="truncate text-sm font-medium">{name}</span> : null}
 		</Link>
 	);
 }
 
-/** Who is signed in, plus sign-out. */
-function Account() {
+/** Icon-only sign-out: POST /api/auth/sign-out, then back to /ingresar. */
+function SignOutIconButton({ tone }: { tone: "rail" | "light" }) {
+	const router = useRouter();
+	const { notify } = useToast();
 	const { user } = useSession();
-	if (!user) return null;
+	const [pending, setPending] = useState(false);
+
+	async function onClick() {
+		setPending(true);
+		try {
+			await signOut();
+			router.replace("/ingresar");
+		} catch (error) {
+			setPending(false);
+			notify(error instanceof Error ? error.message : "No pudimos cerrar tu sesión.");
+		}
+	}
+
+	const label = pending
+		? "Cerrando sesión…"
+		: user
+			? `Cerrar sesión (${user.email})`
+			: "Cerrar sesión";
+
 	return (
-		<div className="grid gap-1 border-t border-line pt-3">
-			<p className="truncate px-3 text-xs text-ink-muted" title={user.email}>
-				<span className="sr-only">Sesión iniciada como </span>
-				{user.email}
-			</p>
-			<SignOutButton />
+		<div className="group relative">
+			<button
+				type="button"
+				onClick={() => void onClick()}
+				disabled={pending}
+				aria-busy={pending}
+				aria-label={label}
+				className={`grid size-11 place-items-center rounded-2xl transition-colors disabled:opacity-60 ${
+					tone === "rail"
+						? "text-rail-muted hover:bg-surface/10 hover:text-rail-ink"
+						: "text-ink-muted hover:bg-surface hover:text-ink"
+				}`}
+			>
+				<SignOutIcon size={22} />
+			</button>
+			{tone === "rail" ? <RailTooltip>{label}</RailTooltip> : null}
 		</div>
 	);
 }
 
-function RunStatusLine() {
-	const { status, runMs, metrics, runError } = useReview();
-	if (runError) {
-		return (
-			<p role="alert" className="text-xs text-danger">
-				{runError}
-			</p>
-		);
-	}
-	if (status === "ready" && metrics) {
-		return (
-			<p className="text-xs text-ink-muted">
-				{metrics.total} piezas analizadas
-				{runMs !== null ? ` en ${formatSeconds(runMs)}` : ""}.
-			</p>
-		);
-	}
-	return null;
-}
-
-/** Phone variant of the account block: one slim row under the tabs. */
-function MobileAccount() {
-	const { user } = useSession();
-	if (!user) return null;
+/** Visible error of the last sample review, shared by every screen. */
+function RunNotice() {
+	const { runError } = useReview();
+	if (!runError) return null;
 	return (
-		<div className="-mx-4 flex items-center justify-between gap-2 border-t border-line px-4">
-			<p className="min-w-0 truncate text-xs text-ink-muted">
-				<span className="sr-only">Sesión iniciada como </span>
-				{user.email}
-			</p>
-			<SignOutButton className="shrink-0" />
-		</div>
+		<p role="alert" className="mb-6 rounded-2xl bg-danger-soft px-4 py-3 text-sm text-danger">
+			{runError}
+		</p>
 	);
 }
 
-/** App frame: sidebar on desktop, top bar with scrollable tabs on phones. */
+/**
+ * Brand color only as an accent (--brand); --primary stays black per the style guide,
+ * so selected rows and main buttons keep the soft UI look.
+ */
+function accentStyle(color: string): CSSProperties {
+	return { "--brand": color, "--brand-ink": readableInk(color) } as CSSProperties;
+}
+
+/** App frame: dark icon rail + white rounded canvas; bottom icon bar on phones. */
 export function AppShell({ children }: { children: ReactNode }) {
 	const { pendingCount } = useReview();
 	const { brand } = useSession();
 
 	return (
 		<div
-			className="min-h-dvh lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]"
-			style={brand ? brandStyle(primaryColor(brand)) : undefined}
+			className="min-h-dvh bg-ground lg:grid lg:grid-cols-[5rem_minmax(0,1fr)]"
+			style={brand ? accentStyle(primaryColor(brand)) : undefined}
 		>
 			<a
 				href="#contenido-principal"
-				className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-md focus:bg-surface focus:px-3 focus:py-2"
+				className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:rounded-xl focus:bg-surface focus:px-3 focus:py-2"
 			>
 				Saltar al contenido
 			</a>
 
-			{/* Desktop sidebar */}
-			<aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r border-line bg-surface p-4 lg:flex">
-				<Brand />
-				<Nav pendingCount={pendingCount} className="grid gap-1" />
-				<div className="mt-auto grid gap-2">
-					<AnalyzeButton className="w-full" />
-					<RunStatusLine />
-					<Account />
+			{/* Desktop rail */}
+			<aside className="sticky top-0 hidden h-dvh flex-col items-center gap-8 bg-rail py-6 text-rail-ink lg:flex">
+				<BrandLink />
+				<Nav pendingCount={pendingCount} layout="rail" className="grid gap-3" />
+				<div className="mt-auto">
+					<SignOutIconButton tone="rail" />
 				</div>
 			</aside>
 
-			{/* Phone / tablet top bar */}
-			<header className="sticky top-0 z-30 grid grid-cols-1 gap-2 border-b border-line bg-surface px-4 pt-3 lg:hidden">
-				<div className="flex items-center justify-between gap-3">
-					<Brand />
-					<AnalyzeButton />
-				</div>
-				<RunStatusLine />
-				<Nav pendingCount={pendingCount} className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-2" />
-				<MobileAccount />
+			{/* Phone / tablet: slim top row */}
+			<header className="flex items-center justify-between gap-3 px-4 pt-3 pb-2 lg:hidden">
+				<BrandLink withName />
+				<SignOutIconButton tone="light" />
 			</header>
 
-			<main id="contenido-principal" className="min-w-0 px-4 py-6 sm:px-6 lg:px-8">
-				{children}
+			<main id="contenido-principal" className="min-w-0 px-2 pb-28 sm:px-3 lg:p-3 lg:pl-0">
+				<div className="min-h-[calc(100dvh-5rem)] rounded-[28px] bg-surface px-4 py-7 sm:px-8 sm:py-9 lg:min-h-[calc(100dvh-1.5rem)] lg:rounded-[var(--radius-panel)] lg:px-12 lg:py-11">
+					<RunNotice />
+					{children}
+				</div>
 			</main>
+
+			{/* Phone / tablet: bottom icon bar */}
+			<div className="fixed inset-x-0 bottom-0 z-30 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] lg:hidden">
+				<Nav
+					pendingCount={pendingCount}
+					layout="bar"
+					className="mx-auto flex max-w-md items-center justify-between rounded-[22px] bg-rail px-2 py-2"
+				/>
+			</div>
 		</div>
 	);
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useRef, useState } from "react";
 import type { ReviewResult } from "../domain/review";
 import { PieceDetail } from "./piece-detail";
 import { PieceList } from "./piece-list";
@@ -29,6 +29,7 @@ export function PieceWorkspace({
 }: PieceWorkspaceProps) {
 	const { editorActions, submittedIds, changedIds } = useReview();
 	const [selectedId, setSelectedId] = useState<string | null>(null);
+	const rootRef = useRef<HTMLDivElement>(null);
 	// Desktop shows the first piece when nothing (or a piece that left the list) is selected.
 	const explicit = items.find((r) => r.piece.id === selectedId) ?? null;
 	const current = explicit ?? items[0] ?? null;
@@ -43,7 +44,10 @@ export function PieceWorkspace({
 	if (items.length === 0) return <>{empty}</>;
 
 	return (
-		<div className="grid items-start gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+		<div
+			ref={rootRef}
+			className="grid scroll-mt-4 items-start gap-6 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] xl:grid-cols-[minmax(0,24rem)_minmax(0,1fr)] xl:gap-8"
+		>
 			<div className={explicit ? "hidden lg:block" : "block"}>
 				<PieceList
 					items={items}
@@ -53,14 +57,19 @@ export function PieceWorkspace({
 					changedIds={changedIds}
 					onSelect={(id) => {
 						setSelectedId(id);
-						// On phones the detail replaces the list: start it from the top.
-						if (window.matchMedia("(max-width: 1023px)").matches) window.scrollTo({ top: 0 });
+						// On phones the detail replaces the list: bring its top into view.
+						if (window.matchMedia("(max-width: 1023px)").matches) {
+							window.requestAnimationFrame(() =>
+								rootRef.current?.scrollIntoView({ block: "start" }),
+							);
+						}
 					}}
 					label={listLabel}
+					implicitSelection={!explicit}
 				/>
 			</div>
 			<div
-				className={`${explicit ? "block" : "hidden lg:block"} lg:sticky lg:top-6 lg:max-h-[calc(100dvh-3rem)] lg:overflow-y-auto lg:rounded-card`}
+				className={`${explicit ? "block" : "hidden lg:block"} lg:sticky lg:top-8 lg:max-h-[calc(100dvh-4rem)] lg:overflow-y-auto lg:rounded-card lg:border lg:border-line lg:p-7`}
 			>
 				{current ? (
 					<PieceDetail
