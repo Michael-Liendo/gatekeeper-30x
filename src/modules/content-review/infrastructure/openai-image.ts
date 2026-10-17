@@ -29,36 +29,32 @@ function listOf(items: readonly string[]): string {
 		.join(", ");
 }
 
-/** Prompt for the image model. Spanish copy, so the redrawn text stays in Spanish. */
+/** First sentence of the body, short enough for one line on the image. */
+export function shortLine(body: string, max = 90): string {
+	const first = body.trim().split(/(?<=[.!?¿¡])\s+/)[0] ?? "";
+	return first.length > max ? `${first.slice(0, max - 1).trimEnd()}…` : first;
+}
+
+/**
+ * Prompt for the image model: short and concrete (format, exact text overlay, style, what
+ * to remove), the way it works best for image models. Quality pieces keep their design and
+ * only change the text; spammy or off-brand pieces are restyled with the brand palette.
+ */
 export function buildImagePrompt(input: ImageRegenerationInput): string {
 	const { brand } = input;
 	const colors = listOf(brand.colors);
-	const offerings = listOf(brand.offerings);
-	const tone = brand.tone.trim();
+	const restyle = input.failedChecks.some((check) => /spam|riesgo de marca|no vende/i.test(check));
+	const line = shortLine(input.body);
 	return [
-		// Role and goal: a real designer fixing a real post, not a new AI illustration.
-		`Eres diseñador senior del equipo de ${brand.name}. Corrige esta pieza para redes sociales como lo haría una persona en Figma: es una edición, no una imagen nueva.`,
-		"Conserva el formato, el encuadre, la composición, la jerarquía tipográfica y los elementos gráficos que no tengan problemas.",
-		colors &&
-			`Paleta de la marca: ${colors} (el primero es el principal). Usa colores planos y sólidos de esa paleta.`,
-		tone && `La pieza debe sentirse acorde al tono de la marca: ${tone}.`,
-		"Acabado natural y profesional, como una pieza publicada por una marca real: tipografía nítida y bien alineada, márgenes generosos, buen contraste y lectura fácil en el celular.",
-		"Evita el aspecto de imagen generada por IA: nada de brillos, degradados exagerados, texturas plásticas, efectos 3D, destellos ni elementos decorativos sobrantes.",
-		"Reemplaza TODO el texto visible por este texto corregido, en español, copiado exactamente y con tildes correctas:",
-		`Título: «${input.title}».`,
-		`Texto: «${input.body}».`,
-		"Si el texto completo no cabe con buena legibilidad, usa el título y una sola frase clave del texto; nunca inventes texto nuevo ni dejes texto a medias.",
-		'Quita de la imagen cualquier promesa de resultados garantizados, cifras sin fuente, urgencia falsa ("últimos cupos", "gana ya"), íconos de dinero o cripto',
-		offerings
-			? `y cualquier oferta que la marca no vende (solo vende: ${offerings}).`
-			: "y cualquier oferta que la marca no vende.",
-		input.failedChecks.length > 0 &&
-			`Problemas detectados que debes corregir: ${input.failedChecks.join("; ")}.`,
-		input.changes.length > 0 && `Cambios ya aplicados al texto: ${input.changes.join(" ")}`,
-		"No agregues logotipos inventados, personas, rostros, manos, personajes conocidos ni marcas de terceros.",
-	]
-		.filter(Boolean)
-		.join(" ");
+		`Edita esta imagen de redes sociales de ${brand.name}. Mismo formato y proporción.`,
+		restyle
+			? `Rediséñala como una pieza editorial limpia de la marca: fondo de color plano ${colors ? `de su paleta (${colors})` : "sobrio"}, tipografía sans-serif grande y negra, mucho espacio en blanco.`
+			: "Conserva exactamente el diseño: los mismos colores de fondo, la misma tipografía, los mismos elementos gráficos y la misma posición de cada elemento. Solo cambia el texto.",
+		`Texto de la imagen, escrito exactamente así y con tildes: titular «${input.title}»${line ? `; una línea debajo: «${line}»` : ""}. No agregues ningún otro texto.`,
+		"Quita sellos, insignias, íconos o frases de resultados garantizados, dinero rápido, cripto o urgencia falsa.",
+		"Estilo: natural y profesional, como un post real de una marca; sin brillos, degradados, efectos 3D ni aspecto de imagen generada por IA.",
+		"NO incluyas logos nuevos, personas, rostros, personajes conocidos ni marcas de terceros.",
+	].join(" ");
 }
 
 /**
