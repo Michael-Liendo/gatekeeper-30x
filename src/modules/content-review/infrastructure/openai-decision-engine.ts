@@ -11,6 +11,7 @@ import type {
 	DecisionResult,
 	ScoreQuestion,
 } from "../domain/decision";
+import { OPENAI_DECISIONS_MODEL } from "./openai-models";
 
 /** USD per million input tokens. */
 const OPENAI_DECISIONS_PRICE_PER_MTOK = 0.1;
@@ -128,7 +129,7 @@ export class OpenAIDecisionEngine implements DecisionEngine {
 		const entries = Object.entries(request.questions);
 
 		const response = await getOpenAI().decisions.create({
-			model: env.OPENAI_DECISIONS_MODEL,
+			model: OPENAI_DECISIONS_MODEL,
 			input: toOpenAIInput(request),
 			questions: entries.map(([name, question]) => toOpenAIQuestion(name, question)),
 		});

@@ -11,10 +11,6 @@ const optionalSecret = z.preprocess((v) => (v === "" ? undefined : v), z.string(
 const envSchema = z.object({
 	TYPESAFE_API_KEY: optionalSecret,
 	OPENAI_API_KEY: optionalSecret,
-	/** Model for the OpenAI Decisions API (fallback decision engine). */
-	OPENAI_DECISIONS_MODEL: z.string().default("gpt-6-luna"),
-	/** Model for "System Two" enrichment through the Responses API. */
-	OPENAI_LLM_MODEL: z.string().default("gpt-6-astra"),
 	/** Max time the primary decision provider gets before falling back. */
 	DECISION_TIMEOUT_MS: z.coerce.number().int().positive().default(4000),
 });
