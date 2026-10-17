@@ -43,7 +43,7 @@ validan, llaman un caso de uso y responden. Detalle y reglas en [`AGENTS.md`](AG
 
 1. Nuevo recurso → repositorio público → **Build Pack: Dockerfile**.
 2. Puerto `3000`. Healthcheck: `/api/health`.
-3. Variables: `TYPESAFE_API_KEY`, `TYPESAFE_MODEL=jev-latest`.
+3. Variables: `TYPESAFE_API_KEY` y `OPENAI_API_KEY` (el modelo de JEV está fijo en el código).
 
 ## Datos
 

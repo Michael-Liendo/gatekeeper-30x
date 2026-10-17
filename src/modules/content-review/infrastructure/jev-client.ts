@@ -14,4 +14,5 @@ export function getJev(): TypeSafeClient {
 	return client;
 }
 
-export const JEV_MODEL = env.TYPESAFE_MODEL;
+/** JEV model id. Pinned in code, not configurable per environment. */
+export const JEV_MODEL = "jev-latest";

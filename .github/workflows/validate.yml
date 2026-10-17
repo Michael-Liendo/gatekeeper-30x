@@ -29,4 +29,5 @@ jobs:
         run: pnpm install --frozen-lockfile
       - run: ${{ matrix.pm }} run lint
       - run: ${{ matrix.pm }} run typecheck
+      - run: ${{ matrix.pm }} test
       - run: ${{ matrix.pm }} run build
