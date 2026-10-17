@@ -78,7 +78,7 @@ export const QUESTION_LABEL = {
 	topic: "Tema",
 	format: "Formato detectado",
 	relevance: "Relevancia para ejecutivos",
-	actionable: "Utilidad práctica",
+	actionable: "Aporte para la audiencia",
 	too_promotional: "Demasiado promocional",
 	exaggerated_promises: "Promesas exageradas",
 	unsourced_claims: "Datos sin fuente",
@@ -248,7 +248,7 @@ const REASON_TEXT: Record<string, string> = {
 	too_promotional: "Suena demasiado a anuncio",
 	unsourced_claims: "Da datos sin decir de dónde salen",
 	topic: "No encaja con los temas de tu marca",
-	editorial_score: "Aporta poco valor a tu audiencia",
+	editorial_score: "Le falta un aporte claro (dato, historia o siguiente paso)",
 	min_confidence: "La IA no lo tiene del todo claro",
 };
 
