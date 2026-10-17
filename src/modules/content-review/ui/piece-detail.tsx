@@ -20,6 +20,7 @@ import {
 	EDITOR_ACTION_LABEL,
 	friendlyReasons,
 	PROVIDER_LABEL,
+	pieceHighlights,
 	pieceImage,
 	ROUTE_LABEL,
 } from "./labels";
@@ -81,6 +82,7 @@ export function PieceDetail({
 	const needsEditor = result.route === "HUMAN_REVIEW" || result.route === "ENRICH_WITH_LLM";
 	const reasons = friendlyReasons(result);
 	const certainty = hasAnswers ? decisionCertainty(result.minConfidence, policy) : null;
+	const highlights = pieceHighlights(result.answers);
 
 	function resolve(next: EditorAction) {
 		setEditorAction(id, next);
@@ -155,6 +157,23 @@ export function PieceDetail({
 					unoptimized
 					className="max-h-80 w-full rounded-[20px] bg-surface-muted object-contain"
 				/>
+			) : null}
+
+			{highlights.reach || highlights.fit ? (
+				<dl className="grid grid-cols-2 gap-3">
+					{highlights.reach ? (
+						<div className="grid gap-1 rounded-2xl bg-linear-to-br from-lilac-from to-lilac-to px-4 py-3">
+							<dt className="text-xs text-ink-muted">Potencial de alcance</dt>
+							<dd className="text-lg font-medium">{highlights.reach}</dd>
+						</div>
+					) : null}
+					{highlights.fit ? (
+						<div className="grid gap-1 rounded-2xl bg-linear-to-br from-aqua-from to-aqua-to px-4 py-3">
+							<dt className="text-xs text-ink-muted">Encaja con tu línea editorial</dt>
+							<dd className="text-lg font-medium">{highlights.fit}</dd>
+						</div>
+					) : null}
+				</dl>
 			) : null}
 
 			<section aria-labelledby="detail-reasons" className="grid gap-3">

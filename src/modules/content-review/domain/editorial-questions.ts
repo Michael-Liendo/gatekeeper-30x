@@ -76,6 +76,18 @@ function brandRiskInstructions(brand: BrandProfile): string {
 	return `¿La pieza ${topics}ataca a personas o empresas${tone}, de forma que pueda dañar la marca ${brand.name}?`;
 }
 
+function editorialFitInstructions(brand: BrandProfile): string {
+	const topics = listOf(brand.topics);
+	const tone = brand.tone.trim();
+	const parts = [
+		topics ? `trata temas de la marca (${topics})` : null,
+		tone ? `respeta su tono ("${tone}")` : null,
+		brand.audience.trim() ? `le habla a su audiencia (${lowerFirst(brand.audience.trim())})` : null,
+	].filter(Boolean);
+	const detail = parts.length > 0 ? `: ${parts.join(", ")}` : "";
+	return `¿La pieza encaja con la línea editorial de ${brand.name}${detail}?`;
+}
+
 /**
  * Typed questions the decision engine answers about each piece in a single pass,
  * judged against the given brand (audience, offerings, tone, topics, forbidden).
@@ -149,6 +161,34 @@ export function buildEditorialQuestions(brand: BrandProfile) {
 			type: "yes_no",
 			instructions:
 				"¿La pieza es spam: texto sin sentido, repetitivo, con enlaces sospechosos o sin relación con el negocio de la marca?",
+		},
+		// Informative only: shown to the editor and used to prioritize, never to approve or
+		// reject. JEV can't know future engagement, so the levels describe observable traits.
+		reach_potential: {
+			type: "score",
+			instructions:
+				"Según lo que se ve en la pieza, ¿qué potencial tiene de generar interacción y compartirse en redes?",
+			levels: [
+				{
+					label: "Bajo",
+					description:
+						"Sin gancho inicial, mensaje difuso o genérico; poco motivo para comentar o compartir.",
+				},
+				{
+					label: "Medio",
+					description:
+						"Tema de interés con algún gancho, pero sin un dato, historia u opinión que destaque.",
+				},
+				{
+					label: "Alto",
+					description:
+						"Gancho claro desde la primera línea, una idea concreta y memorable (dato, historia u opinión fuerte) y una invitación a interactuar.",
+				},
+			],
+		},
+		editorial_fit: {
+			type: "yes_no",
+			instructions: editorialFitInstructions(brand),
 		},
 	} as const satisfies DecisionQuestions;
 }
