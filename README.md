@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gatekeeper Editorial 30X
 
-## Getting Started
+> JEV decide, el LLM corrige, y el equipo solo revisa lo que de verdad importa.
 
-First, run the development server:
+Proyecto del equipo **DevGain** para el **Hackathon 30X (oct 2026) · Reto JEV**.
+Un filtro editorial que usa [JEV de TypeSafe](https://docs.typesafe.ai) para aprobar,
+pedir ajustes, escalar o descartar piezas de contenido de 30X en milisegundos.
+
+- Reto, reglas y entregables: [`docs/01-reto.md`](docs/01-reto.md)
+- Diseño (preguntas, umbrales, métricas): [`docs/02-diseno.md`](docs/02-diseno.md)
+- Pitch: [`docs/03-pitch.md`](docs/03-pitch.md)
+
+## Stack
+
+Next.js 16 (App Router) · TypeScript · Tailwind v4 · `@typesafe-ai/sdk` · zod · Biome · Docker (Coolify).
+
+## Correr en local
+
+Requisitos: Node `>=22.18` y pnpm (`corepack enable`).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+cp .env.example .env.local   # pon tu TYPESAFE_API_KEY
+pnpm dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Comando | Qué hace |
+|---|---|
+| `pnpm dev` | Servidor de desarrollo |
+| `pnpm lint` / `pnpm lint:fix` | Biome (lint + formato) |
+| `pnpm typecheck` | TypeScript |
+| `pnpm check` | lint + typecheck + build (lo mismo que el CI) |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Arquitectura
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+DDD liviano: un módulo por área de negocio (`src/modules/<módulo>`) con capas
+`domain` → `application` → `infrastructure` / `ui`. Las rutas de `src/app` solo
+validan, llaman un caso de uso y responden. Detalle y reglas en [`AGENTS.md`](AGENTS.md).
 
-## Learn More
+## Despliegue (Coolify)
 
-To learn more about Next.js, take a look at the following resources:
+1. Nuevo recurso → repositorio público → **Build Pack: Dockerfile**.
+2. Puerto `3000`. Healthcheck: `/api/health`.
+3. Variables: `TYPESAFE_API_KEY`, `TYPESAFE_MODEL=jev-latest`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Datos
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Solo datos simulados. Ningún dato personal real.

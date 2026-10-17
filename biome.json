@@ -1,0 +1,34 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+	"vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"lineWidth": 100
+	},
+	"linter": {
+		"enabled": true,
+		"domains": { "next": "recommended", "react": "recommended" },
+		"rules": {
+			"preset": "recommended",
+			"correctness": {
+				"noUnusedImports": "warn",
+				"noUnusedVariables": "warn"
+			},
+			"style": {
+				"noNonNullAssertion": "off"
+			}
+		}
+	},
+	"css": { "parser": { "tailwindDirectives": true } },
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
+	"files": {
+		"includes": ["**", "!**/node_modules", "!**/.next", "!next-env.d.ts", "!pnpm-lock.yaml"]
+	}
+}
