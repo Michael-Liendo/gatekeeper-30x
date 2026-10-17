@@ -15,6 +15,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-01T09:00:00.000Z",
+		imagePath: "/samples/cp-001.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -25,6 +26,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "youtube",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-01T15:30:00.000Z",
+		imagePath: "/samples/cp-002.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -35,6 +37,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-02T12:00:00.000Z",
+		imagePath: "/samples/cp-003.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -45,6 +48,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "newsletter",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-02T08:00:00.000Z",
+		imagePath: "/samples/cp-004.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -55,6 +59,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-03T10:15:00.000Z",
+		imagePath: "/samples/cp-005.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -65,6 +70,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Generado por IA",
 		createdAt: "2026-10-03T17:00:00.000Z",
+		imagePath: "/samples/cp-006.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -75,6 +81,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Community manager",
 		createdAt: "2026-10-04T14:00:00.000Z",
+		imagePath: "/samples/cp-007.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -85,6 +92,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Mentor invitado (simulado)",
 		createdAt: "2026-10-05T09:45:00.000Z",
+		imagePath: "/samples/cp-008.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -95,6 +103,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "newsletter",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-06T08:00:00.000Z",
+		imagePath: "/samples/cp-009.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -105,6 +114,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "blog",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-06T16:20:00.000Z",
+		imagePath: "/samples/cp-010.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -115,6 +125,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "youtube",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-07T11:00:00.000Z",
+		imagePath: "/samples/cp-011.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -125,6 +136,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "x",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-08T13:30:00.000Z",
+		imagePath: "/samples/cp-012.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -135,6 +147,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Mentor invitado (simulado)",
 		createdAt: "2026-10-09T10:00:00.000Z",
+		imagePath: "/samples/cp-013.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -145,6 +158,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "newsletter",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-10T08:00:00.000Z",
+		imagePath: "/samples/cp-014.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 	{
@@ -155,6 +169,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "blog",
 		author: "Community manager",
 		createdAt: "2026-10-11T15:00:00.000Z",
+		imagePath: "/samples/cp-015.jpg",
 		expectedRoute: "AUTO_APPROVE",
 	},
 
@@ -167,6 +182,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Generado por IA",
 		createdAt: "2026-10-12T09:00:00.000Z",
+		imagePath: "/samples/cp-016.jpg",
 		expectedRoute: "ENRICH_WITH_LLM",
 	},
 	{
@@ -177,6 +193,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Community manager",
 		createdAt: "2026-10-12T14:00:00.000Z",
+		imagePath: "/samples/cp-017.jpg",
 		expectedRoute: "ENRICH_WITH_LLM",
 	},
 	{
@@ -187,6 +204,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Community manager",
 		createdAt: "2026-10-13T10:00:00.000Z",
+		imagePath: "/samples/cp-018.jpg",
 		expectedRoute: "ENRICH_WITH_LLM",
 	},
 	{
@@ -197,6 +215,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Generado por IA",
 		createdAt: "2026-10-13T16:45:00.000Z",
+		imagePath: "/samples/cp-019.jpg",
 		expectedRoute: "ENRICH_WITH_LLM",
 	},
 	{
@@ -207,6 +226,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "youtube",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-14T11:00:00.000Z",
+		imagePath: "/samples/cp-020.jpg",
 		expectedRoute: "ENRICH_WITH_LLM",
 	},
 	{
@@ -217,6 +237,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "newsletter",
 		author: "Community manager",
 		createdAt: "2026-10-14T08:00:00.000Z",
+		imagePath: "/samples/cp-021.jpg",
 		expectedRoute: "ENRICH_WITH_LLM",
 	},
 	{
@@ -227,6 +248,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Generado por IA",
 		createdAt: "2026-10-15T09:30:00.000Z",
+		imagePath: "/samples/cp-022.jpg",
 		expectedRoute: "ENRICH_WITH_LLM",
 	},
 	{
@@ -237,6 +259,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "x",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-15T13:00:00.000Z",
+		imagePath: "/samples/cp-023.jpg",
 		expectedRoute: "ENRICH_WITH_LLM",
 	},
 	{
@@ -247,6 +270,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "blog",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-16T10:00:00.000Z",
+		imagePath: "/samples/cp-024.jpg",
 		expectedRoute: "ENRICH_WITH_LLM",
 	},
 	{
@@ -257,6 +281,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Generado por IA",
 		createdAt: "2026-10-16T17:00:00.000Z",
+		imagePath: "/samples/cp-025.jpg",
 		expectedRoute: "ENRICH_WITH_LLM",
 	},
 
@@ -269,6 +294,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Generado por IA",
 		createdAt: "2026-10-17T09:00:00.000Z",
+		imagePath: "/samples/cp-026.jpg",
 		expectedRoute: "HUMAN_REVIEW",
 	},
 	{
@@ -279,6 +305,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Mentor invitado (simulado)",
 		createdAt: "2026-10-17T12:00:00.000Z",
+		imagePath: "/samples/cp-027.jpg",
 		expectedRoute: "HUMAN_REVIEW",
 	},
 	{
@@ -289,6 +316,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "youtube",
 		author: "Equipo Media 30X",
 		createdAt: "2026-10-18T10:00:00.000Z",
+		imagePath: "/samples/cp-028.jpg",
 		expectedRoute: "HUMAN_REVIEW",
 	},
 	{
@@ -299,6 +327,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Community manager",
 		createdAt: "2026-10-18T15:00:00.000Z",
+		imagePath: "/samples/cp-029.jpg",
 		expectedRoute: "HUMAN_REVIEW",
 	},
 	{
@@ -309,6 +338,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "newsletter",
 		author: "Generado por IA",
 		createdAt: "2026-10-19T08:00:00.000Z",
+		imagePath: "/samples/cp-030.jpg",
 		expectedRoute: "HUMAN_REVIEW",
 	},
 	{
@@ -319,6 +349,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Community manager",
 		createdAt: "2026-10-19T13:30:00.000Z",
+		imagePath: "/samples/cp-031.jpg",
 		expectedRoute: "HUMAN_REVIEW",
 	},
 	{
@@ -329,6 +360,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Mentor invitado (simulado)",
 		createdAt: "2026-10-20T11:00:00.000Z",
+		imagePath: "/samples/cp-032.jpg",
 		expectedRoute: "HUMAN_REVIEW",
 	},
 	{
@@ -339,6 +371,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Mentor invitado (simulado)",
 		createdAt: "2026-10-20T16:00:00.000Z",
+		imagePath: "/samples/cp-033.jpg",
 		expectedRoute: "HUMAN_REVIEW",
 	},
 	{
@@ -349,6 +382,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "x",
 		author: "Generado por IA",
 		createdAt: "2026-10-21T10:00:00.000Z",
+		imagePath: "/samples/cp-034.jpg",
 		expectedRoute: "HUMAN_REVIEW",
 	},
 	{
@@ -359,6 +393,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "newsletter",
 		author: "Mentor invitado (simulado)",
 		createdAt: "2026-10-21T14:00:00.000Z",
+		imagePath: "/samples/cp-035.jpg",
 		expectedRoute: "HUMAN_REVIEW",
 	},
 
@@ -371,6 +406,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "x",
 		author: "Generado por IA",
 		createdAt: "2026-10-22T03:00:00.000Z",
+		imagePath: "/samples/cp-036.jpg",
 		expectedRoute: "REJECT",
 	},
 	{
@@ -381,6 +417,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Community manager",
 		createdAt: "2026-10-22T19:00:00.000Z",
+		imagePath: "/samples/cp-037.jpg",
 		expectedRoute: "REJECT",
 	},
 	{
@@ -391,6 +428,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "linkedin",
 		author: "Generado por IA",
 		createdAt: "2026-10-23T02:00:00.000Z",
+		imagePath: "/samples/cp-038.jpg",
 		expectedRoute: "REJECT",
 	},
 	{
@@ -401,6 +439,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "blog",
 		author: "Generado por IA",
 		createdAt: "2026-10-23T05:30:00.000Z",
+		imagePath: "/samples/cp-039.jpg",
 		expectedRoute: "REJECT",
 	},
 	{
@@ -411,6 +450,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Community manager",
 		createdAt: "2026-10-24T20:00:00.000Z",
+		imagePath: "/samples/cp-040.jpg",
 		expectedRoute: "REJECT",
 	},
 	{
@@ -421,6 +461,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "instagram",
 		author: "Community manager",
 		createdAt: "2026-10-25T01:00:00.000Z",
+		imagePath: "/samples/cp-041.jpg",
 		expectedRoute: "REJECT",
 	},
 	{
@@ -431,6 +472,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "x",
 		author: "Community manager",
 		createdAt: "2026-10-26T22:00:00.000Z",
+		imagePath: "/samples/cp-042.jpg",
 		expectedRoute: "REJECT",
 	},
 	{
@@ -441,6 +483,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "newsletter",
 		author: "Generado por IA",
 		createdAt: "2026-10-27T04:00:00.000Z",
+		imagePath: "/samples/cp-043.jpg",
 		expectedRoute: "REJECT",
 	},
 	{
@@ -451,6 +494,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "blog",
 		author: "Generado por IA",
 		createdAt: "2026-10-28T03:30:00.000Z",
+		imagePath: "/samples/cp-044.jpg",
 		expectedRoute: "REJECT",
 	},
 	{
@@ -461,6 +505,7 @@ export const sampleContent: readonly ContentPiece[] = [
 		channel: "x",
 		author: "Generado por IA",
 		createdAt: "2026-10-29T06:00:00.000Z",
+		imagePath: "/samples/cp-045.jpg",
 		expectedRoute: "REJECT",
 	},
 ];

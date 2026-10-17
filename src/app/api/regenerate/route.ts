@@ -8,6 +8,7 @@ import {
 	RegenerationNotConfiguredError,
 	regeneratePiece,
 } from "@/modules/content-review/application/regenerate-piece";
+import { withSampleImage } from "@/modules/content-review/application/review-batch";
 import {
 	hasImageIssue,
 	INVALID_IMAGE_MESSAGE,
@@ -86,11 +87,13 @@ export async function POST(request: Request) {
 	let previousReview: ReviewResult | undefined;
 	if ("pieceId" in input) {
 		if (input.pieceId.startsWith("cp-")) {
-			const sample = getReviewDeps().content.find((p) => p.id === input.pieceId);
+			const reviewDeps = getReviewDeps();
+			const sample = reviewDeps.content.find((p) => p.id === input.pieceId);
 			if (!sample) {
 				return Response.json({ error: "No encontramos esa pieza." }, { status: 404 });
 			}
-			piece = sample;
+			// Include the sample's image so it is reviewed and redrawn like a screenshot.
+			piece = await withSampleImage(sample, reviewDeps.loadImage);
 			brand = getDefaultBrand();
 		} else {
 			const stored = loadUserPiece(user, input.pieceId);

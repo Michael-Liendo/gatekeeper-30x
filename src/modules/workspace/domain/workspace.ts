@@ -62,6 +62,8 @@ export interface WorkspacePiece {
 	review: ReviewResult;
 	/** 1 for the original; +1 each time a new version is saved (e.g. AI regeneration). */
 	version: number;
+	/** True for the demo pieces loaded from the simulated dataset (not uploaded by the person). */
+	isExample: boolean;
 	createdAt: string;
 	updatedAt: string;
 }

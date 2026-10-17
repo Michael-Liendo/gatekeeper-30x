@@ -60,6 +60,16 @@ export function regeneratePiece(
 	return fetchJson<RegenerationProposal>("/api/regenerate", { body: { pieceId }, signal });
 }
 
+/** Loads the demo example pieces (idempotent). */
+export function loadExamples(): Promise<{ created: number }> {
+	return fetchJson<{ created: number }>("/api/pieces/examples", { method: "POST" });
+}
+
+/** Removes the demo example pieces. */
+export function removeExamples(): Promise<{ removed: number }> {
+	return fetchJson<{ removed: number }>("/api/pieces/examples", { method: "DELETE" });
+}
+
 function serverMessage(body: unknown): string | null {
 	if (typeof body === "object" && body !== null && "error" in body) {
 		const { error } = body as { error: unknown };

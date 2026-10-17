@@ -151,7 +151,11 @@ export function PieceDetail({
 			{image ? (
 				<Image
 					src={image}
-					alt={`Captura enviada: ${piece.title}`}
+					alt={
+						piece.imageDataUrl
+							? `Captura enviada: ${piece.title}`
+							: `Imagen de la pieza: ${piece.title}`
+					}
 					width={1200}
 					height={900}
 					unoptimized

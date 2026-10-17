@@ -79,6 +79,11 @@ export function openDatabase(dir: string): DatabaseSync {
 	db.exec("PRAGMA busy_timeout = 5000;");
 	db.exec(MIGRATIONS);
 	addColumnIfMissing(db, "users", "role", "TEXT NOT NULL DEFAULT 'other'");
+	addColumnIfMissing(db, "pieces", "sample_id", "TEXT");
+	// One example piece per sample and user, even if two seeds race.
+	db.exec(
+		"CREATE UNIQUE INDEX IF NOT EXISTS pieces_user_sample ON pieces(user_id, sample_id) WHERE sample_id IS NOT NULL;",
+	);
 	return db;
 }
 
