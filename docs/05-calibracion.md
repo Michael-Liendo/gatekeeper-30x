@@ -24,6 +24,13 @@ pieza riesgosa o spam puede aprobarse sola**.
 - 45/45 respondidas por JEV, 0 fallbacks a OpenAI.
 - Los 8 desaciertos son todos **conservadores**: 5 piezas buenas van a "Ajustar con IA" en vez de aprobarse, 1 de zona gris va a revisión humana, 2 spam van a revisión humana en vez de descartarse.
 
+## Corridas posteriores en producción
+
+Con la política calibrada y las preguntas ya adaptadas a cada marca, dos corridas
+completas de las 45 piezas dieron **80 %** (36/45) y **87 %** (39/45) de coincidencia,
+siempre con 0 piezas riesgosas aprobadas solas. JEV no es determinista al 100 %, por
+eso reportamos el rango **80–87 %**.
+
 ## Por qué bajaron los umbrales de confianza
 
 La `confidence` que JEV devuelve en preguntas `choice` y `score` es más baja que la

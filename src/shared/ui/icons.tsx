@@ -183,3 +183,33 @@ export function CoinIcon(props: IconProps) {
 		</Svg>
 	);
 }
+
+export function BoardIcon(props: IconProps) {
+	return (
+		<Svg {...props}>
+			<rect x="3.5" y="4.5" width="5" height="15" rx="1.75" />
+			<rect x="9.5" y="4.5" width="5" height="10" rx="1.75" />
+			<rect x="15.5" y="4.5" width="5" height="12.5" rx="1.75" />
+		</Svg>
+	);
+}
+
+export function StackIcon(props: IconProps) {
+	return (
+		<Svg {...props}>
+			<path d="M12 4 20 8.5 12 13 4 8.5z" />
+			<path d="m4 12.5 8 4.5 8-4.5" />
+			<path d="m4 16 8 4.5 8-4.5" />
+		</Svg>
+	);
+}
+
+export function MoreIcon(props: IconProps) {
+	return (
+		<Svg {...props}>
+			<circle cx="6" cy="12" r="1" />
+			<circle cx="12" cy="12" r="1" />
+			<circle cx="18" cy="12" r="1" />
+		</Svg>
+	);
+}

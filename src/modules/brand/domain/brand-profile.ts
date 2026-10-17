@@ -1,3 +1,5 @@
+import type { TeamRole } from "../../workspace/domain/workspace";
+
 /**
  * The brand whose content the gatekeeper reviews. Filled during onboarding
  * (manually or pre-filled by scraping the brand's website) and fed to the
@@ -42,5 +44,7 @@ export interface UserAccount {
 	id: string;
 	email: string;
 	name: string;
+	/** Role in the creative team; "other" until the user picks one. */
+	role: TeamRole;
 	createdAt: string;
 }
