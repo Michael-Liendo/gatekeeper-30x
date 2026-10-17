@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gatekeeper Editorial 30X · playbook</title>
+<link rel="stylesheet" href="deck.css" />
+</head>
+<body>
+
+<!--
+	Playbook de aplicación del Reto 30X: JEV. Ocho láminas, el máximo que pide
+	el reto: la decisión, el esquema de preguntas, los umbrales, quién lo opera
+	y cómo se mide, más portada, el ciclo de regeneración y la escala.
+
+	Ninguna cifra sin medir. Todas salen de docs/05-calibracion.md, del código
+	(editorial-questions.ts, editorial-policy.ts, policy-presets.ts) o de
+	pruebas en producción. Si cambia la política calibrada, se cambia aquí.
+
+	Ninguna lámina puede desbordarse: `verificar.mjs` las mide todas.
+	Cada `data-notes` es lo que se dice en voz alta; se abren con P.
+-->
+
+<div id="stage">
+	<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+		<symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+		<symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/></symbol>
+		<symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+		<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+		<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5L4.5 13.5H12L11 21.5l8.5-11H12z"/></symbol>
+		<symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M14.5 9.2c-.6-.8-1.5-1.2-2.5-1.2-1.4 0-2.5.8-2.5 2s1.1 1.6 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-1.9-.4-2.5-1.2M12 6.5v11"/></symbol>
+		<symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6.5h11M9 12h11M9 17.5h11M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/></symbol>
+		<symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4.5M7.5 9L12 4.5 16.5 9M4.5 15.5v3a1.5 1.5 0 001.5 1.5h12a1.5 1.5 0 001.5-1.5v-3"/></symbol>
+		<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20c1.3-3.8 4.2-5.5 7.5-5.5s6.2 1.7 7.5 5.5"/></symbol>
+		<symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+		<symbol id="i-gate" viewBox="0 0 24 24"><path d="M5 20V8l7-4.5L19 8v12M9 20v-6h6v6"/></symbol>
+		<symbol id="i-loop" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 0113-5.1L19.5 9M19.5 4.5V9H15M19.5 12a7.5 7.5 0 01-13 5.1L4.5 15M4.5 19.5V15H9"/></symbol>
+		<symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+		<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.5-3.2 8-7.5 9.5-4.3-1.5-7.5-5-7.5-9.5V6z"/><path d="M8.8 12l2.2 2.2 4.2-4.4"/></symbol>
+		<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4.5 12h15M13.5 6l6 6-6 6"/></symbol>
+	</svg>
+
+	<!-- ═══════════════════════════ 01 · Portada ═══════════════════════════ -->
+	<section class="slide" data-notes="Somos DevGain, Michael Liendo y Haron Acosta, y este es el playbook de Gatekeeper Editorial 30X para el reto JEV. La idea cabe en una frase: JEV decide, el LLM corrige, y el equipo solo revisa lo que de verdad importa. Cada pieza que produce 30X Media, la haga una persona o una IA, pasa por un filtro que decide en milisegundos si se aprueba, se mejora, va a revisión o se descarta. Está en producción y el código es abierto.">
+		<div class="head">
+			<span class="num">01</span>
+			<span class="eyebrow">Playbook · Reto 30X: JEV</span>
+		</div>
+		<div class="body">
+			<div class="split" style="grid-template-columns: 1.15fr 1fr; align-items: center; gap: 40px">
+				<div>
+					<h1>Gatekeeper Editorial 30X</h1>
+					<p class="lede" style="font-size: 24px; color: var(--ink)">JEV decide, el LLM corrige, y el equipo solo revisa lo que de verdad importa.</p>
+					<p class="lede" style="font-size: 17px; margin-top: 28px">Equipo <strong>DevGain</strong> · Michael Liendo y Haron Acosta<br>Hackathon 30X · Octubre 2026 · Reto JEV</p>
+				</div>
+				<div class="card lilac" style="padding: 26px">
+					<div class="card-label">Pieza nueva · captura de Instagram <svg aria-hidden="true" class="icon"><use href="#i-upload"/></svg></div>
+					<div style="background:#fff; border-radius:18px; padding:16px 18px; margin-top:14px">
+						<div class="small" style="color: var(--ink)"><strong>3 preguntas antes de subir el precio</strong></div>
+						<div class="small mt-s">Revisada por JEV · 12 preguntas en una pasada</div>
+					</div>
+					<div class="cover-routes" style="display:flex; gap:6px; margin-top:16px">
+						<span class="route approve">Aprobado</span>
+						<span class="route enrich">Mejorar con IA</span>
+						<span class="route human">Revisar</span>
+						<span class="route reject">Descartado</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>1 / 8</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 02 · La decisión ═══════════════════════════ -->
+	<section class="slide" data-notes="La decisión es una sola y se repite miles de veces al día: ¿esta pieza sale o no? Posts, guiones, clips, newsletters y capturas, hechos por el equipo creativo o por una IA. Hay cuatro salidas: aprobado, mejorar con IA, revisar o descartado. ¿Por qué JEV y no un LLM? Porque JEV no escribe, decide: responde con probabilidades tipadas en unos cien a doscientos milisegundos, y mil piezas cuestan menos de cinco centavos de dólar. El LLM solo entra donde hace falta escribir.">
+		<div class="head">
+			<span class="num">02</span>
+			<span class="eyebrow">La decisión</span>
+		</div>
+		<div class="body">
+			<h2>¿Esta pieza sale? JEV lo decide para cada pieza de 30X Media</h2>
+			<p class="lede" style="font-size:18px; margin-top:10px">Posts, guiones, clips, newsletters y capturas, hechos por el equipo creativo o por una IA.</p>
+			<div class="row mt">
+				<div class="card" style="background: var(--approve-soft); border-color: transparent">
+					<span class="route approve" style="background:#fff">Aprobado</span>
+					<p class="small mt-s" style="color: var(--approve-ink)">Lista para publicar, etiquetada por tema y formato. Nadie la toca.</p>
+				</div>
+				<div class="card" style="background: var(--enrich-soft); border-color: transparent">
+					<span class="route enrich" style="background:#fff">Mejorar con IA</span>
+					<p class="small mt-s" style="color: var(--enrich-ink)">Zona gris: un LLM propone el arreglo y JEV lo vuelve a revisar.</p>
+				</div>
+				<div class="card" style="background: var(--human-soft); border-color: transparent">
+					<span class="route human" style="background:#fff">Revisar</span>
+					<p class="small mt-s" style="color: var(--human-ink)">Riesgo o duda real: decide el editor de Media.</p>
+				</div>
+				<div class="card" style="background: var(--reject-soft); border-color: transparent">
+					<span class="route reject" style="background:#fff">Descartado</span>
+					<p class="small mt-s" style="color: var(--reject-ink)">Spam o fuera de la marca. Queda registrado el porqué.</p>
+				</div>
+			</div>
+			<div class="row mt">
+				<div class="card lilac">
+					<div class="card-label">Decide en <svg aria-hidden="true" class="icon"><use href="#i-bolt"/></svg></div>
+					<div class="big">100–210<span class="unit">ms / pieza</span></div>
+				</div>
+				<div class="card aqua">
+					<div class="card-label">Cuesta, por cada 1.000 piezas <svg aria-hidden="true" class="icon"><use href="#i-coin"/></svg></div>
+					<div class="big">USD 0,046</div>
+				</div>
+				<div class="card">
+					<div class="card-label">Responde <svg aria-hidden="true" class="icon"><use href="#i-list"/></svg></div>
+					<div class="big" style="font-size:26px; line-height:1.25">Probabilidades tipadas, no texto libre</div>
+				</div>
+			</div>
+			<p class="small mt-s muted">Medido en producción con JEV <span class="mono">jev-1.13.0</span> (TypeSafe): USD 0,042 por millón de tokens de entrada, salida gratis.</p>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>2 / 8</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 03 · Esquema de preguntas ═══════════════════════════ -->
+	<section class="slide" data-notes="Este es el esquema: doce preguntas simples que JEV contesta en una sola pasada. Dos de opción, cuatro de escala y seis de sí o no con probabilidad. Cada una pide un solo juicio observable. Se adaptan a cada marca: en el onboarding leemos su web y sacamos lo que vende, a quién le habla, su tono y los temas que nunca toca. Y JEV no cuenta ni calcula: el puntaje editorial lo combina el código, con pesos que el equipo puede tocar. Las dos últimas son solo informativas.">
+		<div class="head">
+			<span class="num">03</span>
+			<span class="eyebrow">Esquema de preguntas</span>
+		</div>
+		<div class="body">
+			<div class="split" style="grid-template-columns: 1.7fr 1fr; gap: 28px">
+				<div>
+					<h2 style="font-size:34px">12 preguntas simples, una sola pasada</h2>
+					<table class="mt-s">
+						<thead><tr><th>Pregunta</th><th>Tipo</th><th>Qué mide</th></tr></thead>
+						<tbody>
+							<tr><td class="mono">topic</td><td><span class="type choice">choice</span></td><td>Tema principal entre los de la marca, u «Otro»</td></tr>
+							<tr><td class="mono">format</td><td><span class="type choice">choice</span></td><td>Post, guion, clip, newsletter u otro</td></tr>
+							<tr><td class="mono">relevance</td><td><span class="type score">score</span></td><td>Relevancia para su audiencia: baja · media · alta</td></tr>
+							<tr><td class="mono">actionable</td><td><span class="type score">score</span></td><td>¿Deja algo aplicable? nada · algo · mucho</td></tr>
+							<tr><td class="mono">too_promotional</td><td><span class="type noul">noul</span></td><td>¿Vende más de lo que aporta?</td></tr>
+							<tr><td class="mono">exaggerated_promises</td><td><span class="type noul">noul</span></td><td>¿Promete resultados garantizados?</td></tr>
+							<tr><td class="mono">unsourced_claims</td><td><span class="type noul">noul</span></td><td>¿Cifras o estudios sin fuente?</td></tr>
+							<tr><td class="mono">brand_risk</td><td><span class="type noul">noul</span></td><td>¿Toca temas prohibidos o ataca a alguien?</td></tr>
+							<tr><td class="mono">offers_unsold_product</td><td><span class="type noul">noul</span></td><td>¿Ofrece algo que la marca no vende?</td></tr>
+							<tr><td class="mono">is_spam</td><td><span class="type noul">noul</span></td><td>¿Spam, enlaces raros o sin relación?</td></tr>
+							<tr class="info"><td class="mono">reach_potential</td><td><span class="type score">score</span></td><td>Potencial de alcance: bajo · medio · alto</td></tr>
+							<tr class="info"><td class="mono">editorial_fit</td><td><span class="type noul">noul</span></td><td>¿Encaja con la línea editorial?</td></tr>
+						</tbody>
+					</table>
+				</div>
+				<div style="display:grid; gap:14px">
+					<div class="card lilac">
+						<div class="card-label">Hechas a la medida de cada marca</div>
+						<p class="small mt-s" style="color: var(--ink)">En el onboarding se lee la web de la marca: <strong>qué vende, a quién le habla, su tono y los temas prohibidos</strong>. Esas listas entran en las instrucciones.</p>
+					</div>
+					<div class="card aqua">
+						<div class="card-label">JEV no cuenta ni calcula</div>
+						<p class="small mt-s" style="color: var(--ink)">El código combina las respuestas:</p>
+						<p class="mono mt-s" style="font-size:12.5px; line-height:1.5">puntaje = 0,5·relevancia + 0,5·accionable − 0,5·P(promocional) − 0,5·P(sin fuente)</p>
+					</div>
+					<div class="card muted-bg">
+						<p class="small">Las dos en gris son <strong>señales informativas</strong>: ayudan al editor a priorizar y nunca cambian la ruta.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>3 / 8</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 04 · Umbrales y rutas ═══════════════════════════ -->
+	<section class="slide" data-notes="Los umbrales deciden quién actúa. Las reglas se aplican en este orden: si falta una respuesta, revisa una persona; spam alto se descarta; cualquier riesgo de marca, promesa exagerada u oferta ajena va a revisión; confianza muy baja o tema Otro, también. Solo se aprueba sola la pieza segura, sin alertas y con buen puntaje; lo demás va al LLM. Los números son datos, no código: hay tres preajustes y Equilibrado es el calibrado. Y nunca se aprueba sin respuesta.">
+		<div class="head">
+			<span class="num">04</span>
+			<span class="eyebrow">Umbrales y rutas</span>
+		</div>
+		<div class="body">
+			<h2 style="font-size:34px">Solo actúa sola cuando está segura; lo dudoso sube</h2>
+			<div class="split mt" style="grid-template-columns: 1.25fr 1fr; gap: 26px">
+				<ol class="rules">
+					<li><span>Falta alguna respuesta (JEV y el respaldo fallaron)</span><span class="route human">Revisar</span></li>
+					<li><span>Spam ≥ 0,60 · o tema «Otro» seguro con spam ≥ 0,50</span><span class="route reject">Descartado</span></li>
+					<li><span>Riesgo de marca, promesas u oferta ajena ≥ 0,60</span><span class="route human">Revisar</span></li>
+					<li><span>Confianza mínima &lt; 0,20 · o tema «Otro»</span><span class="route human">Revisar</span></li>
+					<li><span>Confianza ≥ 0,50, ninguna alerta ≥ 0,50 y puntaje ≥ 0,50</span><span class="route approve">Aprobado</span></li>
+					<li><span>Todo lo demás: la zona gris → LLM</span><span class="route enrich">Mejorar con IA</span></li>
+				</ol>
+				<div>
+					<table>
+						<thead><tr><th>Umbral</th><th class="num-cell">Estricto</th><th class="num-cell hl">Equilibrado</th><th class="num-cell">Flexible</th></tr></thead>
+						<tbody>
+							<tr><td>Confianza para aprobar</td><td class="num-cell">0,65</td><td class="num-cell hl">0,50</td><td class="num-cell">0,40</td></tr>
+							<tr><td>Piso de zona gris</td><td class="num-cell">0,30</td><td class="num-cell hl">0,20</td><td class="num-cell">0,15</td></tr>
+							<tr><td>Bloqueo por riesgo</td><td class="num-cell">0,45</td><td class="num-cell hl">0,60</td><td class="num-cell">0,70</td></tr>
+							<tr><td>Spam</td><td class="num-cell">0,50</td><td class="num-cell hl">0,60</td><td class="num-cell">0,70</td></tr>
+							<tr><td>Puntaje editorial</td><td class="num-cell">0,60</td><td class="num-cell hl">0,50</td><td class="num-cell">0,40</td></tr>
+							<tr><td>Alerta (sí/no en rojo)</td><td class="num-cell">0,40</td><td class="num-cell hl">0,50</td><td class="num-cell">0,60</td></tr>
+						</tbody>
+					</table>
+					<p class="small mt-s">Equilibrado = la política calibrada con JEV real. El equipo elige un preajuste o mueve cada número, sin programar.</p>
+				</div>
+			</div>
+			<div class="card dark mt" style="padding:14px 22px; display:flex; align-items:center; gap:12px">
+				<svg aria-hidden="true" class="icon"><use href="#i-shield"/></svg>
+				<span style="font-size:16px">Nunca se aprueba sin respuesta: si JEV no contesta en 4 s, decide el respaldo (OpenAI <span class="mono">gpt-6-luna</span>); si ambos fallan → <strong>Revisar</strong>.</span>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>4 / 8</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 05 · Quién lo opera ═══════════════════════════ -->
+	<section class="slide" data-notes="¿Quién lo opera? Diseño y copy suben la pieza, como captura o como texto. JEV la revisa con las reglas de la marca. Si está en zona gris, la IA propone el arreglo, texto e imagen, y JEV lo verifica antes de que nadie lo vea. El editor de Media solo ve su bandeja: lo riesgoso y lo dudoso, con aprobar excepción o rechazar. Y el equipo ajusta la política sin programar. Todo vive en un tablero compartido con historial y versiones de cada pieza.">
+		<div class="head">
+			<span class="num">05</span>
+			<span class="eyebrow">Quién lo opera</span>
+		</div>
+		<div class="body">
+			<h2 style="font-size:34px">Cada quien hace lo suyo; el editor solo ve su bandeja</h2>
+			<div class="row mt">
+				<div class="card lilac">
+					<div class="card-label">Diseño y Copy <svg aria-hidden="true" class="icon"><use href="#i-upload"/></svg></div>
+					<p class="small mt-s" style="color: var(--ink)">Suben la pieza: captura PNG/JPG o texto.</p>
+				</div>
+				<div class="card dark">
+					<div class="card-label">JEV <svg aria-hidden="true" class="icon"><use href="#i-gate"/></svg></div>
+					<p class="small mt-s">Decide la ruta con las reglas de la marca.</p>
+				</div>
+				<div class="card aqua">
+					<div class="card-label">IA <svg aria-hidden="true" class="icon"><use href="#i-spark"/></svg></div>
+					<p class="small mt-s" style="color: var(--ink)">Propone el arreglo, texto e imagen. JEV lo verifica.</p>
+				</div>
+				<div class="card peach">
+					<div class="card-label">Editor de Media <svg aria-hidden="true" class="icon"><use href="#i-user"/></svg></div>
+					<p class="small mt-s" style="color: var(--ink)">Aprueba excepciones o rechaza. Nada más.</p>
+				</div>
+				<div class="card">
+					<div class="card-label">El equipo <svg aria-hidden="true" class="icon"><use href="#i-sliders"/></svg></div>
+					<p class="small mt-s">Ajusta la política: preajuste o umbral por umbral.</p>
+				</div>
+			</div>
+			<div class="card muted-bg mt" style="background:#fff; border:1px solid var(--line); padding:18px">
+				<div class="card-label" style="margin-bottom:12px">Tablero del equipo · cada pieza con autor, rol, versiones e historial</div>
+				<div class="board">
+					<div class="lane">
+						<div class="lane-head"><span class="dot" style="background:var(--human)"></span>Por revisar</div>
+						<div class="chip selected"><span class="thumb"></span>Oferta con crédito</div>
+						<div class="chip"><span class="thumb"></span>Opinión sobre política</div>
+					</div>
+					<div class="lane">
+						<div class="lane-head"><span class="dot" style="background:var(--enrich)"></span>Por mejorar</div>
+						<div class="chip"><span class="thumb"></span>Cifras sin fuente</div>
+						<div class="chip"><span class="thumb"></span>Demasiado promocional</div>
+					</div>
+					<div class="lane">
+						<div class="lane-head"><span class="dot" style="background:var(--approve)"></span>Aprobado</div>
+						<div class="chip"><span class="thumb"></span>Guion: pricing B2B</div>
+						<div class="chip"><span class="thumb"></span>Post: IA en ventas · v2</div>
+					</div>
+					<div class="lane">
+						<div class="lane-head"><span class="dot" style="background:var(--reject)"></span>Rechazado</div>
+						<div class="chip"><span class="thumb"></span>Cripto «garantizado»</div>
+						<div class="chip"><span class="thumb"></span>Granja de enlaces</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>5 / 8</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 06 · Detecta → arregla → verifica ═══════════════════════════ -->
+	<section class="slide" data-notes="Este caso es real. Subimos una captura de spam: gana cinco mil dólares al día con cripto, garantizado. JEV la descartó: spam 0,81, riesgo de marca 0,95, promesas exageradas 0,98. Con un clic en Regenerar con IA, un LLM reescribió el copy con la voz de 30X y otro modelo redibujó la imagen en el lima de la marca. Después JEV volvió a revisar la versión nueva con las mismas preguntas y la aprobó. Se guardó como versión dos, con su historial.">
+		<div class="head">
+			<span class="num">06</span>
+			<span class="eyebrow">El ciclo · un caso real</span>
+		</div>
+		<div class="body">
+			<h2 style="font-size:34px">Detecta → arregla → verifica</h2>
+			<div class="versus mt">
+				<div class="card">
+					<div class="card-label">Versión 1 · captura subida <span class="route reject">Descartado</span></div>
+					<img class="shot photo mt-s" src="img/antes.jpg" alt="Captura original: GANA $5.000 AL DÍA, método garantizado, invierte en cripto">
+					<div class="flags">
+						<div class="flag">Spam<b>0,81</b></div>
+						<div class="flag">Riesgo de marca<b>0,95</b></div>
+						<div class="flag">Promesas exageradas<b>0,98</b></div>
+					</div>
+				</div>
+				<div class="bridge">
+					<span class="btn"><svg aria-hidden="true" class="icon" style="width:16px;height:16px"><use href="#i-spark"/></svg>Regenerar con IA</span>
+					<svg aria-hidden="true" class="icon" style="width:34px;height:34px; color: var(--ink-muted)"><use href="#i-arrow"/></svg>
+					<p class="small" style="font-size:12.5px">Copy: <span class="mono">gpt-6-astra</span><br>Imagen: <span class="mono">gpt-image-2</span></p>
+				</div>
+				<div class="card">
+					<div class="card-label">Versión 2 · propuesta de la IA <span class="route approve">Aprobado</span></div>
+					<img class="shot photo mt-s" src="img/despues.jpg" alt="Imagen regenerada con gpt-image-2: CRECER EXIGE ESTRATEGIA, en el lima de 30X">
+					<div class="flags">
+						<div class="flag">Copy reescrito con la voz de 30X<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--approve)"><use href="#i-check"/></svg></b></div>
+						<div class="flag">Imagen redibujada en el lima de la marca<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--approve)"><use href="#i-check"/></svg></b></div>
+						<div class="flag">Re-revisada por JEV con las 12 preguntas<b><svg aria-hidden="true" class="icon" style="width:16px;height:16px;color:var(--approve)"><use href="#i-check"/></svg></b></div>
+					</div>
+				</div>
+			</div>
+			<div class="steps mt">
+				<div class="step"><b>1 · Detecta</b>JEV marca qué falla y con cuánta probabilidad.</div>
+				<div class="step"><b>2 · Arregla</b>El LLM corrige solo lo marcado, sin inventar datos.</div>
+				<div class="step"><b>3 · Verifica</b>JEV revisa la versión nueva con las mismas preguntas.</div>
+				<div class="step"><b>4 · Guarda</b>Versión 2 en el tablero, con historial completo.</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>6 / 8</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 07 · Cómo se mide ═══════════════════════════ -->
+	<section class="slide" data-notes="¿Cómo se mide? Calibramos con cuarenta y cinco piezas simuladas y etiquetadas, contra JEV real. Con los umbrales del diseño inicial acertábamos el 53 por ciento; calibrados, el 82, y entre 80 y 87 en corridas posteriores. Las piezas resueltas sin persona pasaron de 18 a 40 por ciento, y ninguna pieza riesgosa o spam se aprobó sola: cada error es del lado prudente. Cada decisión del editor en la bandeja se convierte en una etiqueta nueva para recalibrar con datos reales.">
+		<div class="head">
+			<span class="num">07</span>
+			<span class="eyebrow">Cómo se mide</span>
+		</div>
+		<div class="body">
+			<h2 style="font-size:34px">Medido con JEV real, no estimado</h2>
+			<div class="grid-3 mt">
+				<div class="card lilac">
+					<div class="card-label">Acierto vs. ruta esperada <svg aria-hidden="true" class="icon"><use href="#i-check"/></svg></div>
+					<div class="big"><span class="before">53 %</span>82 %</div>
+					<p class="small" style="color:var(--ink); margin-top:4px">37/45 · corridas posteriores: 80–87 %</p>
+				</div>
+				<div class="card aqua">
+					<div class="card-label">Resuelto sin persona <svg aria-hidden="true" class="icon"><use href="#i-bolt"/></svg></div>
+					<div class="big"><span class="before">18 %</span>40 %</div>
+					<p class="small" style="color:var(--ink); margin-top:4px">El 60 % restante llega a una persona o al LLM</p>
+				</div>
+				<div class="card dark">
+					<div class="card-label">Riesgo o spam aprobado solo <svg aria-hidden="true" class="icon"><use href="#i-shield"/></svg></div>
+					<div class="big">0</div>
+					<p class="small" style="margin-top:4px">Cada error es conservador</p>
+				</div>
+				<div class="card">
+					<div class="card-label">Latencia <svg aria-hidden="true" class="icon"><use href="#i-clock"/></svg></div>
+					<div class="big" style="font-size:34px">100–210<span class="unit">ms / pieza</span></div>
+				</div>
+				<div class="card">
+					<div class="card-label">Costo <svg aria-hidden="true" class="icon"><use href="#i-coin"/></svg></div>
+					<div class="big" style="font-size:34px">USD 0,046<span class="unit">/ 1.000</span></div>
+				</div>
+				<div class="card">
+					<div class="card-label">Respaldo usado <svg aria-hidden="true" class="icon"><use href="#i-loop"/></svg></div>
+					<div class="big" style="font-size:34px">0<span class="unit">fallbacks en 45/45</span></div>
+				</div>
+			</div>
+			<div class="card muted-bg mt" style="padding:14px 22px">
+				<p class="small" style="color: var(--ink)"><strong>Horas ahorradas</strong> = piezas resueltas sin persona × minutos que tarda una revisión. <strong>Cada «Aprobar excepción» o «Rechazar» del editor es una etiqueta nueva</strong> para recalibrar con piezas reales.</p>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>7 / 8 · 45 piezas simuladas · jev-1.13.0</span></div>
+	</section>
+
+	<!-- ═══════════════════════════ 08 · Escala ═══════════════════════════ -->
+	<section class="slide" data-notes="El motor no es de contenido: es estado, preguntas, umbrales y acciones. Para otra decisión de 30X, como agrupar inscritos, detectar riesgo de abandono o poner guardrails a sus agentes, se escribe un set de preguntas y sus umbrales, sin código nuevo. Los próximos pasos: recalibrar con piezas reales etiquetadas por el editor, invitar a todo el equipo a una misma marca e integrarlo con la publicación. Está funcionando en la URL de la demo y el repositorio es público. Gracias.">
+		<div class="head">
+			<span class="num">08</span>
+			<span class="eyebrow">Escala y próximos pasos</span>
+		</div>
+		<div class="body">
+			<h2 style="font-size:34px">El mismo motor, otras decisiones de 30X: preguntas nuevas, cero código nuevo</h2>
+			<div class="grid-3 mt">
+				<div class="card lilac">
+					<h3>Clusterización de inscritos</h3>
+					<p class="small mt-s" style="color:var(--ink)">¿Qué programa le sirve a cada inscrito?</p>
+				</div>
+				<div class="card aqua">
+					<h3>Riesgo de abandono</h3>
+					<p class="small mt-s" style="color:var(--ink)">¿Este alumno necesita que alguien lo llame?</p>
+				</div>
+				<div class="card peach">
+					<h3>Guardrails de agentes</h3>
+					<p class="small mt-s" style="color:var(--ink)">¿Esta respuesta del agente puede salir?</p>
+				</div>
+			</div>
+			<div class="split mt" style="grid-template-columns: 1fr 1fr; gap: 16px">
+				<div class="card">
+					<div class="card-label" style="margin-bottom:12px">Próximos pasos</div>
+					<ul class="points">
+						<li>Recalibrar con piezas reales etiquetadas por el editor</li>
+						<li>Invitar a todo el equipo a una misma marca</li>
+						<li>Integrarlo con la publicación</li>
+					</ul>
+				</div>
+				<div class="card dark">
+					<div class="card-label" style="margin-bottom:12px">Pruébalo</div>
+					<p style="font-size:17px; line-height:1.5"><a href="https://gatekeeper-30x.michaelliendo.com">gatekeeper-30x.michaelliendo.com</a></p>
+					<p style="font-size:17px; line-height:1.5"><a href="https://github.com/Michael-Liendo/gatekeeper-30x">github.com/Michael-Liendo/gatekeeper-30x</a></p>
+					<p class="small mt-s">En producción · código abierto AGPL-3.0 · DevGain</p>
+				</div>
+			</div>
+		</div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>8 / 8</span></div>
+	</section>
+</div>
+
+<div id="notes"></div>
+<div id="help">← → pasar · P notas aparte · F pantalla completa</div>
+
+<script src="deck.js"></script>
+</body>
+</html>
