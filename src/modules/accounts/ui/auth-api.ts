@@ -1,4 +1,5 @@
 import type { BrandProfile, UserAccount } from "@/modules/brand/domain/brand-profile";
+import type { TeamRole } from "@/modules/workspace/domain/workspace";
 import { fetchJson } from "@/shared/ui/fetch-json";
 
 /** Client calls for the accounts API (see docs/06-contrato-marca.md). */
@@ -33,4 +34,9 @@ export function needsName(body: unknown): boolean {
 		"needsName" in body &&
 		(body as { needsName: unknown }).needsName === true
 	);
+}
+
+/** PATCH /api/me: the person's role in the creative team. */
+export function updateRole(role: TeamRole): Promise<{ user: UserAccount }> {
+	return fetchJson<{ user: UserAccount }>("/api/me", { method: "PATCH", body: { role } });
 }

@@ -2,12 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { type FormEvent, useId, useState } from "react";
+import { createPiece } from "@/modules/workspace/ui/workspace-api";
 import { ImageDropZone } from "@/shared/ui/image-drop-zone";
 import type { ContentChannel, ContentFormat } from "../domain/content-piece";
-import { errorMessage } from "./api";
 import { CHANNEL_LABEL, FORMAT_LABEL } from "./labels";
 import { PageHeader } from "./page-header";
-import { useReview } from "./review-session-provider";
 
 const FORMATS = Object.keys(FORMAT_LABEL) as ContentFormat[];
 const CHANNELS = Object.keys(CHANNEL_LABEL) as ContentChannel[];
@@ -27,7 +26,6 @@ function titleFromText(text: string): string | undefined {
 
 /** Full-page form to submit a piece (screenshot, text or both); opens its result page. */
 export function NewPieceView() {
-	const { submit } = useReview();
 	const router = useRouter();
 	const id = useId();
 	const [image, setImage] = useState<string | null>(null);
@@ -48,16 +46,20 @@ export function NewPieceView() {
 		setError(null);
 		setSending(true);
 		try {
-			const result = await submit({
+			const piece = await createPiece({
 				title: title.trim() || titleFromText(text),
 				body: text || undefined,
 				imageDataUrl: image ?? undefined,
 				format,
 				channel,
 			});
-			router.push(`/pieza/${encodeURIComponent(result.piece.id)}`);
+			router.push(`/pieza/${encodeURIComponent(piece.id)}`);
 		} catch (submitError) {
-			setError(errorMessage(submitError));
+			setError(
+				submitError instanceof Error
+					? submitError.message
+					: "Ocurrió un error inesperado. Reintenta en unos segundos.",
+			);
 			setSending(false);
 		}
 	}
@@ -66,7 +68,7 @@ export function NewPieceView() {
 		<>
 			<PageHeader
 				title="Sube una pieza para revisar"
-				description="Una captura, el texto o ambos. En segundos sabrás si se aprueba sola o si necesita tu ojo."
+				description="Una captura, el texto o ambos. En segundos sabrás si está lista y la verás en el tablero del equipo."
 			/>
 			<div className="mx-auto w-full max-w-3xl">
 				<form
