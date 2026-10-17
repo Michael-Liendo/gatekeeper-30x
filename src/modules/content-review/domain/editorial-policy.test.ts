@@ -9,6 +9,20 @@ const { decideRoute, defaultEditorialPolicy, failedChecks } = (await import(
 	policyModule
 )) as typeof import("./editorial-policy");
 
+/**
+ * Rule tests pin their own thresholds so they don't depend on the calibrated
+ * defaults, which change whenever the policy is re-tuned.
+ */
+const testPolicy = {
+	...defaultEditorialPolicy,
+	autoApproveConfidence: 0.85,
+	grayZoneFloor: 0.6,
+	riskBlock: 0.7,
+	spamReject: 0.85,
+	minEditorialScore: 0.75,
+	flagThreshold: 0.5,
+};
+
 type Answers = Record<string, DecisionAnswer>;
 
 const yesNo = (probability: number): DecisionAnswer => ({ type: "yes_no", probability });
@@ -46,15 +60,15 @@ function goodAnswers(overrides: Answers = {}): Answers {
 
 describe("decideRoute", () => {
 	it("auto-approves a confident, clean, high-scoring piece", () => {
-		const result = decideRoute(goodAnswers(), defaultEditorialPolicy);
+		const result = decideRoute(goodAnswers(), testPolicy);
 		assert.equal(result.route, "AUTO_APPROVE");
 		assert.deepEqual(result.reasons, []);
-		assert.ok(result.editorialScore >= defaultEditorialPolicy.minEditorialScore);
+		assert.ok(result.editorialScore >= testPolicy.minEditorialScore);
 		assert.ok(result.minConfidence >= 0.85);
 	});
 
 	it("rejects spam above the spam threshold", () => {
-		const result = decideRoute(goodAnswers({ is_spam: yesNo(0.95) }), defaultEditorialPolicy);
+		const result = decideRoute(goodAnswers({ is_spam: yesNo(0.95) }), testPolicy);
 		assert.equal(result.route, "REJECT");
 		assert.equal(result.reasons[0]?.check, "is_spam");
 		assert.equal(result.reasons[0]?.message, "Spam (0,95)");
@@ -63,7 +77,7 @@ describe("decideRoute", () => {
 	it("rejects confident off-topic content with spam signals", () => {
 		const result = decideRoute(
 			goodAnswers({ topic: choice("other", 0.92), is_spam: yesNo(0.6) }),
-			defaultEditorialPolicy,
+			testPolicy,
 		);
 		assert.equal(result.route, "REJECT");
 	});
@@ -71,50 +85,44 @@ describe("decideRoute", () => {
 	it("rejects spam even when there is also brand risk", () => {
 		const result = decideRoute(
 			goodAnswers({ is_spam: yesNo(0.9), brand_risk: yesNo(0.9) }),
-			defaultEditorialPolicy,
+			testPolicy,
 		);
 		assert.equal(result.route, "REJECT");
 	});
 
 	for (const key of ["brand_risk", "exaggerated_promises", "offers_unsold_product"]) {
 		it(`sends ${key} ≥ riskBlock to human review`, () => {
-			const result = decideRoute(goodAnswers({ [key]: yesNo(0.8) }), defaultEditorialPolicy);
+			const result = decideRoute(goodAnswers({ [key]: yesNo(0.8) }), testPolicy);
 			assert.equal(result.route, "HUMAN_REVIEW");
 			assert.ok(result.reasons.some((r) => r.check === key));
 		});
 	}
 
 	it("sends low confidence to human review", () => {
-		const result = decideRoute(goodAnswers({ relevance: score(2, 0.4) }), defaultEditorialPolicy);
+		const result = decideRoute(goodAnswers({ relevance: score(2, 0.4) }), testPolicy);
 		assert.equal(result.route, "HUMAN_REVIEW");
 		assert.equal(result.minConfidence, 0.4);
 	});
 
 	it("treats an uncertain yes/no (p ≈ 0.5) as low confidence", () => {
-		const result = decideRoute(
-			goodAnswers({ unsourced_claims: yesNo(0.45) }),
-			defaultEditorialPolicy,
-		);
+		const result = decideRoute(goodAnswers({ unsourced_claims: yesNo(0.45) }), testPolicy);
 		assert.equal(result.route, "HUMAN_REVIEW");
 		assert.equal(result.minConfidence, 0.55);
 	});
 
 	it('sends topic "other" without spam to human review', () => {
-		const result = decideRoute(goodAnswers({ topic: choice("other") }), defaultEditorialPolicy);
+		const result = decideRoute(goodAnswers({ topic: choice("other") }), testPolicy);
 		assert.equal(result.route, "HUMAN_REVIEW");
 		assert.ok(result.reasons.some((r) => r.check === "topic"));
 	});
 
 	it("enriches a gray-zone confidence piece with the LLM", () => {
-		const result = decideRoute(goodAnswers({ actionable: score(2, 0.7) }), defaultEditorialPolicy);
+		const result = decideRoute(goodAnswers({ actionable: score(2, 0.7) }), testPolicy);
 		assert.equal(result.route, "ENRICH_WITH_LLM");
 	});
 
 	it("enriches a confident but too promotional piece with the LLM", () => {
-		const result = decideRoute(
-			goodAnswers({ too_promotional: yesNo(0.91) }),
-			defaultEditorialPolicy,
-		);
+		const result = decideRoute(goodAnswers({ too_promotional: yesNo(0.91) }), testPolicy);
 		assert.equal(result.route, "ENRICH_WITH_LLM");
 		assert.ok(failedChecks(result.reasons).includes("Demasiado promocional (0,91)"));
 	});
@@ -122,7 +130,7 @@ describe("decideRoute", () => {
 	it("enriches a confident piece with a low editorial score", () => {
 		const result = decideRoute(
 			goodAnswers({ relevance: score(1), actionable: score(1) }),
-			defaultEditorialPolicy,
+			testPolicy,
 		);
 		assert.equal(result.route, "ENRICH_WITH_LLM");
 		assert.ok(result.reasons.some((r) => r.check === "editorial_score"));
@@ -136,26 +144,26 @@ describe("decideRoute", () => {
 				too_promotional: yesNo(0.2),
 				unsourced_claims: yesNo(0.1),
 			}),
-			defaultEditorialPolicy,
+			testPolicy,
 		);
 		assert.ok(Math.abs(result.editorialScore - 0.6) < 1e-9);
 	});
 
 	it("respects tuned thresholds", () => {
-		const strict = { ...defaultEditorialPolicy, autoApproveConfidence: 0.99 };
+		const strict = { ...testPolicy, autoApproveConfidence: 0.99 };
 		assert.equal(decideRoute(goodAnswers(), strict).route, "ENRICH_WITH_LLM");
 	});
 
 	describe("missing or invalid answers → HUMAN_REVIEW", () => {
 		it("when there are no answers at all", () => {
-			assert.equal(decideRoute({}, defaultEditorialPolicy).route, "HUMAN_REVIEW");
-			assert.equal(decideRoute(null, defaultEditorialPolicy).route, "HUMAN_REVIEW");
+			assert.equal(decideRoute({}, testPolicy).route, "HUMAN_REVIEW");
+			assert.equal(decideRoute(null, testPolicy).route, "HUMAN_REVIEW");
 		});
 
 		it("when one answer is missing", () => {
 			const answers = goodAnswers();
 			delete answers.brand_risk;
-			const result = decideRoute(answers, defaultEditorialPolicy);
+			const result = decideRoute(answers, testPolicy);
 			assert.equal(result.route, "HUMAN_REVIEW");
 			assert.deepEqual(
 				result.reasons.map((r) => r.check),
@@ -164,17 +172,17 @@ describe("decideRoute", () => {
 		});
 
 		it("when an answer has the wrong type", () => {
-			const result = decideRoute(goodAnswers({ relevance: yesNo(0.9) }), defaultEditorialPolicy);
+			const result = decideRoute(goodAnswers({ relevance: yesNo(0.9) }), testPolicy);
 			assert.equal(result.route, "HUMAN_REVIEW");
 		});
 
 		it("when a probability is out of range or NaN", () => {
 			assert.equal(
-				decideRoute(goodAnswers({ is_spam: yesNo(Number.NaN) }), defaultEditorialPolicy).route,
+				decideRoute(goodAnswers({ is_spam: yesNo(Number.NaN) }), testPolicy).route,
 				"HUMAN_REVIEW",
 			);
 			assert.equal(
-				decideRoute(goodAnswers({ brand_risk: yesNo(1.4) }), defaultEditorialPolicy).route,
+				decideRoute(goodAnswers({ brand_risk: yesNo(1.4) }), testPolicy).route,
 				"HUMAN_REVIEW",
 			);
 		});
