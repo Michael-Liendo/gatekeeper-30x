@@ -88,6 +88,7 @@ const FORMAT_HINT = {
 
 const SAFETY = [
 	"No real people, no faces, no photos of people, no hands.",
+	"Only original characters and drawings: never existing cartoon, comic, movie or game characters (no Garfield, Mickey, Pokémon, etc.) and no mascots of real brands.",
 	"No logos and no real brand names other than the '30X' wordmark when requested.",
 	"Spanish text must be spelled exactly as given, with correct accents.",
 	"Texto de la imagen en español.",
