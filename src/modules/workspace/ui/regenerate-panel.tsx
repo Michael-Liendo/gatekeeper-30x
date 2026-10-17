@@ -8,7 +8,12 @@ import { ghostButton, primaryButton } from "@/shared/ui/button-styles";
 import { CopyActions } from "@/shared/ui/copy-actions";
 import { SparkleIcon } from "@/shared/ui/icons";
 import { useToast } from "@/shared/ui/toast";
-import type { RegenerationProposal, WorkspacePiece } from "../domain/workspace";
+import {
+	type RegenerationProposal,
+	STATUS_FROM_ROUTE,
+	type WorkspacePiece,
+} from "../domain/workspace";
+import { PublishMenu } from "./publish-menu";
 import { messageOf, regeneratePiece, regenerationErrorMessage, saveVersion } from "./workspace-api";
 
 /** Text + image regeneration can take up to ~60 s; give it room before giving up. */
@@ -154,6 +159,7 @@ export function RegeneratePanel({ piece, onSaved }: RegeneratePanelProps) {
 	if (state.status === "proposal") {
 		const { proposal } = state;
 		const reasons = friendlyReasons(proposal.review);
+		const proposalText = proposal.body ? `${proposal.title}\n\n${proposal.body}` : proposal.title;
 		return (
 			<section
 				aria-labelledby="regen-title"
@@ -233,6 +239,21 @@ export function RegeneratePanel({ piece, onSaved }: RegeneratePanelProps) {
 							))}
 						</ul>
 					)}
+				</div>
+
+				<div className="flex flex-wrap items-start gap-2">
+					<PublishMenu
+						enabled={STATUS_FROM_ROUTE[proposal.review.route] === "approved"}
+						disabledHint="Guárdala y apruébala primero"
+						text={proposalText}
+						imageSrc={proposal.imageDataUrl}
+						fileName="pieza-propuesta"
+					/>
+					<CopyActions
+						text={proposalText}
+						imageSrc={proposal.imageDataUrl}
+						fileName="pieza-propuesta"
+					/>
 				</div>
 
 				<div className="flex flex-wrap gap-2">

@@ -19,6 +19,7 @@ import { CheckIcon, CloseIcon, RefreshIcon } from "@/shared/ui/icons";
 import { useToast } from "@/shared/ui/toast";
 import type { PieceEvent, PieceStatus, WorkspacePiece } from "../domain/workspace";
 import { PieceTimeline } from "./piece-timeline";
+import { PublishMenu } from "./publish-menu";
 import { RegeneratePanel } from "./regenerate-panel";
 import { RoleChip } from "./role-chip";
 import { useAuthorRole } from "./use-author-role";
@@ -144,6 +145,8 @@ export function WorkspacePieceView({ id }: { id: string }) {
 	const style = STATUS_STYLE[piece.status];
 	const reasons = friendlyReasons(piece.review);
 	const highlights = pieceHighlights(piece.review.answers ?? {});
+	const copyText = piece.body ? `${piece.title}\n\n${piece.body}` : piece.title;
+	const fileName = `pieza-v${piece.version}`;
 
 	async function move(status: PieceStatus) {
 		setMoving(status);
@@ -221,11 +224,15 @@ export function WorkspacePieceView({ id }: { id: string }) {
 						</p>
 					) : null}
 
-					<CopyActions
-						text={piece.body ? `${piece.title}\n\n${piece.body}` : piece.title}
-						imageSrc={piece.imageUrl}
-						fileName={`pieza-v${piece.version}`}
-					/>
+					<div className="flex flex-wrap items-start gap-2">
+						<PublishMenu
+							enabled={piece.status === "approved"}
+							text={copyText}
+							imageSrc={piece.imageUrl}
+							fileName={fileName}
+						/>
+						<CopyActions text={copyText} imageSrc={piece.imageUrl} fileName={fileName} />
+					</div>
 
 					{highlights.reach || highlights.fit ? (
 						<dl className="grid grid-cols-2 gap-3">

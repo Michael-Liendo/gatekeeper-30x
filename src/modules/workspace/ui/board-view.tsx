@@ -9,6 +9,7 @@ import { PlusIcon } from "@/shared/ui/icons";
 import { useToast } from "@/shared/ui/toast";
 import type { PieceStatus, WorkspacePiece } from "../domain/workspace";
 import { BoardCard, DRAG_TYPE } from "./board-card";
+import { GridUploadSoon } from "./grid-upload-soon";
 import { LoadExamplesButton } from "./load-examples-button";
 import { useAuthorRole } from "./use-author-role";
 import { usePieces } from "./use-pieces";
@@ -131,10 +132,13 @@ export function BoardView() {
 			title="Tablero del equipo"
 			description="Todo lo que subió tu equipo, ordenado por estado. Mueve una pieza con el menú de cada tarjeta o arrastrándola."
 			actions={
-				<Link href="/nueva" className={primaryButton}>
-					<PlusIcon size={18} />
-					Subir pieza
-				</Link>
+				<div className="flex flex-wrap items-center gap-3">
+					<GridUploadSoon />
+					<Link href="/nueva" className={primaryButton}>
+						<PlusIcon size={18} />
+						Subir pieza
+					</Link>
+				</div>
 			}
 		/>
 	);

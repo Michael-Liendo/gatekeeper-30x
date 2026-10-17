@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { type FormEvent, useId, useState } from "react";
+import { GridUploadSoon } from "@/modules/workspace/ui/grid-upload-soon";
 import { createPiece } from "@/modules/workspace/ui/workspace-api";
 import { ChevronDownIcon } from "@/shared/ui/icons";
 import { ImageDropZone } from "@/shared/ui/image-drop-zone";
@@ -75,6 +76,9 @@ export function NewPieceView() {
 				description="Una captura, el texto o ambos. En segundos sabrás si está lista y la verás en el tablero del equipo."
 				className="mb-3 sm:mb-4"
 			/>
+			<div className="mb-3 sm:mb-4">
+				<GridUploadSoon size="sm" />
+			</div>
 			<form
 				onSubmit={handleSubmit}
 				noValidate

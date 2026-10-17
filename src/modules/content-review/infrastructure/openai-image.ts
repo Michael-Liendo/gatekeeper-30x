@@ -22,10 +22,10 @@ function getOpenAI(): OpenAI {
 	return client;
 }
 
-/** First sentence of the body, short enough for one line on the image. */
+/** First sentence of the body if it fits on one line; empty otherwise (never cut with "…"). */
 export function shortLine(body: string, max = 90): string {
-	const first = body.trim().split(/(?<=[.!?¿¡])\s+/)[0] ?? "";
-	return first.length > max ? `${first.slice(0, max - 1).trimEnd()}…` : first;
+	const first = body.trim().split(/(?<=[.!?])\s+/)[0] ?? "";
+	return first.length <= max ? first : "";
 }
 
 /** Checks that mean the original visual itself is the problem (spam, off-brand, unsold offer). */
