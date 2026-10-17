@@ -24,10 +24,12 @@ Al revisar con JEV: AUTO_APPROVE→approved, ENRICH_WITH_LLM→needs_changes, HU
 | PATCH | `/api/pieces/[id]` | `{ status, note? }` | `WorkspacePiece` (+ evento `status_changed`) |
 | POST | `/api/pieces/[id]/versions` | `{ title, body, changes?: string[] }` | `WorkspacePiece` (nueva versión, re-revisada por JEV, + evento `version_saved`) |
 | GET | `/api/pieces/[id]/image` | — | la captura |
+| POST | `/api/pieces/examples` | — | `{ created }`: carga 12 piezas de ejemplo (4 aprobadas, 3 por mejorar, 3 por revisar, 2 rechazadas según el dataset), revisadas por JEV con la marca del usuario. Idempotente |
+| DELETE | `/api/pieces/examples` | — | `{ removed }`: borra las piezas de ejemplo con su historial e imágenes |
 | POST | `/api/regenerate` | `{ pieceId }` **o** `{ title, body, format, channel, imageDataUrl? }` | `RegenerationProposal` (no guarda nada) |
 | PATCH | `/api/me` | `{ role }` | `{ user }` |
 
-`UserAccount` gana `role: TeamRole`. Errores `{ error }` en español; 401 sin sesión; 404 si la pieza no es del usuario.
+`UserAccount` gana `role: TeamRole`. `WorkspacePiece` gana `isExample` (columna `pieces.sample_id`). El primer `PUT /api/brand` de alguien sin piezas carga los ejemplos automáticamente. Errores `{ error }` en español; 401 sin sesión; 404 si la pieza no es del usuario.
 
 ## Regenerar con IA (owner: agente de regeneración)
 1. Toma la pieza, la marca del usuario y lo que JEV marcó (razones + respuestas).

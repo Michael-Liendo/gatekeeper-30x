@@ -8,6 +8,8 @@ export interface StoredPiece {
 	piece: WorkspacePiece;
 	/** File name under the uploads directory, or null for text-only pieces. */
 	imageFile: string | null;
+	/** Id of the simulated sample it was loaded from (e.g. "cp-001"); absent for real uploads. */
+	sampleId?: string | null;
 }
 
 export interface PieceRepository {
@@ -17,6 +19,10 @@ export interface PieceRepository {
 	findById(id: string): StoredPiece | null;
 	/** The author's pieces, newest first, optionally filtered by status. */
 	listByAuthor(authorId: string, status?: PieceStatus): WorkspacePiece[];
+	/** Sample ids the author already has pieces for (demo examples). */
+	listSampleIds(authorId: string): string[];
+	/** Deletes the author's example pieces (their events cascade) and returns their ids. */
+	deleteExamples(authorId: string): string[];
 }
 
 export interface PieceEventRepository {
@@ -34,6 +40,8 @@ export interface ImageStore {
 	/** Saves `<pieceId>-v<version>.<png|jpg>` and returns that file name. */
 	save(pieceId: string, version: number, image: DecisionImage): string;
 	read(fileName: string): StoredImage | null;
+	/** Deletes every stored version of the piece's screenshot. */
+	removeAll(pieceId: string): void;
 }
 
 /** Everything the workspace use cases need. Infrastructure wires the real ones. */

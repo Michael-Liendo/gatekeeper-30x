@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { BrandProfile } from "@/modules/brand/domain/brand-profile";
 import { getCurrentBrand, getDefaultBrand } from "@/modules/brand/infrastructure/current-brand";
+import { withSampleImage } from "@/modules/content-review/application/review-batch";
 import {
 	SuggestionsNotConfiguredError,
 	suggestFixesForPiece,
@@ -50,10 +51,12 @@ export async function POST(request: Request) {
 	let piece: ContentPiece | undefined;
 	let brand: BrandProfile;
 	if ("id" in input) {
-		piece = deps.content.find((p) => p.id === input.id);
-		if (!piece) {
+		const sample = deps.content.find((p) => p.id === input.id);
+		if (!sample) {
 			return Response.json({ error: `Pieza desconocida: ${input.id}.` }, { status: 404 });
 		}
+		// Same image the batch review saw, so the cached decision is reused.
+		piece = await withSampleImage(sample, deps.loadImage);
 		brand = getDefaultBrand();
 	} else {
 		brand = (await getCurrentBrand()) ?? getDefaultBrand();

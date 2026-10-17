@@ -518,6 +518,12 @@ export function OnboardingWizard() {
 							<div className="grid gap-6">
 								<BrandSummary brand={input} />
 								<div aria-live="polite" className="empty:hidden">
+									{saving ? (
+										<p className="text-xs text-ink-muted">
+											Guardamos tu marca y JEV revisa unas piezas de ejemplo con ella para que tu
+											tablero no empiece vacío. Toma unos segundos.
+										</p>
+									) : null}
 									{saveError ? (
 										<p className="rounded-lg bg-danger-soft px-3 py-2 text-xs font-medium text-danger">
 											{saveError}
@@ -532,7 +538,7 @@ export function OnboardingWizard() {
 										aria-busy={saving}
 										className={primaryGradientButton}
 									>
-										<span>{saving ? "Guardando tu marca…" : "Entrar a mi bandeja"}</span>
+										<span>{saving ? "Preparando piezas de ejemplo…" : "Entrar a mi bandeja"}</span>
 										{!saving ? (
 											<svg
 												aria-hidden="true"

@@ -97,29 +97,46 @@ function addEvent(
 	deps.events.add(event);
 }
 
+/** What `createReviewedPiece` stores: the content, who signs it and how it starts. */
+export interface NewPieceSpec {
+	title: string;
+	body: string;
+	format: ContentPiece["format"];
+	channel: ContentPiece["channel"];
+	image: DecisionImage | null;
+	/** Owner of the piece (whose board and Mis piezas it lands on). */
+	ownerId: string;
+	/** Name and role shown as the author. */
+	authorName: string;
+	authorRole: Actor["role"];
+	/** Summary of the first ("submitted") event. */
+	submittedSummary: string;
+	/** Sample it comes from, for demo examples. */
+	sampleId?: string;
+}
+
 /**
- * Stores a new piece for `actor`: saves the screenshot (if any), reviews it with JEV
- * against the actor's brand, sets the status from the route and records the
- * "submitted" and "reviewed" events.
+ * Stores a new piece: saves the screenshot (if any), reviews it with JEV against
+ * `brand`, sets the status from the route and records the "submitted" and "reviewed"
+ * events. Shared by uploads and demo examples.
  */
-export async function submitPiece(
-	input: SubmitPieceInput,
-	actor: Actor,
+export async function createReviewedPiece(
+	spec: NewPieceSpec,
 	brand: BrandProfile,
 	deps: WorkspaceDeps,
 ): Promise<WorkspacePiece> {
 	const id = deps.newId();
 	const createdAt = deps.now();
-	const image = decodeImage(input.imageDataUrl);
+	const { image } = spec;
 	const imageFile = image ? deps.images.save(id, 1, image) : null;
 
 	const content: ContentPiece = {
 		id,
-		title: input.title,
-		body: input.body,
-		format: input.format,
-		channel: input.channel,
-		author: actor.name,
+		title: spec.title,
+		body: spec.body,
+		format: spec.format,
+		channel: spec.channel,
+		author: spec.authorName,
 		createdAt: createdAt.toISOString(),
 		...(image ? { imageDataUrl: toImageDataUrl(image) } : {}),
 	};
@@ -129,24 +146,49 @@ export async function submitPiece(
 	const piece: WorkspacePiece = {
 		id,
 		brandId: brand.id,
-		authorId: actor.id,
-		authorName: actor.name,
-		authorRole: actor.role,
-		title: input.title,
-		body: input.body,
-		format: input.format,
-		channel: input.channel,
+		authorId: spec.ownerId,
+		authorName: spec.authorName,
+		authorRole: spec.authorRole,
+		title: spec.title,
+		body: spec.body,
+		format: spec.format,
+		channel: spec.channel,
 		...(imageFile ? { imageUrl: pieceImageUrl(id) } : {}),
 		status: STATUS_FROM_ROUTE[review.route],
 		review,
 		version: 1,
+		isExample: spec.sampleId !== undefined,
 		createdAt: createdAt.toISOString(),
 		updatedAt: reviewedAt.toISOString(),
 	};
-	deps.pieces.insert({ piece, imageFile });
-	addEvent(deps, id, "submitted", actor.name, SUBMITTED_SUMMARY, createdAt);
+	deps.pieces.insert({ piece, imageFile, sampleId: spec.sampleId ?? null });
+	addEvent(deps, id, "submitted", spec.authorName, spec.submittedSummary, createdAt);
 	addEvent(deps, id, "reviewed", REVIEWER_NAME, reviewSummary(review), reviewedAt);
 	return piece;
+}
+
+/** Stores a piece the actor uploaded, reviewed with JEV against the actor's brand. */
+export function submitPiece(
+	input: SubmitPieceInput,
+	actor: Actor,
+	brand: BrandProfile,
+	deps: WorkspaceDeps,
+): Promise<WorkspacePiece> {
+	return createReviewedPiece(
+		{
+			title: input.title,
+			body: input.body,
+			format: input.format,
+			channel: input.channel,
+			image: decodeImage(input.imageDataUrl),
+			ownerId: actor.id,
+			authorName: actor.name,
+			authorRole: actor.role,
+			submittedSummary: SUBMITTED_SUMMARY,
+		},
+		brand,
+		deps,
+	);
 }
 
 /** The actor's pieces, newest first. */
@@ -237,7 +279,7 @@ export async function saveNewVersion(
 		version,
 		updatedAt: reviewedAt.toISOString(),
 	};
-	deps.pieces.update({ piece, imageFile });
+	deps.pieces.update({ ...stored, piece, imageFile });
 	addEvent(
 		deps,
 		pieceId,

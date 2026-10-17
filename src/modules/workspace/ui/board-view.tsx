@@ -9,6 +9,7 @@ import { PlusIcon } from "@/shared/ui/icons";
 import { useToast } from "@/shared/ui/toast";
 import type { PieceStatus, WorkspacePiece } from "../domain/workspace";
 import { BoardCard, DRAG_TYPE } from "./board-card";
+import { LoadExamplesButton } from "./load-examples-button";
 import { useAuthorRole } from "./use-author-role";
 import { usePieces } from "./use-pieces";
 import { messageOf, movePiece } from "./workspace-api";
@@ -173,13 +174,16 @@ export function BoardView() {
 				<EmptyState
 					title="Tu tablero está vacío"
 					action={
-						<Link href="/nueva" className={primaryButton}>
-							Sube tu primera pieza
-						</Link>
+						<div className="flex flex-wrap gap-3">
+							<Link href="/nueva" className={primaryButton}>
+								Sube tu primera pieza
+							</Link>
+							<LoadExamplesButton onLoaded={retry} />
+						</div>
 					}
 				>
 					Cuando subas una pieza, JEV la revisa con tu marca y aparece aquí en la columna que le
-					corresponde.
+					corresponde. ¿Quieres ver cómo se ve? Carga unas piezas de ejemplo.
 				</EmptyState>
 			</>
 		);
