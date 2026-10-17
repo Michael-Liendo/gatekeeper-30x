@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Poppins } from "next/font/google";
 import { ToastProvider } from "@/shared/ui/toast";
 import "./globals.css";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
+const poppins = Poppins({
+	variable: "--font-poppins",
 	subsets: ["latin"],
+	weight: ["300", "400", "500", "600"],
 });
 
 const geistMono = Geist_Mono({
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
 	return (
-		<html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+		<html lang="es" className={`${poppins.variable} ${geistMono.variable} h-full antialiased`}>
 			<body className="min-h-full">
 				<ToastProvider>{children}</ToastProvider>
 			</body>

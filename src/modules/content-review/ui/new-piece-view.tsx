@@ -16,7 +16,8 @@ const IMAGE_TYPES = ["image/png", "image/jpeg"] as const;
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 const MAX_BODY = 4000;
 
-const field = "w-full rounded-lg border border-line-strong bg-surface px-3 text-sm";
+const field =
+	"w-full rounded-2xl border border-line bg-surface-muted px-4 text-sm focus-visible:border-ink focus-visible:bg-surface";
 
 /** Submit a piece to the gatekeeper: a screenshot, its text, or both. */
 export function NewPieceView() {
@@ -67,18 +68,18 @@ export function NewPieceView() {
 	return (
 		<>
 			<PageHeader
-				title="Nueva pieza"
-				description="Envía una pieza al gatekeeper. JEV la evalúa con tu política actual y decide su ruta en milisegundos."
+				title="Sube una pieza para revisar"
+				description="Una captura, el texto o ambos. En segundos sabrás si se aprueba sola o si necesita tu ojo."
 			/>
-			<div className="grid items-start gap-6 xl:grid-cols-[minmax(0,32rem)_minmax(0,1fr)]">
+			<div className="grid items-start gap-8 xl:grid-cols-[minmax(0,34rem)_minmax(0,1fr)] xl:gap-10">
 				<form
 					onSubmit={handleSubmit}
 					noValidate
-					className="grid gap-4 rounded-card border border-line bg-surface p-5"
+					className="grid gap-5"
 					aria-describedby={error ? `${id}-error` : undefined}
 				>
 					<fieldset className="grid gap-2">
-						<legend className="mb-1 text-sm font-semibold">Captura</legend>
+						<legend className="sr-only">Captura</legend>
 						<ImageDropZone
 							value={image}
 							onChange={(value) => {
@@ -88,14 +89,14 @@ export function NewPieceView() {
 							onError={setError}
 							accept={IMAGE_TYPES}
 							maxBytes={MAX_IMAGE_BYTES}
-							label="Arrastra una captura o haz clic para subirla"
-							hint="PNG o JPG hasta 4 MB. También puedes pegarla con Ctrl+V o Cmd+V."
+							label="Arrastra o elige una captura"
+							hint="PNG o JPG de hasta 4 MB. También puedes pegarla con Ctrl+V o Cmd+V."
 							disabled={sending}
 						/>
 					</fieldset>
 
 					<div className="grid gap-1">
-						<label htmlFor={`${id}-body`} className="text-sm font-semibold">
+						<label htmlFor={`${id}-body`} className="text-sm font-medium">
 							Texto <span className="font-normal text-ink-muted">(opcional si subes captura)</span>
 						</label>
 						<textarea
@@ -104,15 +105,15 @@ export function NewPieceView() {
 							onChange={(e) => setBody(e.target.value)}
 							rows={6}
 							maxLength={MAX_BODY}
-							className={`${field} py-2 leading-relaxed`}
+							className={`${field} py-3 leading-relaxed`}
 						/>
-						<p className="text-right font-mono text-xs text-ink-muted">
+						<p className="text-right text-xs text-ink-muted tabular-nums">
 							{body.length}/{MAX_BODY}
 						</p>
 					</div>
 
 					<div className="grid gap-1">
-						<label htmlFor={`${id}-title`} className="text-sm font-semibold">
+						<label htmlFor={`${id}-title`} className="text-sm font-medium">
 							Título <span className="font-normal text-ink-muted">(opcional)</span>
 						</label>
 						<input
@@ -127,7 +128,7 @@ export function NewPieceView() {
 
 					<div className="grid grid-cols-2 gap-3">
 						<div className="grid gap-1">
-							<label htmlFor={`${id}-format`} className="text-sm font-semibold">
+							<label htmlFor={`${id}-format`} className="text-sm font-medium">
 								Formato
 							</label>
 							<select
@@ -144,7 +145,7 @@ export function NewPieceView() {
 							</select>
 						</div>
 						<div className="grid gap-1">
-							<label htmlFor={`${id}-channel`} className="text-sm font-semibold">
+							<label htmlFor={`${id}-channel`} className="text-sm font-medium">
 								Canal
 							</label>
 							<select
@@ -166,7 +167,7 @@ export function NewPieceView() {
 						<p
 							id={`${id}-error`}
 							role="alert"
-							className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger"
+							className="rounded-2xl bg-danger-soft px-4 py-3 text-sm text-danger"
 						>
 							{error}
 						</p>
@@ -176,9 +177,9 @@ export function NewPieceView() {
 						type="submit"
 						disabled={sending}
 						aria-busy={sending}
-						className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-primary-ink hover:opacity-90 disabled:cursor-progress disabled:opacity-70"
+						className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-7 text-sm font-medium text-primary-ink hover:opacity-90 disabled:cursor-progress disabled:opacity-70 sm:justify-self-start"
 					>
-						{sending ? "JEV está evaluando…" : "Enviar al gatekeeper"}
+						{sending ? "Revisando…" : "Revisar pieza"}
 					</button>
 				</form>
 
@@ -188,23 +189,23 @@ export function NewPieceView() {
 							<p className="text-sm text-ink-muted">
 								{needsEditor ? (
 									<>
-										Quedó en tu{" "}
+										También quedó en tu{" "}
 										<Link href="/" className="font-medium text-ink underline underline-offset-2">
-											Bandeja
+											bandeja
 										</Link>
 										. Puedes decidirla aquí mismo.
 									</>
 								) : (
-									"Resuelta sin intervención. También aparece en Todo el contenido."
+									"Se resolvió sola. También la verás en Contenido."
 								)}
 							</p>
-							<PieceDetail key={last.piece.id} result={last} />
+							<div className="rounded-card border border-line p-5 sm:p-7">
+								<PieceDetail key={last.piece.id} result={last} />
+							</div>
 						</>
 					) : (
-						<div className="grid min-h-40 place-items-center rounded-card border border-dashed border-line-strong bg-surface p-6 text-center text-sm text-ink-muted">
-							{sending
-								? "JEV está leyendo la pieza…"
-								: "Aquí verás la ruta, las razones, la latencia y el costo de la pieza que envíes."}
+						<div className="grid min-h-56 place-items-center rounded-card bg-surface-muted p-8 text-center text-sm text-ink-muted">
+							{sending ? "Leyendo la pieza…" : "Aquí verás qué se decidió con tu pieza y por qué."}
 						</div>
 					)}
 				</div>

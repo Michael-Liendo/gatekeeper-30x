@@ -2,14 +2,23 @@
 
 import Image from "next/image";
 import { useSession } from "@/modules/accounts/ui/session-provider";
+import {
+	ArrowLeftIcon,
+	CheckIcon,
+	ChevronDownIcon,
+	CloseIcon,
+	SparkleIcon,
+} from "@/shared/ui/icons";
 import { useToast } from "@/shared/ui/toast";
 import type { ReviewResult } from "../domain/review";
 import { AnswerList } from "./answer-list";
 import { formatDecimal, formatMs, formatPercent, formatUsd } from "./format";
 import {
 	brandForResult,
+	decisionCertainty,
 	describePiece,
 	EDITOR_ACTION_LABEL,
+	friendlyReasons,
 	PROVIDER_LABEL,
 	pieceImage,
 	ROUTE_LABEL,
@@ -28,18 +37,19 @@ interface PieceDetailProps {
 	onResolved?: (id: string) => void;
 }
 
-const button =
-	"inline-flex min-h-11 items-center justify-center rounded-lg px-4 text-sm font-semibold disabled:cursor-progress disabled:opacity-70";
-const primary = `${button} bg-primary text-primary-ink hover:opacity-90`;
-const secondary = `${button} border border-line-strong bg-surface hover:bg-surface-muted`;
+const action =
+	"inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 text-sm font-medium transition-colors disabled:cursor-progress disabled:opacity-70";
+const primary = `${action} bg-primary text-primary-ink hover:opacity-90`;
+const secondary = `${action} border border-line-strong bg-surface text-ink hover:bg-surface-muted`;
+const ai = `${action} bg-linear-to-br from-lilac-from to-lilac-to text-ink hover:opacity-90`;
 
 const TOAST_TEXT: Record<EditorAction, string> = {
-	approved: "Excepción aprobada",
-	rejected: "Pieza rechazada",
-	adjusted: "Aprobada con los ajustes de IA",
+	approved: "Aprobada",
+	rejected: "Rechazada",
+	adjusted: "Aprobada con las mejoras de la IA",
 };
 
-/** Everything about one decision plus the editor's actions on it. */
+/** One piece: what was decided, why in plain words, and the editor's actions. */
 export function PieceDetail({
 	result,
 	onBack,
@@ -59,15 +69,18 @@ export function PieceDetail({
 	const { notify } = useToast();
 	const { piece } = result;
 	const id = piece.id;
-	const action = editorActions[id];
+	const decided = editorActions[id];
 	const enrichState = enrichments[id];
 	const suggestions = enrichState?.status === "done" ? enrichState.suggestions : result.suggestions;
 	const canEnrich = !submittedIds.has(id);
+	const enriching = enrichState?.status === "loading";
 	const image = pieceImage(piece);
 	const hasAnswers = Object.keys(result.answers ?? {}).length > 0;
 	const providerName = result.provider ? PROVIDER_LABEL[result.provider] : null;
 	const originalRoute = originalRoutes.get(id);
 	const needsEditor = result.route === "HUMAN_REVIEW" || result.route === "ENRICH_WITH_LLM";
+	const reasons = friendlyReasons(result);
+	const certainty = hasAnswers ? decisionCertainty(result.minConfidence, policy) : null;
 
 	function resolve(next: EditorAction) {
 		setEditorAction(id, next);
@@ -79,7 +92,7 @@ export function PieceDetail({
 	}
 
 	const facts = [
-		{ label: "Latencia", value: formatMs(result.latencyMs) },
+		{ label: "Tiempo de respuesta", value: formatMs(result.latencyMs) },
 		{ label: "Costo", value: formatUsd(result.costUsd) },
 		{
 			label: "Proveedor",
@@ -90,23 +103,48 @@ export function PieceDetail({
 		{ label: "Modelo", value: result.model ?? "—" },
 		{ label: "Puntaje editorial", value: formatDecimal(result.editorialScore) },
 		{ label: "Confianza mínima", value: formatPercent(result.minConfidence) },
+		{ label: "Tokens de entrada", value: result.inputTokens?.toString() ?? "—" },
+		{
+			label: "Ruta esperada",
+			value: piece.expectedRoute
+				? `${ROUTE_LABEL[piece.expectedRoute]} ${result.matchesExpected ? "(coincide)" : "(no coincide)"}`
+				: "—",
+		},
 	];
 
 	return (
-		<article
-			aria-labelledby="piece-detail-title"
-			className="grid gap-5 rounded-card border border-line bg-surface p-5"
-		>
+		<article aria-labelledby="piece-detail-title" className="grid gap-6">
 			{onBack ? (
 				<button
 					type="button"
 					onClick={onBack}
-					className="-mt-2 -ml-2 inline-flex min-h-11 items-center justify-self-start rounded-lg px-2 text-sm font-medium text-ink-muted hover:text-ink lg:hidden"
+					className="-ml-2 inline-flex min-h-11 items-center gap-2 justify-self-start rounded-full px-2 text-sm text-ink-muted hover:text-ink lg:hidden"
 				>
-					<span aria-hidden="true">‹&nbsp;</span>
+					<ArrowLeftIcon size={18} />
 					{backLabel}
 				</button>
 			) : null}
+
+			<header className="grid gap-3">
+				<div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+					<RouteBadge route={result.route} size="lg" />
+					{certainty ? (
+						<span className="text-xs text-ink-muted">Seguridad de la decisión: {certainty}</span>
+					) : null}
+				</div>
+				<h2
+					id="piece-detail-title"
+					className="text-balance text-2xl font-normal leading-tight sm:text-[1.75rem]"
+				>
+					{piece.title}
+				</h2>
+				<p className="text-sm text-ink-muted">
+					{describePiece(piece)}
+					{originalRoute && originalRoute !== result.route
+						? `. Antes de tu política: ${ROUTE_LABEL[originalRoute]}`
+						: ""}
+				</p>
+			</header>
 
 			{image ? (
 				<Image
@@ -115,154 +153,134 @@ export function PieceDetail({
 					width={1200}
 					height={900}
 					unoptimized
-					className="max-h-80 w-full rounded-lg border border-line bg-surface-muted object-contain"
+					className="max-h-80 w-full rounded-[20px] bg-surface-muted object-contain"
 				/>
 			) : null}
 
-			<header className="grid gap-2">
-				<div className="flex flex-wrap items-center gap-2">
-					<RouteBadge route={result.route} size="lg" />
-					{originalRoute && originalRoute !== result.route ? (
-						<span className="text-xs text-ink-muted">
-							Antes de tu política: {ROUTE_LABEL[originalRoute]}
-						</span>
-					) : null}
-				</div>
-				<h2 id="piece-detail-title" className="text-xl font-semibold leading-snug">
-					{piece.title}
-				</h2>
-				<p className="text-sm text-ink-muted">
-					{describePiece(piece)}
-					{piece.expectedRoute
-						? `. Ruta esperada: ${ROUTE_LABEL[piece.expectedRoute]} ${result.matchesExpected ? "(coincide)" : "(no coincide)"}`
-						: ""}
-				</p>
-			</header>
-
-			{result.error ? (
-				<p role="note" className="rounded-lg bg-danger-soft px-3 py-2 text-sm text-danger">
-					{result.error}
-				</p>
-			) : null}
-
-			{/* Editor actions */}
-			{action ? (
-				<div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-line bg-surface-muted p-3">
-					<p className="text-sm font-semibold">Resuelta: {EDITOR_ACTION_LABEL[action]}.</p>
-					<button type="button" onClick={() => setEditorAction(id, null)} className={secondary}>
-						Deshacer
-					</button>
-				</div>
-			) : result.route === "HUMAN_REVIEW" ? (
-				<div className="grid gap-2">
-					<p className="text-sm text-ink-muted">JEV no puede decidir esta pieza sola. Decide tú.</p>
-					<div className="flex flex-wrap gap-2">
-						<button type="button" onClick={() => resolve("approved")} className={primary}>
-							Aprobar excepción
-						</button>
-						<button type="button" onClick={() => resolve("rejected")} className={secondary}>
-							Rechazar
-						</button>
-					</div>
-				</div>
-			) : result.route === "ENRICH_WITH_LLM" ? (
-				<div className="grid gap-3">
-					<p className="text-sm text-ink-muted">
-						Casi lista. Pide ajustes a la IA, apruébala tal cual o recházala.
-					</p>
-					{suggestions ? <SuggestionsCard suggestions={suggestions} /> : null}
-					{enrichState?.status === "error" ? (
-						<p role="alert" className="text-sm text-danger">
-							{enrichState.message}
-						</p>
-					) : null}
-					<div className="flex flex-wrap gap-2">
-						{suggestions ? (
-							<button type="button" onClick={() => resolve("adjusted")} className={primary}>
-								Aprobar con ajustes
-							</button>
-						) : canEnrich ? (
-							<button
-								type="button"
-								onClick={() => void enrich(id)}
-								disabled={enrichState?.status === "loading"}
-								aria-busy={enrichState?.status === "loading"}
-								className={primary}
-							>
-								{enrichState?.status === "loading" ? "Pidiendo ajustes…" : "Sugerir ajustes con IA"}
-							</button>
-						) : null}
-						<button type="button" onClick={() => resolve("approved")} className={secondary}>
-							Aprobar sin cambios
-						</button>
-						<button type="button" onClick={() => resolve("rejected")} className={secondary}>
-							Rechazar
-						</button>
-					</div>
-				</div>
-			) : (
-				<p className="rounded-lg bg-surface-muted px-3 py-2 text-sm text-ink-muted">
-					{result.route === "AUTO_APPROVE"
-						? "Aprobada automáticamente. No necesita al editor."
-						: "Descartada automáticamente. No necesita al editor."}
-				</p>
-			)}
-
-			<section
-				aria-labelledby="detail-reasons"
-				className="grid gap-2 rounded-lg bg-surface-muted p-4"
-			>
-				<h3 id="detail-reasons" className="text-sm font-semibold">
-					Por qué
-					{needsEditor ? " necesita al editor" : ` está ${ROUTE_LABEL[result.route].toLowerCase()}`}
+			<section aria-labelledby="detail-reasons" className="grid gap-3">
+				<h3 id="detail-reasons" className="text-sm font-medium">
+					{needsEditor
+						? "Por qué te llega"
+						: result.route === "AUTO_APPROVE"
+							? "Por qué se aprobó sola"
+							: "Por qué se descartó"}
 				</h3>
-				{result.reasons.length === 0 ? (
-					<p className="text-sm text-ink-muted">
-						Todas las respuestas superan los umbrales. No se activó ninguna regla.
-					</p>
+				{reasons.length === 0 ? (
+					<p className="text-sm text-ink-muted">Cumple todo lo que pide tu política.</p>
 				) : (
-					<ul className="grid list-disc gap-1 pl-5 text-sm">
-						{result.reasons.map((reason) => (
-							<li key={`${reason.check}-${reason.message}`}>{reason.message}</li>
+					<ul className="grid gap-2">
+						{reasons.map((reason) => (
+							<li
+								key={reason}
+								className="flex items-center gap-3 rounded-2xl bg-surface-muted px-4 py-3 text-sm"
+							>
+								<span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-ink" />
+								{reason}
+							</li>
 						))}
 					</ul>
 				)}
 			</section>
 
-			<section aria-labelledby="detail-answers" className="grid gap-3">
-				<h3 id="detail-answers" className="text-sm font-semibold">
-					Respuestas de {providerName ?? "JEV"}
-				</h3>
-				{hasAnswers ? (
-					<AnswerList
-						answers={result.answers}
-						policy={policy}
-						brand={brandForResult(result, sessionBrand)}
-					/>
-				) : (
-					<p className="text-sm text-ink-muted">Ningún modelo respondió para esta pieza.</p>
-				)}
-			</section>
+			{suggestions && !decided && needsEditor ? (
+				<SuggestionsCard suggestions={suggestions} />
+			) : null}
+			{enrichState?.status === "error" ? (
+				<p role="alert" className="rounded-2xl bg-danger-soft px-4 py-3 text-sm text-danger">
+					{enrichState.message}
+				</p>
+			) : null}
 
-			<dl className="grid grid-cols-2 gap-x-4 gap-y-3 border-t border-line pt-4 sm:grid-cols-3">
-				{facts.map((fact) => (
-					<div key={fact.label} className="grid min-w-0 gap-0.5">
-						<dt className="text-xs text-ink-muted">{fact.label}</dt>
-						<dd className="break-words font-mono text-sm tabular-nums">{fact.value}</dd>
-					</div>
-				))}
-			</dl>
+			{decided ? (
+				<div className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] bg-pill p-4 pl-5">
+					<p className="text-sm font-medium text-pill-ink">{EDITOR_ACTION_LABEL[decided]}</p>
+					<button type="button" onClick={() => setEditorAction(id, null)} className={secondary}>
+						Deshacer
+					</button>
+				</div>
+			) : needsEditor ? (
+				<div className="flex flex-wrap gap-2">
+					{suggestions ? (
+						<button type="button" onClick={() => resolve("adjusted")} className={primary}>
+							<CheckIcon size={18} />
+							Aprobar con mejoras
+						</button>
+					) : (
+						<button type="button" onClick={() => resolve("approved")} className={primary}>
+							<CheckIcon size={18} />
+							Aprobar
+						</button>
+					)}
+					<button type="button" onClick={() => resolve("rejected")} className={secondary}>
+						<CloseIcon size={18} />
+						Rechazar
+					</button>
+					{suggestions ? (
+						<button type="button" onClick={() => resolve("approved")} className={secondary}>
+							Aprobar sin cambios
+						</button>
+					) : canEnrich ? (
+						<button
+							type="button"
+							onClick={() => void enrich(id)}
+							disabled={enriching}
+							aria-busy={enriching}
+							className={ai}
+						>
+							<SparkleIcon size={18} />
+							{enriching ? "Pidiendo ideas a la IA…" : "Sugerir ajustes con IA"}
+						</button>
+					) : null}
+				</div>
+			) : (
+				<p className="rounded-[20px] bg-surface-muted px-5 py-4 text-sm text-ink-muted">
+					{result.route === "AUTO_APPROVE"
+						? "Se aprobó sola. No tienes que hacer nada."
+						: "Se descartó sola. No tienes que hacer nada."}
+				</p>
+			)}
 
 			{piece.body ? (
-				<details className="rounded-lg border border-line">
-					<summary className="flex min-h-11 cursor-pointer items-center px-4 text-sm font-semibold">
-						Texto de la pieza
+				<details className="group rounded-[20px] border border-line">
+					<summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-5 text-sm font-medium [&::-webkit-details-marker]:hidden">
+						Ver texto completo
+						<ChevronDownIcon size={18} className="transition-transform group-open:rotate-180" />
 					</summary>
-					<p className="whitespace-pre-line border-t border-line px-4 py-3 text-sm leading-relaxed">
+					<p className="whitespace-pre-line border-t border-line px-5 py-4 text-sm leading-relaxed">
 						{piece.body}
 					</p>
 				</details>
 			) : null}
+
+			<details className="group rounded-[20px] border border-line">
+				<summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-5 text-sm text-ink-muted [&::-webkit-details-marker]:hidden">
+					Ver detalle técnico
+					<ChevronDownIcon size={18} className="transition-transform group-open:rotate-180" />
+				</summary>
+				<div className="grid gap-5 border-t border-line px-5 py-4">
+					{result.error ? <p className="text-sm text-danger">{result.error}</p> : null}
+					{hasAnswers ? (
+						<div className="grid gap-2">
+							<h3 className="text-xs text-ink-muted">Respuestas de {providerName ?? "JEV"}</h3>
+							<AnswerList
+								answers={result.answers}
+								policy={policy}
+								brand={brandForResult(result, sessionBrand)}
+							/>
+						</div>
+					) : (
+						<p className="text-sm text-ink-muted">Ningún modelo respondió para esta pieza.</p>
+					)}
+					<dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+						{facts.map((fact) => (
+							<div key={fact.label} className="grid min-w-0 gap-0.5">
+								<dt className="text-xs text-ink-muted">{fact.label}</dt>
+								<dd className="break-words font-mono text-xs tabular-nums">{fact.value}</dd>
+							</div>
+						))}
+					</dl>
+				</div>
+			</details>
 		</article>
 	);
 }

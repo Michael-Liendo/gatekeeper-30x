@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "@/modules/accounts/ui/session-provider";
-import { linkButton, primaryButton, secondaryButton } from "@/shared/ui/button-styles";
+import { ghostButton, primaryButton, secondaryButton } from "@/shared/ui/button-styles";
 import { useToast } from "@/shared/ui/toast";
 import type { BrandProfile, BrandProfileInput } from "../domain/brand-profile";
 import { extractBrand, saveBrand } from "./brand-api";
@@ -14,6 +14,7 @@ import {
 	normalizeUrl,
 	toBrandInput,
 	validateBrandInput,
+	withDefaults,
 } from "./brand-input";
 import { ExtractingStatus } from "./extracting-status";
 
@@ -31,7 +32,7 @@ function BrandEditor({ brand }: { brand: BrandProfile }) {
 
 	async function reanalyze() {
 		if (links.length === 0) {
-			setMessage("Agrega el enlace de tu sitio web para volver a analizarlo.");
+			setMessage("Agrega tu página web en «Más detalles» para volver a analizarla.");
 			return;
 		}
 		setMessage(null);
@@ -49,13 +50,15 @@ function BrandEditor({ brand }: { brand: BrandProfile }) {
 	}
 
 	async function save() {
-		const next = validateBrandInput(input);
+		const filled = withDefaults(input);
+		if (filled !== input) setInput(filled);
+		const next = validateBrandInput(filled);
 		setErrors(next);
 		if (Object.keys(next).length > 0) return;
 		setSaving(true);
 		setMessage(null);
 		try {
-			const saved = await saveBrand(normalizeBrandInput(input));
+			const saved = await saveBrand(normalizeBrandInput(filled));
 			setBrand(saved);
 			setInput(toBrandInput(saved));
 			setWarnings([]);
@@ -68,7 +71,7 @@ function BrandEditor({ brand }: { brand: BrandProfile }) {
 	}
 
 	return (
-		<div className="grid max-w-3xl gap-4">
+		<div className="grid max-w-3xl gap-5">
 			<div aria-live="polite" className="grid gap-3 empty:hidden">
 				{extracting ? <ExtractingStatus /> : null}
 				{message ? <p className="text-sm text-danger">{message}</p> : null}
@@ -109,7 +112,7 @@ function BrandEditor({ brand }: { brand: BrandProfile }) {
 								setWarnings([]);
 							}}
 							disabled={saving || extracting}
-							className={linkButton}
+							className={ghostButton}
 						>
 							Descartar cambios
 						</button>
@@ -126,14 +129,17 @@ export function BrandSettingsView() {
 
 	if (status === "loading") {
 		return (
-			<p role="status" className="text-sm text-ink-muted">
+			<p role="status" className="py-6 text-sm text-ink-muted">
 				Cargando tu marca…
 			</p>
 		);
 	}
 	if (!brand) {
 		return (
-			<p role="status" className="rounded-card border border-line bg-surface p-4 text-sm">
+			<p
+				role="status"
+				className="max-w-3xl rounded-[var(--radius-card)] border border-line bg-surface p-6 text-sm"
+			>
 				No pudimos cargar tu marca en este momento. Recarga la página o vuelve a ingresar.
 			</p>
 		);

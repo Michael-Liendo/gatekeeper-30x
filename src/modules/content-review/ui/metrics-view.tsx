@@ -1,26 +1,64 @@
 "use client";
 
+import { HighlightCard, HighlightRow } from "@/shared/ui/highlight-card";
+import {
+	CheckIcon,
+	ChevronDownIcon,
+	ClockIcon,
+	CoinIcon,
+	EyeIcon,
+	SparkleIcon,
+} from "@/shared/ui/icons";
+import type { ReviewMetrics } from "../domain/review";
 import { AnalyzeButton } from "./analyze-button";
 import { EmptyState } from "./empty-state";
-import { KpiStrip } from "./kpi-strip";
+import { formatMs, formatPercent, formatUsd } from "./format";
 import { ROUTE_LABEL, ROUTES } from "./labels";
 import { LoadingBlock } from "./loading-block";
 import { PageHeader } from "./page-header";
 import { useReview } from "./review-session-provider";
 import { RouteBar } from "./route-bar";
 
-/** Batch KPIs, route distribution and expected-vs-decided matrix. */
+/** "Decide en menos de un segundo" / "Decide en unos 3 segundos". */
+function speedText(avgMs: number): string {
+	if (avgMs < 1000) return "Decide en menos de un segundo";
+	const seconds = Math.round(avgMs / 1000);
+	return `Decide en unos ${seconds} ${seconds === 1 ? "segundo" : "segundos"}`;
+}
+
+/** "Menos de 1 centavo por cada 100 piezas" / "Unos 12 centavos por cada 100 piezas". */
+function costText(costPer1kUsd: number): string {
+	const centsPer100 = (costPer1kUsd / 10) * 100;
+	if (centsPer100 < 1) return "Menos de 1 centavo de dólar por cada 100 piezas";
+	if (centsPer100 < 100)
+		return `Unos ${Math.round(centsPer100)} centavos de dólar por cada 100 piezas`;
+	return `Unos ${Math.round(centsPer100 / 100)} dólares por cada 100 piezas`;
+}
+
+function techFacts(metrics: ReviewMetrics) {
+	return [
+		{ label: "Latencia promedio", value: formatMs(metrics.avgLatencyMs) },
+		{ label: "Costo por 1.000 piezas", value: formatUsd(metrics.costPer1kUsd) },
+		{ label: "Costo de este lote", value: formatUsd(metrics.totalCostUsd) },
+		{
+			label: "Respuestas de respaldo (OpenAI)",
+			value: String(metrics.fallbackCount),
+		},
+		{ label: "Solo revisión humana", value: formatPercent(metrics.escalationRate) },
+	];
+}
+
+/** Three numbers, one chart and plain-language speed and cost. Detail stays collapsed. */
 export function MetricsView() {
-	const { hydrated, metrics, results, submittedIds, editorActions, pieces, status, changedIds } =
-		useReview();
+	const { hydrated, metrics, results, submittedIds, changedIds } = useReview();
 	const batch = results.filter((r) => !submittedIds.has(r.piece.id));
-	const editorDecisions = batch.filter((r) => editorActions[r.piece.id]).length;
 	const labeled = batch.filter((r) => r.piece.expectedRoute);
 
 	const header = (
 		<PageHeader
-			title="Métricas"
-			description="Cuánto resuelve JEV solo, cuánto llega al equipo, qué tan preciso es y cuánto cuesta. Se recalculan con tu política."
+			title="Cuánto trabajo te ahorra"
+			description="Calculado sobre el contenido de ejemplo de 30X con tu política actual."
+			actions={metrics ? <AnalyzeButton variant="icon" /> : null}
 		/>
 	);
 
@@ -37,84 +75,126 @@ export function MetricsView() {
 		return (
 			<>
 				{header}
-				<EmptyState title="Sin métricas todavía" action={<AnalyzeButton />}>
-					<p>Las métricas salen del análisis del contenido. Lánzalo y vuelve aquí.</p>
+				<EmptyState title="Aún no hay números" action={<AnalyzeButton />}>
+					<p>Revisa el contenido de ejemplo y vuelve aquí para ver cuánto se resuelve solo.</p>
 				</EmptyState>
 			</>
 		);
 	}
 
+	const toYou = metrics.byRoute.HUMAN_REVIEW + metrics.byRoute.ENRICH_WITH_LLM;
+
 	return (
 		<>
 			{header}
-			<div className="grid gap-6">
-				<KpiStrip metrics={metrics} results={batch} editorDecisions={editorDecisions} />
+			<div className="grid gap-8">
+				<HighlightRow label="Resumen">
+					<HighlightCard
+						tone="lilac"
+						label="Se resuelve solo"
+						value={formatPercent(metrics.automationRate)}
+						note={`${metrics.byRoute.AUTO_APPROVE + metrics.byRoute.REJECT} de ${metrics.total}`}
+						icon={<SparkleIcon size={18} />}
+					/>
+					<HighlightCard
+						tone="aqua"
+						label="Te llega a ti"
+						value={formatPercent(metrics.total ? toYou / metrics.total : 0)}
+						note={`${toYou} de ${metrics.total}`}
+						icon={<EyeIcon size={18} />}
+					/>
+					<HighlightCard
+						tone="plain"
+						label="Acierta"
+						value={formatPercent(metrics.accuracy)}
+						note={labeled.length > 0 ? "frente a lo esperado" : "sin datos"}
+						icon={<CheckIcon size={18} />}
+					/>
+				</HighlightRow>
+
+				<ul className="grid gap-3 sm:grid-cols-2">
+					<li className="flex items-center gap-3 rounded-[20px] bg-surface-muted px-5 py-4 text-sm">
+						<ClockIcon size={20} className="shrink-0" />
+						{speedText(metrics.avgLatencyMs)}
+					</li>
+					<li className="flex items-center gap-3 rounded-[20px] bg-surface-muted px-5 py-4 text-sm">
+						<CoinIcon size={20} className="shrink-0" />
+						{costText(metrics.costPer1kUsd)}
+					</li>
+				</ul>
+
 				<RouteBar
 					metrics={metrics}
-					pendingCount={pieces.length}
-					running={status === "running"}
 					changedCount={batch.filter((r) => changedIds.has(r.piece.id)).length}
 				/>
-				{labeled.length > 0 ? (
-					<section
-						aria-labelledby="matrix-title"
-						className="grid gap-3 rounded-card border border-line bg-surface p-5"
-					>
-						<div className="grid gap-1">
-							<h2 id="matrix-title" className="text-lg font-semibold">
-								Esperado contra decidido
-							</h2>
-							<p className="text-sm text-ink-muted">
-								Filas: ruta esperada en el dataset simulado. Columnas: ruta que decidió el
-								gatekeeper.
-							</p>
-						</div>
-						<div className="overflow-x-auto">
-							<table className="w-full min-w-[32rem] text-sm">
-								<thead>
-									<tr className="text-xs text-ink-muted">
-										<th scope="col" className="py-2 text-left font-medium">
-											Esperado
-										</th>
-										{ROUTES.map((route) => (
-											<th key={route} scope="col" className="py-2 text-right font-medium">
-												{ROUTE_LABEL[route]}
-											</th>
-										))}
-									</tr>
-								</thead>
-								<tbody className="divide-y divide-line">
-									{ROUTES.map((expected) => (
-										<tr key={expected}>
-											<th scope="row" className="py-2 text-left font-medium">
-												{ROUTE_LABEL[expected]}
-											</th>
-											{ROUTES.map((decided) => {
-												const n = labeled.filter(
-													(r) => r.piece.expectedRoute === expected && r.route === decided,
-												).length;
-												return (
-													<td
-														key={decided}
-														className={`py-2 text-right font-mono ${
-															expected === decided
-																? "font-semibold text-ink"
-																: n > 0
-																	? "text-danger"
-																	: "text-ink-muted"
-														}`}
-													>
-														{n}
-													</td>
-												);
-											})}
-										</tr>
-									))}
-								</tbody>
-							</table>
-						</div>
-					</section>
-				) : null}
+
+				<details className="group rounded-card border border-line">
+					<summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-3 px-6 text-sm text-ink-muted [&::-webkit-details-marker]:hidden">
+						Ver detalle técnico
+						<ChevronDownIcon size={18} className="transition-transform group-open:rotate-180" />
+					</summary>
+					<div className="grid gap-6 border-t border-line px-6 py-6">
+						<dl className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3">
+							{techFacts(metrics).map((fact) => (
+								<div key={fact.label} className="grid min-w-0 gap-0.5">
+									<dt className="text-xs text-ink-muted">{fact.label}</dt>
+									<dd className="break-words font-mono text-sm tabular-nums">{fact.value}</dd>
+								</div>
+							))}
+						</dl>
+						{labeled.length > 0 ? (
+							<div className="grid gap-2">
+								<h3 className="text-xs text-ink-muted">
+									Esperado (filas) contra decidido (columnas), dataset simulado
+								</h3>
+								<div className="overflow-x-auto">
+									<table className="w-full min-w-[32rem] font-mono text-xs">
+										<thead>
+											<tr className="text-ink-muted">
+												<th scope="col" className="py-2 text-left font-normal">
+													Esperado
+												</th>
+												{ROUTES.map((route) => (
+													<th key={route} scope="col" className="py-2 text-right font-normal">
+														{ROUTE_LABEL[route]}
+													</th>
+												))}
+											</tr>
+										</thead>
+										<tbody className="divide-y divide-line">
+											{ROUTES.map((expected) => (
+												<tr key={expected}>
+													<th scope="row" className="py-2 text-left font-normal">
+														{ROUTE_LABEL[expected]}
+													</th>
+													{ROUTES.map((decided) => {
+														const n = labeled.filter(
+															(r) => r.piece.expectedRoute === expected && r.route === decided,
+														).length;
+														return (
+															<td
+																key={decided}
+																className={`py-2 text-right ${
+																	expected === decided
+																		? "font-semibold text-ink"
+																		: n > 0
+																			? "text-danger"
+																			: "text-ink-muted"
+																}`}
+															>
+																{n}
+															</td>
+														);
+													})}
+												</tr>
+											))}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						) : null}
+					</div>
+				</details>
 			</div>
 		</>
 	);

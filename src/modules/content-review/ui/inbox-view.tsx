@@ -2,9 +2,16 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { HighlightCard, HighlightRow } from "@/shared/ui/highlight-card";
+import { CheckIcon, CloseIcon, EyeIcon } from "@/shared/ui/icons";
+import { PillTabs } from "@/shared/ui/pill-tabs";
+import { SearchField } from "@/shared/ui/search-field";
+import type { ReviewResult } from "../domain/review";
 import { AnalyzeButton } from "./analyze-button";
 import { EmptyState } from "./empty-state";
+import { isToday, todayNote } from "./format";
 import { LoadingBlock } from "./loading-block";
+import { normalize } from "./normalize";
 import { PageHeader } from "./page-header";
 import { PieceWorkspace } from "./piece-workspace";
 import { useReview } from "./review-session-provider";
@@ -14,27 +21,50 @@ type Tab = "pending" | "resolved";
 
 const ROUTE_ORDER = { HUMAN_REVIEW: 0, ENRICH_WITH_LLM: 1, AUTO_APPROVE: 2, REJECT: 3 } as const;
 
-/** The editor's queue: only the pieces JEV could not settle on its own. */
+function countToday(items: readonly ReviewResult[]): number {
+	return items.filter((r) => isToday(r.piece.createdAt)).length;
+}
+
+/** Home: the three numbers that matter, then only the pieces that need the editor. */
 export function InboxView() {
 	const { hydrated, results, editorActions, status, submittedIds } = useReview();
 	const [tab, setTab] = useState<Tab>("pending");
+	const [query, setQuery] = useState("");
+
+	const needle = normalize(query.trim());
+	const matches = (r: ReviewResult) =>
+		needle === "" || normalize(`${r.piece.title} ${r.piece.body}`).includes(needle);
 
 	const queue = results.filter((r) => QUEUE_ROUTES.has(r.route));
-	const pending = queue
-		.filter((r) => !editorActions[r.piece.id])
-		.sort((a, b) => {
-			// Pieces the editor just submitted first, then human review before AI adjustments.
-			const submitted = Number(submittedIds.has(b.piece.id)) - Number(submittedIds.has(a.piece.id));
-			return submitted || ROUTE_ORDER[a.route] - ROUTE_ORDER[b.route];
-		});
-	const resolved = queue.filter((r) => editorActions[r.piece.id]);
+	const pendingAll = queue.filter((r) => !editorActions[r.piece.id]);
+	const pending = pendingAll.filter(matches).sort((a, b) => {
+		// Pieces the editor just submitted first, then "Revisar" before "Mejorar con IA".
+		const submitted = Number(submittedIds.has(b.piece.id)) - Number(submittedIds.has(a.piece.id));
+		return submitted || ROUTE_ORDER[a.route] - ROUTE_ORDER[b.route];
+	});
+	const resolved = queue.filter((r) => editorActions[r.piece.id]).filter(matches);
 	const items = tab === "pending" ? pending : resolved;
-	const autoResolved = results.length - queue.length;
+	const approved = results.filter((r) => r.route === "AUTO_APPROVE");
+	const rejected = results.filter((r) => r.route === "REJECT");
+	const total = results.length;
 
 	const header = (
 		<PageHeader
-			title="Bandeja"
-			description="Solo lo que JEV no pudo resolver solo: piezas para revisión humana o para ajustar con IA."
+			title="Revisa el contenido de tu marca"
+			description="Lo claro se aprueba o se descarta solo. Aquí te queda únicamente lo que necesita tu ojo."
+			actions={
+				results.length > 0 ? (
+					<>
+						<SearchField
+							value={query}
+							onChange={setQuery}
+							label="Buscar en la bandeja"
+							className="flex-1 sm:w-56 sm:flex-none"
+						/>
+						<AnalyzeButton variant="icon" />
+					</>
+				) : null
+			}
 		/>
 	);
 
@@ -52,15 +82,13 @@ export function InboxView() {
 			<>
 				{header}
 				<EmptyState
-					title={status === "running" ? "Analizando el contenido…" : "Tu bandeja está vacía"}
+					title={status === "running" ? "Revisando el contenido…" : "Tu bandeja está vacía"}
 					action={<AnalyzeButton />}
 				>
 					<p>
-						Analiza el contenido de 30X Media: JEV responde preguntas tipadas sobre cada pieza y la
-						política editorial decide si se aprueba, se ajusta con IA, se descarta o llega aquí para
-						que la revises. También puedes{" "}
+						Prueba con el contenido de ejemplo para ver cómo funciona, o{" "}
 						<Link href="/nueva" className="font-medium text-ink underline underline-offset-2">
-							enviar una pieza nueva
+							sube una pieza tuya
 						</Link>
 						.
 					</p>
@@ -72,55 +100,63 @@ export function InboxView() {
 	return (
 		<>
 			{header}
-			<div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-				<div
-					role="tablist"
-					aria-label="Estado de la bandeja"
-					className="flex gap-1 rounded-lg bg-surface-muted p-1"
-				>
-					{(
-						[
-							["pending", "Pendientes", pending.length],
-							["resolved", "Resueltas", resolved.length],
-						] as const
-					).map(([value, label, count]) => (
-						<button
-							key={value}
-							type="button"
-							role="tab"
-							aria-selected={tab === value}
-							onClick={() => setTab(value)}
-							className="min-h-10 rounded-md px-3 text-sm font-medium text-ink-muted aria-selected:bg-surface aria-selected:text-ink aria-selected:shadow-sm"
-						>
-							{label} <span className="font-mono text-xs">{count}</span>
-						</button>
-					))}
-				</div>
+			<HighlightRow label="Resumen de la revisión">
+				<HighlightCard
+					tone="lilac"
+					label="Aprobado solo"
+					value={String(approved.length)}
+					note={todayNote(countToday(approved), approved.length, total)}
+					icon={<CheckIcon size={18} />}
+				/>
+				<HighlightCard
+					tone="aqua"
+					label="Necesita tu revisión"
+					value={String(pendingAll.length)}
+					note={todayNote(countToday(pendingAll), pendingAll.length, total)}
+					icon={<EyeIcon size={18} />}
+				/>
+				<HighlightCard
+					tone="plain"
+					label="Descartado"
+					value={String(rejected.length)}
+					note={todayNote(countToday(rejected), rejected.length, total)}
+					icon={<CloseIcon size={18} />}
+				/>
+			</HighlightRow>
+
+			<div className="mt-10 mb-5 flex flex-wrap items-center justify-between gap-3">
+				<PillTabs
+					label="Estado de la bandeja"
+					value={tab}
+					onChange={setTab}
+					tabs={[
+						{ value: "pending", label: "Pendientes", count: pending.length },
+						{ value: "resolved", label: "Resueltas", count: resolved.length },
+					]}
+				/>
 				<p className="text-sm text-ink-muted">
-					{autoResolved} de {results.length} piezas se resolvieron sin ti.
+					{total - queue.length} de {total} piezas se resolvieron sin ti
 				</p>
 			</div>
 			<div role="tabpanel" aria-label={tab === "pending" ? "Pendientes" : "Resueltas"}>
 				<PieceWorkspace
-					key={tab}
+					key={`${tab}-${needle}`}
 					items={items}
 					listLabel={tab === "pending" ? "Piezas pendientes" : "Piezas resueltas"}
 					backLabel="Volver a la bandeja"
 					advanceOnResolve={tab === "pending"}
 					empty={
-						tab === "pending" ? (
-							<EmptyState title="Bandeja al día">
-								<p>
-									No queda nada por revisar con la política actual. Las decisiones que tomaste están
-									en Resueltas.
-								</p>
+						needle !== "" ? (
+							<EmptyState title="Nada coincide con tu búsqueda">
+								<p>Prueba con otra palabra o borra la búsqueda.</p>
+							</EmptyState>
+						) : tab === "pending" ? (
+							<EmptyState title="Estás al día">
+								<p>No queda nada por revisar. Lo que decidiste está en Resueltas.</p>
 							</EmptyState>
 						) : (
-							<EmptyState title="Aún no resolviste ninguna pieza">
-								<p>
-									Cuando apruebes, ajustes o rechaces una pieza aparecerá aquí, con opción de
-									deshacer.
-								</p>
+							<EmptyState title="Aún no decidiste ninguna pieza">
+								<p>Cuando apruebes o rechaces una pieza aparecerá aquí, y podrás deshacerlo.</p>
 							</EmptyState>
 						)
 					}

@@ -28,7 +28,7 @@ export function SignOutButton({ className = "" }: { className?: string }) {
 			onClick={() => void onClick()}
 			disabled={pending}
 			aria-busy={pending}
-			className={`min-h-11 rounded-lg px-3 text-left text-sm font-medium text-ink-muted hover:bg-surface-muted hover:text-ink disabled:opacity-60 ${className}`}
+			className={`min-h-11 rounded-full px-4 text-left text-sm font-medium text-ink-muted hover:bg-surface-muted hover:text-ink disabled:opacity-60 ${className}`}
 		>
 			{pending ? "Cerrando sesión…" : "Cerrar sesión"}
 		</button>

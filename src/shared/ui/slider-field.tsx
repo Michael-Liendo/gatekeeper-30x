@@ -32,12 +32,12 @@ export function SliderField({
 	const changed = defaultValue !== undefined && Math.abs(defaultValue - value) > 1e-9;
 
 	return (
-		<div className="grid gap-1.5">
+		<div className="grid gap-1">
 			<div className="flex items-baseline justify-between gap-3">
-				<label htmlFor={id} className="text-sm font-semibold">
+				<label htmlFor={id} className="text-sm font-medium">
 					{label}
 				</label>
-				<output htmlFor={id} className="font-mono text-sm font-semibold tabular-nums">
+				<output htmlFor={id} className="text-sm tabular-nums">
 					{format(value)}
 				</output>
 			</div>
@@ -56,7 +56,7 @@ export function SliderField({
 			<p id={descriptionId} className="text-xs leading-relaxed text-ink-muted">
 				{description}
 				{changed && defaultValue !== undefined ? (
-					<span className="text-ink"> Por defecto: {format(defaultValue)}.</span>
+					<span className="text-ink"> Recomendado: {format(defaultValue)}.</span>
 				) : null}
 			</p>
 		</div>

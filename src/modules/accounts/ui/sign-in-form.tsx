@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useRef, useState } from "react";
+import { primaryButtonLarge, underlineInput } from "@/shared/ui/button-styles";
 import { ApiError } from "@/shared/ui/fetch-json";
 import { fetchMe, needsName, signIn } from "./auth-api";
 
@@ -52,21 +53,35 @@ export function SignInForm() {
 		setPending(true);
 		try {
 			const result = await signIn(
-				askName ? { email: trimmedEmail, name: name.trim() } : { email: trimmedEmail },
+				askName
+					? { email: trimmedEmail, name: name.trim() }
+					: { email: trimmedEmail },
 			);
 			await goNext(result.isNew);
 		} catch (cause) {
 			setPending(false);
-			if (cause instanceof ApiError && cause.status === 400 && needsName(cause.body)) {
+			if (
+				cause instanceof ApiError &&
+				cause.status === 400 &&
+				needsName(cause.body)
+			) {
 				setAskName(true);
 				return;
 			}
-			setError(cause instanceof Error ? cause.message : "No pudimos iniciar tu sesión.");
+			setError(
+				cause instanceof Error
+					? cause.message
+					: "No pudimos iniciar tu sesión.",
+			);
 		}
 	}
 
 	return (
-		<form onSubmit={(event) => void onSubmit(event)} noValidate className="grid gap-4">
+		<form
+			onSubmit={(event) => void onSubmit(event)}
+			noValidate
+			className="grid gap-4"
+		>
 			<div className="grid gap-1.5">
 				<label
 					htmlFor="email"
@@ -122,7 +137,7 @@ export function SignInForm() {
 					>
 						Tu nombre
 					</label>
-					<p id="name-hint" className="text-xs text-ink-muted">
+					<p id="name-hint" className="text-sm text-ink">
 						Es tu primera vez aquí. ¿Cómo te llamamos?
 					</p>
 					<div className="relative">
@@ -178,7 +193,9 @@ export function SignInForm() {
 				aria-busy={pending}
 				className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 px-5 text-sm font-semibold text-white shadow-sm transition-all hover:brightness-110 hover:shadow-md active:scale-[0.99] disabled:cursor-progress disabled:opacity-75"
 			>
-				<span>{pending ? "Entrando…" : askName ? "Crear mi cuenta" : "Continuar"}</span>
+				<span>
+					{pending ? "Entrando…" : askName ? "Crear mi cuenta" : "Continuar"}
+				</span>
 				{!pending ? (
 					<svg
 						aria-hidden="true"

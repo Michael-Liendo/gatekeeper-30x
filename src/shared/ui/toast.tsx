@@ -36,7 +36,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number)
 	}, [toast.id, onDismiss]);
 
 	return (
-		<div className="pointer-events-auto flex w-full items-center gap-3 rounded-card bg-primary px-4 py-3 text-sm text-primary-ink shadow-lg">
+		<div className="pointer-events-auto flex w-full items-center gap-3 rounded-2xl bg-primary px-4 py-3 text-sm text-primary-ink shadow-lg">
 			<span className="min-w-0 flex-1">{toast.message}</span>
 			{toast.action ? (
 				<button
@@ -85,7 +85,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 			<div
 				role="status"
 				aria-live="polite"
-				className="pointer-events-none fixed inset-x-4 bottom-4 z-50 grid justify-items-center gap-2 sm:inset-x-auto sm:right-6 sm:bottom-6 sm:w-96"
+				className="pointer-events-none fixed inset-x-4 bottom-24 z-50 grid justify-items-center gap-2 sm:inset-x-auto sm:right-6 sm:w-96 lg:bottom-6"
 			>
 				{toasts.map((toast) => (
 					<ToastItem key={toast.id} toast={toast} onDismiss={dismiss} />

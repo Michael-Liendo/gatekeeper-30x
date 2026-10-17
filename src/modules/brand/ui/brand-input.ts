@@ -80,6 +80,15 @@ export function validateBrandInput(input: BrandProfileInput): BrandFormErrors {
 	return errors;
 }
 
+/**
+ * Sensible defaults for the fields hidden under "Más detalles": topics start as what
+ * the brand sells, so the short form is enough to finish.
+ */
+export function withDefaults(input: BrandProfileInput): BrandProfileInput {
+	if (input.topics.length > 0 || input.offerings.length === 0) return input;
+	return { ...input, topics: [...input.offerings] };
+}
+
 /** Trims text fields before sending. */
 export function normalizeBrandInput(input: BrandProfileInput): BrandProfileInput {
 	return {

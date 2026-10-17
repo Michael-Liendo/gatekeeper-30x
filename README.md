@@ -48,3 +48,10 @@ validan, llaman un caso de uso y responden. Detalle y reglas en [`AGENTS.md`](AG
 ## Datos
 
 Solo datos simulados. Ningún dato personal real.
+
+## Licencia
+
+[GNU AGPL-3.0](LICENSE) © 2026 Equipo DevGain (Michael Liendo, Haron Acosta).
+Es la licencia de código abierto más restrictiva: cualquiera que use, modifique o
+**ofrezca este software como servicio en red** debe publicar su código fuente
+completo bajo la misma licencia.
