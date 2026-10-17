@@ -16,3 +16,14 @@ export function getJev(): TypeSafeClient {
 
 /** JEV model id. Pinned in code, not configurable per environment. */
 export const JEV_MODEL = "jev-latest";
+
+/**
+ * Model for requests with a screenshot. The SDK docs only require `jev-preview` for
+ * `box` questions, so images use the same pinned model as text.
+ */
+export const JEV_IMAGE_MODEL = JEV_MODEL;
+
+/** Opt-in header for TypeSafe's experimental image support, sent per request. */
+export const JEV_IMAGE_HEADERS: Readonly<Record<string, string>> = {
+	"TypeSafe-Danger-Zone-Images": "true",
+};

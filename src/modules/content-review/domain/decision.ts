@@ -68,10 +68,20 @@ export interface DecisionResult {
 	usedFallback: boolean;
 }
 
+export type DecisionImageMimeType = "image/png" | "image/jpeg";
+
+/** An image sent alongside the input, as raw base64 (no `data:` prefix). */
+export interface DecisionImage {
+	mimeType: DecisionImageMimeType;
+	base64: string;
+}
+
 export interface DecisionRequest {
 	/** Text or JSON-serializable state describing the content. */
 	input: string | Record<string, unknown>;
 	questions: DecisionQuestions;
+	/** Optional screenshot of the content; engines send it as an image part. */
+	image?: DecisionImage;
 }
 
 /** Port implemented by each model provider (see infrastructure/). */

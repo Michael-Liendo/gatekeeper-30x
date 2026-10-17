@@ -15,8 +15,12 @@ const MAX_ENTRIES = 500;
 const cache = new Map<string, Promise<DecisionResult>>();
 
 function cacheKey(request: DecisionRequest, pieceId: string | undefined): string {
+	// Hash the image separately so the key doesn't embed megabytes of base64.
+	const image = request.image
+		? `${request.image.mimeType}:${createHash("sha256").update(request.image.base64).digest("hex")}`
+		: null;
 	const hash = createHash("sha256")
-		.update(JSON.stringify({ input: request.input, questions: request.questions }))
+		.update(JSON.stringify({ input: request.input, questions: request.questions, image }))
 		.digest("hex");
 	return `${pieceId ?? "anonymous"}:${hash}`;
 }

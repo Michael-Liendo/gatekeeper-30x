@@ -2,6 +2,7 @@ import "server-only";
 import OpenAI from "openai";
 import type { Decision, DecisionCreateParams } from "openai/resources/decisions";
 import { env } from "@/shared/config/env";
+import { toImageDataUrl } from "../domain/content-image";
 import type {
 	DecisionAnswer,
 	DecisionEngine,
@@ -103,18 +104,32 @@ function fromOpenAIAnswer(
 	throw new Error(`OpenAI answer type "${answer.type}" does not match question "${name}"`);
 }
 
+/** Text-only input as a string; with an image, one user message with text + image parts. */
+function toOpenAIInput(request: DecisionRequest): DecisionCreateParams["input"] {
+	const text = typeof request.input === "string" ? request.input : JSON.stringify(request.input);
+	if (!request.image) return text;
+	return [
+		{
+			role: "user",
+			content: [
+				{ type: "input_text", text },
+				{ type: "input_image", image_url: toImageDataUrl(request.image) },
+			],
+		},
+	];
+}
+
 /** Decision engine backed by the OpenAI Decisions API (`POST /v1/decisions`). */
 export class OpenAIDecisionEngine implements DecisionEngine {
 	readonly provider = "openai" as const;
 
 	async decide(request: DecisionRequest): Promise<DecisionResult> {
 		const started = performance.now();
-		const input = typeof request.input === "string" ? request.input : JSON.stringify(request.input);
 		const entries = Object.entries(request.questions);
 
 		const response = await getOpenAI().decisions.create({
 			model: env.OPENAI_DECISIONS_MODEL,
-			input,
+			input: toOpenAIInput(request),
 			questions: entries.map(([name, question]) => toOpenAIQuestion(name, question)),
 		});
 		const latencyMs = Math.round(performance.now() - started);

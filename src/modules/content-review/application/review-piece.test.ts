@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import { describe, it } from "node:test";
 import type { ContentPiece } from "../domain/content-piece";
-import type { DecisionAnswer, DecisionResult } from "../domain/decision";
+import type { DecisionAnswer, DecisionRequest, DecisionResult } from "../domain/decision";
 import type { EditorialSuggestions } from "../domain/review";
 import type { ReviewDeps, SuggestInput } from "./review-piece";
 
@@ -173,6 +173,61 @@ describe("reviewPiece", () => {
 		const { expectedRoute: _, ...custom } = piece;
 		const result = await reviewPiece(custom, {}, deps);
 		assert.equal("matchesExpected" in result, false);
+	});
+});
+
+// Smallest valid PNG signature + padding; the use case only checks the data URL shape.
+const PNG_BASE64 =
+	"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+
+describe("reviewPiece with a screenshot", () => {
+	const screenshotPiece: ContentPiece = {
+		id: "custom-1",
+		title: "Captura sin título",
+		body: "",
+		format: "post",
+		channel: "instagram",
+		author: "Prueba en vivo",
+		createdAt: "2026-10-01T09:00:00.000Z",
+		imageDataUrl: `data:image/png;base64,${PNG_BASE64}`,
+	};
+
+	it("passes the image of an image-only piece to deps.decide and deps.suggest", async () => {
+		const requests: DecisionRequest[] = [];
+		const suggestCalls: SuggestInput[] = [];
+		const deps: ReviewDeps = {
+			decide: async (request) => {
+				requests.push(request);
+				return decision(goodAnswers({ too_promotional: yesNo(0.91) }));
+			},
+			suggest: async (input) => {
+				suggestCalls.push(input);
+				return suggestions;
+			},
+		};
+		const result = await reviewPiece(screenshotPiece, { enrich: true }, deps);
+		assert.equal(result.route, "ENRICH_WITH_LLM");
+		assert.deepEqual(requests[0]?.image, { mimeType: "image/png", base64: PNG_BASE64 });
+		const input = requests[0]?.input as Record<string, unknown>;
+		assert.equal(input.body, "");
+		assert.equal(typeof input.note, "string", "the state tells the model to read the image");
+		assert.equal("imageDataUrl" in input, false, "the data URL is not duplicated in the state");
+		assert.deepEqual(suggestCalls[0]?.image, { mimeType: "image/png", base64: PNG_BASE64 });
+	});
+
+	it("sends no image for a text-only piece", async () => {
+		const requests: DecisionRequest[] = [];
+		const deps: ReviewDeps = {
+			decide: async (request) => {
+				requests.push(request);
+				return decision(goodAnswers());
+			},
+		};
+		await reviewPiece(piece, {}, deps);
+		const [request] = requests;
+		assert.ok(request);
+		assert.equal("image" in request, false);
+		assert.equal("note" in (request.input as Record<string, unknown>), false);
 	});
 });
 

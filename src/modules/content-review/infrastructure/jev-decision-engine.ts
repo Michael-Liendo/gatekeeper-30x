@@ -1,7 +1,9 @@
 import "server-only";
 import {
+	type ContentValue,
 	choice,
-	type JsonValue,
+	type EntryType,
+	Image,
 	noul,
 	type Question,
 	type Questions,
@@ -16,7 +18,7 @@ import type {
 	DecisionRequest,
 	DecisionResult,
 } from "../domain/decision";
-import { getJev, JEV_MODEL } from "./jev-client";
+import { getJev, JEV_IMAGE_HEADERS, JEV_IMAGE_MODEL, JEV_MODEL } from "./jev-client";
 
 /** USD per million input tokens. */
 const JEV_PRICE_PER_MTOK = 0.042;
@@ -74,22 +76,36 @@ function fromJevAnswer(
 	throw new Error(`JEV answer type "${answer.type}" does not match question "${name}"`);
 }
 
+/**
+ * JEV state for a request. With an image, the fields go in an object next to a
+ * `screenshot` asset; the SDK uploads the bytes as a multipart part.
+ */
+function toJevState(request: DecisionRequest): NonNullable<EntryType> {
+	const fields = request.input as { [key: string]: ContentValue };
+	if (!request.image) {
+		return typeof request.input === "string" ? request.input : fields;
+	}
+	const screenshot = Image.fromBase64(request.image.base64);
+	return typeof request.input === "string"
+		? { content: request.input, screenshot }
+		: { ...fields, screenshot };
+}
+
 /** Decision engine backed by TypeSafe JEV (System One). */
 export class JevDecisionEngine implements DecisionEngine {
 	readonly provider = "jev" as const;
 
 	async decide(request: DecisionRequest): Promise<DecisionResult> {
 		const started = performance.now();
-		const state: string | { [key: string]: JsonValue } =
-			typeof request.input === "string"
-				? request.input
-				: (request.input as { [key: string]: JsonValue });
-
-		const result = await getJev().systemOne({
-			state,
-			questions: toJevQuestions(request.questions),
-			model: JEV_MODEL,
-		});
+		const result = await getJev().systemOne(
+			{
+				state: toJevState(request),
+				questions: toJevQuestions(request.questions),
+				model: request.image ? JEV_IMAGE_MODEL : JEV_MODEL,
+			},
+			// Images are experimental in TypeSafe and need an explicit opt-in per request.
+			request.image ? { headers: JEV_IMAGE_HEADERS } : undefined,
+		);
 		const latencyMs = Math.round(performance.now() - started);
 
 		const answers: Record<string, DecisionAnswer> = {};

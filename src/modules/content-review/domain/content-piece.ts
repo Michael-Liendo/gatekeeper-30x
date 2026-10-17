@@ -13,6 +13,11 @@ export interface ContentPiece {
 	author: string;
 	createdAt: string;
 	/**
+	 * Optional screenshot of the piece (post, slide, thumbnail) as a PNG or JPEG
+	 * `data:` URL. When present, the decision engine judges the image too.
+	 */
+	imageDataUrl?: string;
+	/**
 	 * Expected route, only in simulated data, used to measure precision in the demo.
 	 * Not sent to any model.
 	 */

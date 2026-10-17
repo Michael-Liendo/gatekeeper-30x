@@ -3,7 +3,11 @@ import {
 	SuggestionsNotConfiguredError,
 	suggestFixesForPiece,
 } from "@/modules/content-review/application/review-piece";
-import { enrichRequestSchema } from "@/modules/content-review/application/review-schemas";
+import {
+	enrichRequestSchema,
+	hasImageIssue,
+	INVALID_IMAGE_MESSAGE,
+} from "@/modules/content-review/application/review-schemas";
 import type { ContentPiece } from "@/modules/content-review/domain/content-piece";
 import { getReviewDeps } from "@/modules/content-review/infrastructure/review-deps";
 
@@ -20,7 +24,9 @@ export async function POST(request: Request) {
 	if (!parsed.success) {
 		return Response.json(
 			{
-				error: "Petición inválida: envía el id de una pieza o la pieza completa.",
+				error: hasImageIssue(parsed.error)
+					? INVALID_IMAGE_MESSAGE
+					: "Petición inválida: envía el id de una pieza o la pieza completa.",
 				issues: z.treeifyError(parsed.error),
 			},
 			{ status: 400 },

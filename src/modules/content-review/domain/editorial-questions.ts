@@ -89,10 +89,18 @@ export type EditorialQuestionKey = keyof typeof editorialQuestions;
  * the model judges the content only, and must never see the expected answer.
  */
 export function buildContentInput(piece: ContentPiece): Record<string, unknown> {
-	return {
+	const input: Record<string, unknown> = {
 		title: piece.title,
 		body: piece.body,
 		format: piece.format,
 		channel: piece.channel,
 	};
+	if (piece.imageDataUrl) {
+		input.note = SCREENSHOT_NOTE;
+	}
+	return input;
 }
+
+/** Tells the model to read the screenshot as part of the piece (it may be the only content). */
+export const SCREENSHOT_NOTE =
+	"La pieza incluye una captura (publicación, diapositiva o miniatura). Júzgala como parte de la pieza: lee el texto visible en la imagen y considera lo que muestra. Si el campo body está vacío, la captura es todo el contenido.";

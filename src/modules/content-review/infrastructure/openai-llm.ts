@@ -1,8 +1,11 @@
 import "server-only";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
+import type { ResponseInput } from "openai/resources/responses/responses";
 import { z } from "zod";
 import { env } from "@/shared/config/env";
+import { toImageDataUrl } from "../domain/content-image";
+import type { DecisionImage } from "../domain/decision";
 
 let client: OpenAI | undefined;
 
@@ -28,6 +31,8 @@ export interface EditorialFixesInput {
 	body: string;
 	/** Human-readable descriptions of the checks the content failed. */
 	failedChecks: string[];
+	/** Screenshot of the piece, when it was submitted as an image. */
+	image?: DecisionImage;
 }
 
 const INSTRUCTIONS = [
@@ -36,8 +41,28 @@ const INSTRUCTIONS = [
 	"Responde siempre en español neutro.",
 	"Propón un título mejorado (suggestedTitle), un resumen de exactamente 3 viñetas (summary)",
 	"y una lista de correcciones concretas y accionables, una por cada control fallido (fixes).",
-	"No inventes datos, cifras ni citas que no estén en el texto original.",
+	"Si la pieza incluye una captura, léela como parte del contenido y puedes referirte a ella.",
+	"No inventes datos, cifras ni citas que no estén en el texto original o en la captura.",
 ].join(" ");
+
+/** Text-only input as a JSON string; with a screenshot, one user message with both parts. */
+function toResponsesInput(input: EditorialFixesInput): string | ResponseInput {
+	const text = JSON.stringify({
+		title: input.title,
+		body: input.body,
+		failedChecks: input.failedChecks,
+	});
+	if (!input.image) return text;
+	return [
+		{
+			role: "user",
+			content: [
+				{ type: "input_text", text },
+				{ type: "input_image", image_url: toImageDataUrl(input.image), detail: "auto" },
+			],
+		},
+	];
+}
 
 /**
  * "System Two" enrichment: once JEV has flagged problems, ask an LLM for concrete
@@ -47,11 +72,7 @@ export async function suggestEditorialFixes(input: EditorialFixesInput): Promise
 	const response = await getOpenAI().responses.parse({
 		model: env.OPENAI_LLM_MODEL,
 		instructions: INSTRUCTIONS,
-		input: JSON.stringify({
-			title: input.title,
-			body: input.body,
-			failedChecks: input.failedChecks,
-		}),
+		input: toResponsesInput(input),
 		text: { format: zodTextFormat(editorialFixesSchema, "editorial_fixes") },
 	});
 

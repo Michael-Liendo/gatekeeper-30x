@@ -1,5 +1,6 @@
+import { parseImageDataUrl } from "../domain/content-image";
 import type { ContentPiece } from "../domain/content-piece";
-import type { DecisionRequest, DecisionResult } from "../domain/decision";
+import type { DecisionImage, DecisionRequest, DecisionResult } from "../domain/decision";
 import {
 	decideRoute,
 	defaultEditorialPolicy,
@@ -15,6 +16,8 @@ export interface SuggestInput {
 	body: string;
 	/** Human-readable descriptions of the checks the content failed. */
 	failedChecks: string[];
+	/** Screenshot of the piece, when it was submitted as an image. */
+	image?: DecisionImage;
 }
 
 /** Ports the review use cases depend on. Infrastructure wires the real ones. */
@@ -61,8 +64,24 @@ function describeError(error: unknown): string {
 	return error instanceof Error ? `${error.name}: ${error.message}` : "unknown error";
 }
 
+/** The piece's screenshot ready for the engines, or undefined (invalid URLs are ignored). */
+function pieceImage(piece: ContentPiece): DecisionImage | undefined {
+	return piece.imageDataUrl ? (parseImageDataUrl(piece.imageDataUrl) ?? undefined) : undefined;
+}
+
 function buildRequest(piece: ContentPiece): DecisionRequest {
-	return { input: buildContentInput(piece), questions: editorialQuestions };
+	const request: DecisionRequest = {
+		input: buildContentInput(piece),
+		questions: editorialQuestions,
+	};
+	const image = pieceImage(piece);
+	return image ? { ...request, image } : request;
+}
+
+function suggestInput(piece: ContentPiece, failed: string[]): SuggestInput {
+	const input: SuggestInput = { title: piece.title, body: piece.body, failedChecks: failed };
+	const image = pieceImage(piece);
+	return image ? { ...input, image } : input;
 }
 
 function withExpected(result: ReviewResult): ReviewResult {
@@ -123,11 +142,7 @@ export async function reviewPiece(
 
 	if (options.enrich && outcome.route === "ENRICH_WITH_LLM" && deps.suggest) {
 		try {
-			result.suggestions = await deps.suggest({
-				title: piece.title,
-				body: piece.body,
-				failedChecks: failedChecks(outcome.reasons),
-			});
+			result.suggestions = await deps.suggest(suggestInput(piece, failedChecks(outcome.reasons)));
 		} catch (error) {
 			console.warn(`[review] suggestions failed for ${piece.id}: ${describeError(error)}`);
 		}
@@ -151,9 +166,5 @@ export async function suggestFixesForPiece(
 	if (!deps.suggest) throw new SuggestionsNotConfiguredError();
 	const decision = await deps.decide(buildRequest(piece), piece.id);
 	const outcome = decideRoute(decision.answers, mergePolicy(options.policy));
-	return deps.suggest({
-		title: piece.title,
-		body: piece.body,
-		failedChecks: failedChecks(outcome.reasons),
-	});
+	return deps.suggest(suggestInput(piece, failedChecks(outcome.reasons)));
 }
