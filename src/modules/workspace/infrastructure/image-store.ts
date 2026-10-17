@@ -1,5 +1,5 @@
 import "server-only";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import type { DecisionImage } from "@/modules/content-review/domain/decision";
 import type { ImageStore } from "@/modules/workspace/application/workspace-ports";
@@ -11,6 +11,7 @@ const EXTENSION: Record<DecisionImage["mimeType"], string> = {
 };
 
 const FILE_PATTERN = /^[\w-]+-v\d+\.(png|jpg)$/;
+const VERSION_SUFFIX = /^-v\d+\.(png|jpg)$/;
 
 /** Screenshots as plain files: `<dir>/<pieceId>-v<version>.<png|jpg>`. */
 export function createImageStore(dir: string): ImageStore {
@@ -30,6 +31,20 @@ export function createImageStore(dir: string): ImageStore {
 				return { mimeType: match[1] === "png" ? "image/png" : "image/jpeg", bytes };
 			} catch {
 				return null;
+			}
+		},
+		removeAll(pieceId) {
+			const prefix = `${pieceId}-v`;
+			let files: string[];
+			try {
+				files = readdirSync(dir);
+			} catch {
+				return;
+			}
+			for (const file of files) {
+				if (file.startsWith(prefix) && VERSION_SUFFIX.test(file.slice(pieceId.length))) {
+					rmSync(path.join(dir, file), { force: true });
+				}
 			}
 		},
 	};

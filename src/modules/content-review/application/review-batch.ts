@@ -1,5 +1,7 @@
 import type { BrandProfile } from "../../brand/domain/brand-profile";
+import { toImageDataUrl } from "../domain/content-image";
 import type { ContentPiece } from "../domain/content-piece";
+import type { DecisionImage } from "../domain/decision";
 import { computeMetrics } from "../domain/metrics";
 import type { ReviewBatchRequest, ReviewBatchResponse } from "../domain/review";
 import { type PolicyOverrides, type ReviewDeps, reviewPiece } from "./review-piece";
@@ -19,6 +21,24 @@ const CONCURRENCY = 8;
 export interface ReviewBatchDeps extends ReviewDeps {
 	/** The dataset the batch runs over. */
 	content: readonly ContentPiece[];
+	/**
+	 * Loads a bundled sample image by its public path (`piece.imagePath`). Returns null
+	 * when the file is missing or invalid; the piece is then reviewed text-only.
+	 */
+	loadImage?(imagePath: string): Promise<DecisionImage | null>;
+}
+
+/**
+ * The piece as the decision engine should see it: dataset pieces with an `imagePath`
+ * (and no screenshot of their own) get the sample image attached as `imageDataUrl`.
+ */
+export async function withSampleImage(
+	piece: ContentPiece,
+	loadImage: ReviewBatchDeps["loadImage"],
+): Promise<ContentPiece> {
+	if (!piece.imagePath || piece.imageDataUrl || !loadImage) return piece;
+	const image = await loadImage(piece.imagePath).catch(() => null);
+	return image ? { ...piece, imageDataUrl: toImageDataUrl(image) } : piece;
 }
 
 /** Maps `items` with at most `limit` calls in flight; results keep the input order. */
@@ -48,8 +68,11 @@ export async function reviewBatch(
 	const pieces = ids ? deps.content.filter((piece) => ids.has(piece.id)) : deps.content;
 	const options = { policy: request.policy, enrich: request.enrich ?? false, brand: request.brand };
 
-	const results = await mapWithConcurrency(pieces, CONCURRENCY, (piece) =>
-		reviewPiece(piece, options, deps),
-	);
+	const results = await mapWithConcurrency(pieces, CONCURRENCY, async (piece) => {
+		const result = await reviewPiece(await withSampleImage(piece, deps.loadImage), options, deps);
+		// Return the original piece: the client shows `imagePath`, so the base64 copy
+		// would only bloat the response.
+		return { ...result, piece };
+	});
 	return { results, metrics: computeMetrics(results) };
 }

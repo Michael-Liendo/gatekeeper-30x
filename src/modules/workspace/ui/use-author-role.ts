@@ -11,9 +11,10 @@ export function useCurrentRole(): TeamRole | null {
 	return isTeamRole(role) ? role : null;
 }
 
-/** Role to show on a card: the person's current role for their own pieces. */
+/** Role to show on a card: the person's current role for their own uploads (not examples). */
 export function useAuthorRole(): (piece: WorkspacePiece) => TeamRole {
 	const { user } = useSession();
 	const current = useCurrentRole();
-	return (piece) => (user && current && piece.authorId === user.id ? current : piece.authorRole);
+	return (piece) =>
+		user && current && piece.authorId === user.id && !piece.isExample ? current : piece.authorRole;
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { describePiece, pieceHighlights } from "@/modules/content-review/ui/labels";
 import type { PieceStatus, TeamRole, WorkspacePiece } from "../domain/workspace";
+import { ExampleChip } from "./example-chip";
 import { MoveMenu } from "./move-menu";
 import { RoleChip } from "./role-chip";
 import { timeAgo } from "./workspace-labels";
@@ -57,6 +58,7 @@ export function BoardCard({ piece, role, moving, onMove }: BoardCardProps) {
 			<div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-ink-muted">
 				<span className="truncate font-medium text-ink">{piece.authorName}</span>
 				<RoleChip role={role} />
+				{piece.isExample ? <ExampleChip /> : null}
 			</div>
 			<div className="flex items-center justify-between gap-2 text-xs text-ink-muted">
 				{reach ? (

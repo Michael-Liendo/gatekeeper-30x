@@ -219,10 +219,15 @@ export const POLICY_FIELDS: readonly {
 	},
 ];
 
-/** Screenshot attached to a submitted piece, when the API echoed it back. */
+/**
+ * Image to show for a piece: the screenshot of a submitted piece when the API echoed it
+ * back, otherwise the bundled sample image of a dataset piece ("/samples/cp-001.jpg").
+ */
 export function pieceImage(piece: ContentPiece): string | null {
 	const value: unknown = (piece as ContentPiece & { imageDataUrl?: unknown }).imageDataUrl;
-	return typeof value === "string" && value.startsWith("data:image/") ? value : null;
+	if (typeof value === "string" && value.startsWith("data:image/")) return value;
+	const path: unknown = piece.imagePath;
+	return typeof path === "string" && path.startsWith("/samples/") ? path : null;
 }
 
 export const EDITOR_ACTION_LABEL = {

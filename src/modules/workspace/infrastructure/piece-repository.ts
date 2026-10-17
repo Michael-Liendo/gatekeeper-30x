@@ -27,10 +27,11 @@ interface PieceRow {
 	version: number;
 	created_at: string;
 	updated_at: string;
+	sample_id: string | null;
 }
 
 const COLUMNS =
-	"id, user_id, brand_id, author_name, author_role, title, body, format, channel, image_file, status, review, version, created_at, updated_at";
+	"id, user_id, brand_id, author_name, author_role, title, body, format, channel, image_file, status, review, version, created_at, updated_at, sample_id";
 
 function toPiece(row: PieceRow): WorkspacePiece {
 	return {
@@ -47,6 +48,7 @@ function toPiece(row: PieceRow): WorkspacePiece {
 		status: row.status as PieceStatus,
 		review: JSON.parse(row.review) as ReviewResult,
 		version: Number(row.version),
+		isExample: row.sample_id !== null,
 		createdAt: row.created_at,
 		updatedAt: row.updated_at,
 	};
@@ -68,9 +70,15 @@ export function createPieceRepository(db: DatabaseSync): PieceRepository {
 	const byAuthorAndStatus = db.prepare(
 		`SELECT ${COLUMNS} FROM pieces WHERE user_id = ? AND status = ? ORDER BY created_at DESC, rowid DESC`,
 	);
+	const sampleIds = db.prepare(
+		"SELECT sample_id FROM pieces WHERE user_id = ? AND sample_id IS NOT NULL",
+	);
+	const deleteExamples = db.prepare(
+		"DELETE FROM pieces WHERE user_id = ? AND sample_id IS NOT NULL RETURNING id",
+	);
 
 	return {
-		insert({ piece, imageFile }) {
+		insert({ piece, imageFile, sampleId }) {
 			insert.run(
 				piece.id,
 				piece.authorId,
@@ -87,6 +95,7 @@ export function createPieceRepository(db: DatabaseSync): PieceRepository {
 				piece.version,
 				piece.createdAt,
 				piece.updatedAt,
+				sampleId ?? null,
 			);
 		},
 		update({ piece, imageFile }) {
@@ -103,13 +112,24 @@ export function createPieceRepository(db: DatabaseSync): PieceRepository {
 		},
 		findById(id): StoredPiece | null {
 			const row = byId.get(id) as PieceRow | undefined;
-			return row ? { piece: toPiece(row), imageFile: row.image_file } : null;
+			return row
+				? { piece: toPiece(row), imageFile: row.image_file, sampleId: row.sample_id }
+				: null;
 		},
 		listByAuthor(authorId, status) {
 			const rows = (status
 				? byAuthorAndStatus.all(authorId, status)
 				: byAuthor.all(authorId)) as unknown as PieceRow[];
 			return rows.map(toPiece);
+		},
+		listSampleIds(authorId) {
+			return (sampleIds.all(authorId) as unknown as { sample_id: string }[]).map(
+				(row) => row.sample_id,
+			);
+		},
+		deleteExamples(authorId) {
+			// piece_events rows go with ON DELETE CASCADE (foreign_keys is ON).
+			return (deleteExamples.all(authorId) as unknown as { id: string }[]).map((row) => row.id);
 		},
 	};
 }

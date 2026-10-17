@@ -44,3 +44,9 @@ export function versionSummary(version: number, changes: readonly string[] = [])
 }
 
 export const SUBMITTED_SUMMARY = "Subió la pieza";
+
+/** First event of a demo piece loaded from the simulated dataset. */
+export const SAMPLE_LOADED_SUMMARY = "Pieza de ejemplo cargada";
+
+/** Author shown on the demo pieces. Simulated, never a real person. */
+export const SAMPLE_AUTHOR_NAME = "Ejemplo · Equipo Media";

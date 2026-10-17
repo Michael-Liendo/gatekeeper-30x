@@ -7,12 +7,16 @@ import { EmptyState } from "@/modules/content-review/ui/empty-state";
 import { describePiece } from "@/modules/content-review/ui/labels";
 import { LoadingBlock } from "@/modules/content-review/ui/loading-block";
 import { PageHeader } from "@/modules/content-review/ui/page-header";
-import { primaryButton, secondaryButton } from "@/shared/ui/button-styles";
+import { ghostButton, primaryButton, secondaryButton } from "@/shared/ui/button-styles";
 import { PlusIcon } from "@/shared/ui/icons";
 import { PillTabs } from "@/shared/ui/pill-tabs";
+import { useToast } from "@/shared/ui/toast";
 import type { PieceStatus } from "../domain/workspace";
+import { ExampleChip } from "./example-chip";
+import { LoadExamplesButton } from "./load-examples-button";
 import { StatusPill } from "./status-pill";
 import { usePieces } from "./use-pieces";
+import { messageOf, removeExamples } from "./workspace-api";
 import { STATUS_LABEL, STATUSES, timeAgo, topReason } from "./workspace-labels";
 import { WorkspaceThumb } from "./workspace-thumb";
 
@@ -22,17 +26,51 @@ type Filter = "all" | PieceStatus;
 export function MyPiecesView() {
 	const { state, retry } = usePieces();
 	const { user } = useSession();
+	const { notify } = useToast();
 	const [filter, setFilter] = useState<Filter>("all");
+	const [removing, setRemoving] = useState(false);
+
+	const hasExamples = state.status === "ready" && state.pieces.some((piece) => piece.isExample);
+
+	async function clearExamples() {
+		if (!window.confirm("¿Quitar las piezas de ejemplo? Tus piezas no se tocan.")) return;
+		setRemoving(true);
+		try {
+			const { removed } = await removeExamples();
+			notify(
+				removed === 1 ? "Quitamos 1 pieza de ejemplo" : `Quitamos ${removed} piezas de ejemplo`,
+			);
+			setFilter("all");
+			retry();
+		} catch (error) {
+			notify(messageOf(error));
+		} finally {
+			setRemoving(false);
+		}
+	}
 
 	const header = (
 		<PageHeader
 			title="Mis piezas"
 			description="Lo que subiste, en qué estado está y qué te pidieron cambiar."
 			actions={
-				<Link href="/nueva" className={primaryButton}>
-					<PlusIcon size={18} />
-					Subir pieza
-				</Link>
+				<>
+					{hasExamples ? (
+						<button
+							type="button"
+							onClick={() => void clearExamples()}
+							disabled={removing}
+							aria-busy={removing}
+							className={ghostButton}
+						>
+							{removing ? "Quitando ejemplos…" : "Quitar ejemplos"}
+						</button>
+					) : null}
+					<Link href="/nueva" className={primaryButton}>
+						<PlusIcon size={18} />
+						Subir pieza
+					</Link>
+				</>
 			}
 		/>
 	);
@@ -71,12 +109,16 @@ export function MyPiecesView() {
 				<EmptyState
 					title="Todavía no subiste piezas"
 					action={
-						<Link href="/nueva" className={primaryButton}>
-							Sube tu primera pieza
-						</Link>
+						<div className="flex flex-wrap gap-3">
+							<Link href="/nueva" className={primaryButton}>
+								Sube tu primera pieza
+							</Link>
+							<LoadExamplesButton onLoaded={retry} />
+						</div>
 					}
 				>
-					Sube una captura o el texto de un post y en segundos sabrás si está lista para publicar.
+					Sube una captura o el texto de un post y en segundos sabrás si está lista para publicar. O
+					carga unas piezas de ejemplo para ver cómo funciona.
 				</EmptyState>
 			</>
 		);
@@ -119,7 +161,10 @@ export function MyPiecesView() {
 									>
 										<WorkspaceThumb piece={piece} size="lg" />
 										<div className="grid min-w-0 flex-1 gap-1">
-											<p className="truncate text-sm font-medium">{piece.title}</p>
+											<p className="flex min-w-0 items-center gap-2">
+												<span className="truncate text-sm font-medium">{piece.title}</span>
+												{piece.isExample ? <ExampleChip /> : null}
+											</p>
 											<p className="text-xs text-ink-muted">
 												{describePiece(piece)}
 												{piece.version > 1 ? ` · Versión ${piece.version}` : ""} ·{" "}
