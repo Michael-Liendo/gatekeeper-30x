@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useRef, useState } from "react";
-import { primaryButtonLarge, underlineInput } from "@/shared/ui/button-styles";
 import { ApiError } from "@/shared/ui/fetch-json";
 import { fetchMe, needsName, signIn } from "./auth-api";
 
