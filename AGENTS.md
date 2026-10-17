@@ -60,8 +60,11 @@ Rules:
 
 ## Tooling
 
-- Node `>=22.18` (see `.nvmrc`), **pnpm only** (`corepack enable`).
-- Biome for lint + format (tabs, 100 cols). Run `pnpm check` before pushing.
+- Node `>=22.18` (see `.nvmrc`). **npm or pnpm** both work; no yarn.
+- When adding/removing a dependency, update **both** `package-lock.json` and
+  `pnpm-lock.yaml` (`npm install <pkg>` then `pnpm install`). CI checks both.
+- Docker builds with `npm ci`.
+- Biome for lint + format (tabs, 100 cols). Run `npm run check` before pushing.
 
 ## Data
 

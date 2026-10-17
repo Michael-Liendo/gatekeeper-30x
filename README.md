@@ -16,20 +16,22 @@ Next.js 16 (App Router) · TypeScript · Tailwind v4 · `@typesafe-ai/sdk` · zo
 
 ## Correr en local
 
-Requisitos: Node `>=22.18` y pnpm (`corepack enable`).
+Requisitos: Node `>=22.18`. Funciona con **npm** o **pnpm** (los dos lockfiles están en el repo).
 
 ```bash
-pnpm install
+npm install                  # o: pnpm install
 cp .env.example .env.local   # pon tu TYPESAFE_API_KEY
-pnpm dev                     # http://localhost:3000
+npm run dev                  # o: pnpm dev → http://localhost:3000
 ```
 
 | Comando | Qué hace |
 |---|---|
-| `pnpm dev` | Servidor de desarrollo |
-| `pnpm lint` / `pnpm lint:fix` | Biome (lint + formato) |
-| `pnpm typecheck` | TypeScript |
-| `pnpm check` | lint + typecheck + build (lo mismo que el CI) |
+| `npm run dev` | Servidor de desarrollo |
+| `npm run lint` / `npm run lint:fix` | Biome (lint + formato) |
+| `npm run typecheck` | TypeScript |
+| `npm run check` | lint + typecheck + build (lo mismo que el CI) |
+
+Con pnpm son los mismos scripts: `pnpm dev`, `pnpm check`, etc.
 
 ## Arquitectura
 

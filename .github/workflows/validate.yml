@@ -1,7 +1,7 @@
 name: validate
 
-# Runs the same checks as `pnpm check` on every PR and on main,
-# so nothing broken reaches the Coolify deploy.
+# Runs the same checks as `npm run check` on every PR and on main, with both
+# package managers, so the npm and pnpm lockfiles never drift apart.
 on:
   pull_request:
   push:
@@ -11,14 +11,22 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        pm: [npm, pnpm]
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - if: matrix.pm == 'pnpm'
+        uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm lint
-      - run: pnpm typecheck
-      - run: pnpm build
+          cache: ${{ matrix.pm }}
+      - if: matrix.pm == 'npm'
+        run: npm ci
+      - if: matrix.pm == 'pnpm'
+        run: pnpm install --frozen-lockfile
+      - run: ${{ matrix.pm }} run lint
+      - run: ${{ matrix.pm }} run typecheck
+      - run: ${{ matrix.pm }} run build
