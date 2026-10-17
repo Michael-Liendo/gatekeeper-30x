@@ -13,6 +13,7 @@ import { LoadingBlock } from "@/modules/content-review/ui/loading-block";
 import { PageHeader } from "@/modules/content-review/ui/page-header";
 import { RouteBadge } from "@/modules/content-review/ui/route-badge";
 import { primaryButton, primaryButtonLarge, secondaryButton } from "@/shared/ui/button-styles";
+import { CopyActions } from "@/shared/ui/copy-actions";
 import { ApiError } from "@/shared/ui/fetch-json";
 import { CheckIcon, CloseIcon, RefreshIcon } from "@/shared/ui/icons";
 import { useToast } from "@/shared/ui/toast";
@@ -219,6 +220,12 @@ export function WorkspacePieceView({ id }: { id: string }) {
 							{piece.body}
 						</p>
 					) : null}
+
+					<CopyActions
+						text={piece.body ? `${piece.title}\n\n${piece.body}` : piece.title}
+						imageSrc={piece.imageUrl}
+						fileName={`pieza-v${piece.version}`}
+					/>
 
 					{highlights.reach || highlights.fit ? (
 						<dl className="grid grid-cols-2 gap-3">

@@ -7,6 +7,7 @@ import { signOut } from "@/modules/accounts/ui/auth-api";
 import { useSession } from "@/modules/accounts/ui/session-provider";
 import { primaryColor } from "@/modules/brand/ui/brand-input";
 import { BrandMark } from "@/modules/brand/ui/brand-mark";
+import { UsersIcon } from "@/modules/segmentation/ui/segment-bits";
 import { readableInk } from "@/shared/ui/contrast";
 import {
 	BoardIcon,
@@ -30,6 +31,7 @@ type Href =
 	| "/nueva"
 	| "/politica"
 	| "/metricas"
+	| "/segmentos"
 	| "/marca";
 
 interface NavItem {
@@ -47,6 +49,7 @@ const NAV: readonly NavItem[] = [
 	{ href: "/nueva", label: "Nueva pieza", icon: PlusIcon },
 	{ href: "/politica", label: "Política", icon: SlidersIcon },
 	{ href: "/metricas", label: "Métricas", icon: ChartIcon },
+	{ href: "/segmentos", label: "Inscritos", icon: UsersIcon },
 	{ href: "/marca", label: "Mi marca", icon: TagIcon },
 ];
 
@@ -97,7 +100,7 @@ function NavIcons({
 							aria-current={active ? "page" : undefined}
 							aria-label={accessible}
 							className={`relative grid place-items-center rounded-2xl transition-colors ${
-								layout === "rail" ? "size-11" : "size-10"
+								layout === "rail" ? "size-11" : "size-9"
 							} ${
 								active
 									? "bg-surface text-ink"

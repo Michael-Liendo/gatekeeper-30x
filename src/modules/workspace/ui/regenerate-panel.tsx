@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { friendlyReasons } from "@/modules/content-review/ui/labels";
 import { RouteBadge } from "@/modules/content-review/ui/route-badge";
 import { ghostButton, primaryButton } from "@/shared/ui/button-styles";
+import { CopyActions } from "@/shared/ui/copy-actions";
 import { SparkleIcon } from "@/shared/ui/icons";
 import { useToast } from "@/shared/ui/toast";
 import type { RegenerationProposal, WorkspacePiece } from "../domain/workspace";

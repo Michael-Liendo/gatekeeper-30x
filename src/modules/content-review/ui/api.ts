@@ -1,3 +1,4 @@
+import type { StressReport } from "../application/stress-run";
 import type { ContentChannel, ContentFormat, ContentPiece } from "../domain/content-piece";
 import type { EditorialPolicy } from "../domain/editorial-policy";
 import type {
@@ -101,4 +102,9 @@ export function enrichContent(
 		format: piece.format,
 		channel: piece.channel,
 	});
+}
+
+/** "Prueba de escala": real, uncached, text-only decisions (POST /api/stress). */
+export function runStressTest(count: 100 | 1000 = 1000): Promise<StressReport> {
+	return request<StressReport>("/api/stress", { count });
 }

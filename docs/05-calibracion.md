@@ -31,6 +31,19 @@ completas de las 45 piezas dieron **80 %** (36/45) y **87 %** (39/45) de coincid
 siempre con 0 piezas riesgosas aprobadas solas. JEV no es determinista al 100 %, por
 eso reportamos el rango **80–87 %**.
 
+## Corrida del 17 oct (tarde): con imágenes y preguntas por marca
+
+Las 45 piezas ahora llevan imagen y las preguntas se adaptan a la marca (más
+"Potencial de alcance" y "Línea editorial", informativas). Con la misma política:
+
+| Coincide con lo esperado | Sin persona | Riesgos aprobados solos | Latencia promedio | Fallbacks |
+|---|---|---|---|---|
+| **80 % (36/45)** | **42 %** | **0** | ~0,3 s (con imagen) | 0 |
+
+La búsqueda de umbrales encontró como máximo 82 % (un acierto más), así que no
+cambiamos la política para no sobreajustar a 45 piezas. Todas las cifras son sobre
+**45 piezas simuladas etiquetadas por el equipo**, no sobre datos reales de 30X.
+
 ## Por qué bajaron los umbrales de confianza
 
 La `confidence` que JEV devuelve en preguntas `choice` y `score` es más baja que la
