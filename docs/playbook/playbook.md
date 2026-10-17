@@ -106,7 +106,7 @@ Aprobado · Rechazado, y cada pieza guarda autor, rol, versiones e historial.
 1. **Detecta.** Se subió una captura de spam: «GANA $5.000 AL DÍA… cripto…
    garantizado». JEV: **Descartado** — Spam 0,81 · Riesgo de marca 0,95 ·
    Promesas exageradas 0,98.
-2. **Arregla.** «Regenerar con IA»: `gpt-6-astra` reescribió el copy con la voz de
+2. **Arregla.** «Regenerar con IA»: `gpt-6-luna` reescribió el copy con la voz de
    30X y `gpt-image-2` redibujó la imagen en el lima de la marca, corrigiendo solo
    lo marcado y sin inventar datos.
 3. **Verifica.** JEV revisó la versión nueva con las mismas 12 preguntas:
