@@ -6,6 +6,7 @@ import { z } from "zod";
 import { env } from "@/shared/config/env";
 import { toImageDataUrl } from "../domain/content-image";
 import type { DecisionImage } from "../domain/decision";
+import { OPENAI_LLM_MODEL } from "./openai-models";
 
 let client: OpenAI | undefined;
 
@@ -70,7 +71,7 @@ function toResponsesInput(input: EditorialFixesInput): string | ResponseInput {
  */
 export async function suggestEditorialFixes(input: EditorialFixesInput): Promise<EditorialFixes> {
 	const response = await getOpenAI().responses.parse({
-		model: env.OPENAI_LLM_MODEL,
+		model: OPENAI_LLM_MODEL,
 		instructions: INSTRUCTIONS,
 		input: toResponsesInput(input),
 		text: { format: zodTextFormat(editorialFixesSchema, "editorial_fixes") },
