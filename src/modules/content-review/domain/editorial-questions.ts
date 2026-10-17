@@ -60,9 +60,9 @@ function listOf(items: readonly string[]): string {
 function offersUnsoldProductInstructions(brand: BrandProfile): string {
 	const offerings = listOf(brand.offerings);
 	if (!offerings) {
-		return `${brand.name} no declaró productos ni servicios a la venta. ¿La pieza ofrece o promete algún producto o servicio pago?`;
+		return `${brand.name} no declaró productos ni servicios a la venta. ¿La pieza vende o cobra por algún producto o servicio? Invitar a eventos, convocatorias, contenido gratuito o actividades con aliados no cuenta.`;
 	}
-	return `¿La pieza ofrece o promete algo que ${brand.name} no vende? ${brand.name} vende solo: ${offerings}. Responde sí si ofrece algún producto o servicio que no esté en esa lista.`;
+	return `¿La pieza vende o cobra por algo que ${brand.name} no vende? ${brand.name} vende solo: ${offerings}. Responde sí solo si ofrece en venta un producto o servicio pago que no esté en esa lista. Invitar a eventos, convocatorias, contenido gratuito o actividades con aliados no cuenta.`;
 }
 
 function brandRiskInstructions(brand: BrandProfile): string {
@@ -153,7 +153,7 @@ export function buildEditorialQuestions(brand: BrandProfile) {
 		too_promotional: {
 			type: "yes_no",
 			instructions:
-				"¿La mayor parte de la pieza está dedicada a vender o promocionar un producto en lugar de aportar contenido?",
+				"¿La pieza es venta dura: empuja a comprar un producto o servicio pago (precio, descuento, urgencia, 'compra ya') sin aportar nada más? Anunciar un evento, una convocatoria o una actividad con su información (fecha, lugar, cómo participar) no es venta dura.",
 		},
 		exaggerated_promises: {
 			type: "yes_no",
@@ -162,7 +162,8 @@ export function buildEditorialQuestions(brand: BrandProfile) {
 		},
 		unsourced_claims: {
 			type: "yes_no",
-			instructions: "¿La pieza menciona datos, cifras o estudios sin indicar de dónde vienen?",
+			instructions:
+				"¿La pieza afirma estadísticas, porcentajes, estudios o resultados de terceros (del mercado, de clientes o de investigaciones) sin decir de dónde salen? Los datos propios de la marca o de su evento (fechas, horarios, precios, premios, cupos, lugares) no cuentan.",
 		},
 		brand_risk: {
 			type: "yes_no",
