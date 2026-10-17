@@ -7,40 +7,58 @@
  */
 :root {
 	color-scheme: light;
-	--ground: #f5f6f8;
+	/* Soft UI: dark rail + white rounded canvas + pastel cards (see docs/07-estilo.md). */
+	--ground: #e9ebf0;
 	--surface: #ffffff;
-	--surface-muted: #f3f4f6;
-	--line: #e3e5e9;
-	--line-strong: #c9cdd4;
-	--ink: #111318;
-	--ink-muted: #5f6673;
-	--primary: #111318;
+	--surface-muted: #f5f6f9;
+	--line: #eceef2;
+	--line-strong: #d9dce3;
+	--ink: #1c1c1e;
+	--ink-muted: #8a8f9c;
+	--primary: #1c1c1e;
 	--primary-ink: #ffffff;
-	--focus: #2f5bd3;
-	--danger: #b42318;
-	--danger-soft: #fdecea;
-	--success: #1f7a4d;
-	--suggest: #f3f5fe;
+	--focus: #5b8def;
+	--danger: #d4534b;
+	--danger-soft: #fdeeee;
+	--success: #3bb59a;
+	--suggest: #f1f0ff;
+
+	/* Dark rail and the soft pill used for selected tabs. */
+	--rail: #1c1c1e;
+	--rail-ink: #ffffff;
+	--rail-muted: #8a8f9c;
+	--pill: #e6f6f5;
+	--pill-ink: #1c1c1e;
+
+	/* Pastel gradients for highlight cards. */
+	--grad-lilac-from: #cfd0ff;
+	--grad-lilac-to: #f9c9ec;
+	--grad-aqua-from: #a9e6f2;
+	--grad-aqua-to: #c8f4ee;
+	--grad-sky-from: #8fd8f5;
+	--grad-sky-to: #c9ecfb;
+	--grad-peach-from: #ffe1c7;
+	--grad-peach-to: #ffd0d8;
 
 	/* Brand of the signed-in account. The app shell overrides both at runtime
 	 * (brand primary color + black/white ink picked by luminance). */
-	--brand: #111318;
+	--brand: #1c1c1e;
 	--brand-ink: #ffffff;
 
-	/* Routes: dot, tinted background, text on the tint. */
-	--route-approve: #1f7a4d;
-	--route-approve-soft: #e3f3ea;
-	--route-approve-ink: #155c39;
-	--route-enrich: #3653d6;
-	--route-enrich-soft: #e8ecfc;
-	--route-enrich-ink: #2338a8;
-	--route-human: #d98a0b;
-	--route-human-soft: #fcf1dc;
-	--route-human-ink: #7a4b00;
-	--route-reject: #8a919c;
-	--route-reject-soft: #eef0f3;
-	--route-reject-ink: #3f4652;
-	--route-pending: #d5d9df;
+	/* Routes: dot, tinted background, text on the tint (soft, friendly). */
+	--route-approve: #3bb59a;
+	--route-approve-soft: #e3f6f1;
+	--route-approve-ink: #1d6b58;
+	--route-enrich: #7b7ff0;
+	--route-enrich-soft: #eeeeff;
+	--route-enrich-ink: #3f43a8;
+	--route-human: #f0a35a;
+	--route-human-soft: #fff1e4;
+	--route-human-ink: #8a4d12;
+	--route-reject: #b4b8c2;
+	--route-reject-soft: #f2f3f6;
+	--route-reject-ink: #5a5f6b;
+	--route-pending: #dfe2e8;
 }
 
 @theme inline {
@@ -58,6 +76,11 @@
 	--color-danger-soft: var(--danger-soft);
 	--color-success: var(--success);
 	--color-suggest: var(--suggest);
+	--color-rail: var(--rail);
+	--color-rail-ink: var(--rail-ink);
+	--color-rail-muted: var(--rail-muted);
+	--color-pill: var(--pill);
+	--color-pill-ink: var(--pill-ink);
 	--color-brand: var(--brand);
 	--color-brand-ink: var(--brand-ink);
 
@@ -75,9 +98,20 @@
 	--color-reject-ink: var(--route-reject-ink);
 	--color-pending: var(--route-pending);
 
-	--radius-card: 10px;
+	/* Gradient stops as colors, so cards can use from-lilac-from / to-lilac-to. */
+	--color-lilac-from: var(--grad-lilac-from);
+	--color-lilac-to: var(--grad-lilac-to);
+	--color-aqua-from: var(--grad-aqua-from);
+	--color-aqua-to: var(--grad-aqua-to);
+	--color-sky-from: var(--grad-sky-from);
+	--color-sky-to: var(--grad-sky-to);
+	--color-peach-from: var(--grad-peach-from);
+	--color-peach-to: var(--grad-peach-to);
 
-	--font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+	--radius-card: 24px;
+	--radius-panel: 36px;
+
+	--font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
 	--font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
