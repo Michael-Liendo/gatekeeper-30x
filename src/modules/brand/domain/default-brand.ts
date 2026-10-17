@@ -26,7 +26,7 @@ export const defaultBrand: BrandProfile = {
 		"Promesas de dinero rápido",
 		"Cripto y apuestas",
 	],
-	colors: ["#111111", "#FF5A1F"],
+	colors: ["#EBFF6F", "#111111", "#EFEBE2"],
 	links: ["https://30x.com"],
 	createdAt: "2026-10-17T00:00:00.000Z",
 	updatedAt: "2026-10-17T00:00:00.000Z",
