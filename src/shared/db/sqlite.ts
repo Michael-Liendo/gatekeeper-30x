@@ -80,6 +80,8 @@ export function openDatabase(dir: string): DatabaseSync {
 	db.exec(MIGRATIONS);
 	addColumnIfMissing(db, "users", "role", "TEXT NOT NULL DEFAULT 'other'");
 	addColumnIfMissing(db, "pieces", "sample_id", "TEXT");
+	addColumnIfMissing(db, "pieces", "scheduled_for", "TEXT");
+	addColumnIfMissing(db, "pieces", "campaign", "TEXT");
 	// One example piece per sample and user, even if two seeds race.
 	db.exec(
 		"CREATE UNIQUE INDEX IF NOT EXISTS pieces_user_sample ON pieces(user_id, sample_id) WHERE sample_id IS NOT NULL;",

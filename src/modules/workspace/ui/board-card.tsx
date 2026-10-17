@@ -6,7 +6,7 @@ import type { PieceStatus, TeamRole, WorkspacePiece } from "../domain/workspace"
 import { ExampleChip } from "./example-chip";
 import { MoveMenu } from "./move-menu";
 import { RoleChip } from "./role-chip";
-import { timeAgo } from "./workspace-labels";
+import { formatScheduled, timeAgo } from "./workspace-labels";
 import { WorkspaceThumb } from "./workspace-thumb";
 
 interface BoardCardProps {
@@ -44,6 +44,14 @@ export function BoardCard({ piece, role, moving, onMove }: BoardCardProps) {
 						{piece.title}
 					</Link>
 					<p className="text-xs text-ink-muted">{describePiece(piece)}</p>
+					{piece.scheduledFor ? (
+						<p className="text-xs text-ink-muted">
+							Programada:{" "}
+							<time dateTime={piece.scheduledFor} className="font-medium text-ink">
+								{formatScheduled(piece.scheduledFor)}
+							</time>
+						</p>
+					) : null}
 				</div>
 				{/* Above the stretched link so the menu stays clickable. */}
 				<div className="relative z-10 -mt-1 -mr-1">

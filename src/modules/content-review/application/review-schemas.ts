@@ -59,8 +59,12 @@ const customPieceFields = z.object({
 		.optional()
 		.transform((title) => title || DEFAULT_CUSTOM_TITLE),
 	body: z.string().trim().max(MAX_CUSTOM_BODY_LENGTH).optional().default(""),
-	format: z.enum(["post", "video_script", "clip", "newsletter"]),
-	channel: z.enum(["linkedin", "instagram", "youtube", "x", "newsletter", "blog"]),
+	// Optional for API callers: a post on Instagram unless told otherwise.
+	format: z.enum(["post", "video_script", "clip", "newsletter"]).optional().default("post"),
+	channel: z
+		.enum(["linkedin", "instagram", "youtube", "x", "newsletter", "blog"])
+		.optional()
+		.default("instagram"),
 	imageDataUrl: imageDataUrlSchema.optional(),
 });
 

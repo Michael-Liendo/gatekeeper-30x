@@ -20,6 +20,7 @@ Al revisar con JEV: AUTO_APPROVE→approved, ENRICH_WITH_LLM→needs_changes, HU
 |---|---|---|---|
 | GET | `/api/pieces` | `?status=` opcional | `WorkspacePiece[]` del usuario, más recientes primero |
 | POST | `/api/pieces` | `{ title?, body?, format, channel, imageDataUrl? }` | `WorkspacePiece` (revisada por JEV con la marca del usuario) |
+| POST | `/api/pieces/bulk` | `{ campaign?, pieces: [{ title?, body, format, channel, scheduledFor?, notes? }] }` (1–200 piezas, texto ≤ 4000, fecha `aaaa-mm-dd`) | `{ created: WorkspacePiece[], failed: { index, error }[], byStatus, totalMs }`: carga la grilla (Excel/CSV leído en el navegador), revisa cada pieza con JEV (8 a la vez). Primer evento "Cargada desde la grilla"; las notas quedan como evento `note` |
 | GET | `/api/pieces/[id]` | — | `{ piece: WorkspacePiece, events: PieceEvent[] }` |
 | PATCH | `/api/pieces/[id]` | `{ status, note? }` | `WorkspacePiece` (+ evento `status_changed`) |
 | POST | `/api/pieces/[id]/versions` | `{ title, body, changes?: string[] }` | `WorkspacePiece` (nueva versión, re-revisada por JEV, + evento `version_saved`) |
@@ -29,7 +30,7 @@ Al revisar con JEV: AUTO_APPROVE→approved, ENRICH_WITH_LLM→needs_changes, HU
 | POST | `/api/regenerate` | `{ pieceId }` **o** `{ title, body, format, channel, imageDataUrl? }` | `RegenerationProposal` (no guarda nada) |
 | PATCH | `/api/me` | `{ role }` | `{ user }` |
 
-`UserAccount` gana `role: TeamRole`. `WorkspacePiece` gana `isExample` (columna `pieces.sample_id`). El primer `PUT /api/brand` de alguien sin piezas carga los ejemplos automáticamente. Errores `{ error }` en español; 401 sin sesión; 404 si la pieza no es del usuario.
+`UserAccount` gana `role: TeamRole`. `WorkspacePiece` gana `isExample` (columna `pieces.sample_id`) y, para piezas de una grilla, `scheduledFor` (fecha programada, `pieces.scheduled_for`) y `campaign` (`pieces.campaign`). El primer `PUT /api/brand` de alguien sin piezas carga los ejemplos automáticamente. Errores `{ error }` en español; 401 sin sesión; 404 si la pieza no es del usuario.
 
 ## Regenerar con IA (owner: agente de regeneración)
 1. Toma la pieza, la marca del usuario y lo que JEV marcó (razones + respuestas).
@@ -40,6 +41,7 @@ Capturas: se reescribe el texto y la imagen se rediseña con OpenAI `gpt-image-2
 
 ## UI (owner: agente de UI)
 - `/tablero`: columnas por estado (Por revisar, Por mejorar, Aprobado, Rechazado) con tarjetas (miniatura, título, autor, potencial de alcance); mover con botones/menú (y arrastrar si es simple).
+- `/campana`: "Tu campaña", piezas programadas por semana y día, con filtro por campaña y estado. `/campana/cargar`: sube la grilla (.xlsx o .csv, máx. 2 MB y 200 filas), vista previa y revisión masiva.
 - `/mis-piezas`: lista de lo que subió el usuario con estado y qué le pidieron cambiar.
 - `/pieza/[id]`: si el id es de la base → detalle + historial (línea de tiempo) + versiones + "Regenerar con IA". Las piezas de ejemplo (`cp-*`) siguen leyéndose del estado local.
 - Nueva pieza envía a `POST /api/pieces` y redirige a `/pieza/[id]`.

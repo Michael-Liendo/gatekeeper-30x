@@ -60,6 +60,30 @@ export function regeneratePiece(
 	return fetchJson<RegenerationProposal>("/api/regenerate", { body: { pieceId }, signal });
 }
 
+export interface BulkPieceInput {
+	title?: string;
+	body: string;
+	format: ContentFormat;
+	channel: ContentChannel;
+	scheduledFor?: string;
+	notes?: string;
+}
+
+export interface BulkUploadResponse {
+	created: WorkspacePiece[];
+	failed: { index: number; error: string }[];
+	byStatus: Record<PieceStatus, number>;
+	totalMs: number;
+}
+
+/** Stores and reviews every piece of a content grid (POST /api/pieces/bulk). */
+export function uploadGrid(input: {
+	campaign?: string;
+	pieces: BulkPieceInput[];
+}): Promise<BulkUploadResponse> {
+	return fetchJson<BulkUploadResponse>("/api/pieces/bulk", { body: input });
+}
+
 /** Loads the demo example pieces (idempotent). */
 export function loadExamples(): Promise<{ created: number }> {
 	return fetchJson<{ created: number }>("/api/pieces/examples", { method: "POST" });

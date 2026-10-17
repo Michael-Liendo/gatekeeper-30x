@@ -68,13 +68,14 @@ export function toBrandInput(brand: BrandProfile): BrandProfileInput {
 	return { ...input, colors: padColors(input.colors) };
 }
 
-/** Same rules the server applies: name, ≥1 offering, ≥1 topic, colors #RRGGBB. */
+/**
+ * Only the name is required: everything else is optional and comes pre-filled from the
+ * brand's website when we could read it. Colors, when given, must be #RRGGBB.
+ */
 export function validateBrandInput(input: BrandProfileInput): BrandFormErrors {
 	const errors: BrandFormErrors = {};
 	if (input.name.trim() === "") errors.name = "Escribe el nombre de tu marca.";
-	if (input.offerings.length === 0) errors.offerings = "Agrega al menos un producto o servicio.";
-	if (input.topics.length === 0) errors.topics = "Agrega al menos un tema.";
-	if (input.colors.length === 0 || !input.colors.every(isHexColor)) {
+	if (!input.colors.every(isHexColor)) {
 		errors.colors = "Usa colores en formato #RRGGBB, por ejemplo #1F7A4D.";
 	}
 	return errors;

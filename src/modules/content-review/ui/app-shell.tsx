@@ -11,6 +11,7 @@ import { UsersIcon } from "@/modules/segmentation/ui/segment-bits";
 import { readableInk } from "@/shared/ui/contrast";
 import {
 	BoardIcon,
+	CalendarIcon,
 	ChartIcon,
 	GridIcon,
 	InboxIcon,
@@ -26,6 +27,7 @@ import { useReview } from "./review-session-provider";
 type Href =
 	| "/"
 	| "/tablero"
+	| "/campana"
 	| "/mis-piezas"
 	| "/contenido"
 	| "/nueva"
@@ -44,6 +46,7 @@ interface NavItem {
 const NAV: readonly NavItem[] = [
 	{ href: "/", label: "Bandeja", icon: InboxIcon, badge: "pending" },
 	{ href: "/tablero", label: "Tablero", icon: BoardIcon },
+	{ href: "/campana", label: "Campaña", icon: CalendarIcon },
 	{ href: "/mis-piezas", label: "Mis piezas", icon: StackIcon },
 	{ href: "/contenido", label: "Contenido", icon: GridIcon },
 	{ href: "/nueva", label: "Nueva pieza", icon: PlusIcon },
@@ -89,12 +92,14 @@ function NavIcons({
 	return (
 		<>
 			{NAV.map((item) => {
-				const active = pathname === item.href;
+				const active =
+					pathname === item.href ||
+					(item.href !== "/" && (pathname?.startsWith(`${item.href}/`) ?? false));
 				const Icon = item.icon;
 				const pending = item.badge === "pending" ? pendingCount : 0;
 				const accessible = pending > 0 ? `${item.label}, ${pending} pendientes` : item.label;
 				return (
-					<li key={item.href} className="group relative">
+					<li key={item.href} className="group relative shrink-0 snap-start">
 						<Link
 							href={item.href}
 							aria-current={active ? "page" : undefined}
@@ -282,7 +287,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 				<Nav
 					pendingCount={pendingCount}
 					layout="bar"
-					className="mx-auto flex max-w-md items-center justify-between rounded-[22px] bg-rail px-2 py-2"
+					className="mx-auto flex max-w-md snap-x snap-mandatory scroll-px-2 items-center justify-between gap-1 overflow-x-auto overscroll-x-contain rounded-[22px] bg-rail px-2 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
 				/>
 			</div>
 		</div>

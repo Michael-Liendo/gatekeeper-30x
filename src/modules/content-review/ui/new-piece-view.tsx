@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { type FormEvent, useId, useState } from "react";
+import { useSession } from "@/modules/accounts/ui/session-provider";
 import { GridUploadSoon } from "@/modules/workspace/ui/grid-upload-soon";
 import { createPiece } from "@/modules/workspace/ui/workspace-api";
 import { ChevronDownIcon } from "@/shared/ui/icons";
@@ -27,6 +28,21 @@ function titleFromText(text: string): string | undefined {
 	return firstLine.length > 70 ? `${firstLine.slice(0, 67).trimEnd()}…` : firstLine;
 }
 
+const LINK_CHANNELS: [RegExp, ContentChannel][] = [
+	[/instagram\.com/i, "instagram"],
+	[/linkedin\.com/i, "linkedin"],
+	[/(youtube\.com|youtu\.be)/i, "youtube"],
+	[/(x\.com|twitter\.com)/i, "x"],
+];
+
+function channelFromLinks(links: readonly string[] | undefined): ContentChannel {
+	for (const link of links ?? []) {
+		const match = LINK_CHANNELS.find(([pattern]) => pattern.test(link));
+		if (match) return match[1];
+	}
+	return "instagram";
+}
+
 /** Full-page form to submit a piece (screenshot, text or both); opens its result page. */
 export function NewPieceView() {
 	const router = useRouter();
@@ -36,7 +52,9 @@ export function NewPieceView() {
 	const [title, setTitle] = useState("");
 	const [body, setBody] = useState("");
 	const [format, setFormat] = useState<ContentFormat>("post");
-	const [channel, setChannel] = useState<ContentChannel>("linkedin");
+	// The brand's own network is the default channel (its first social link), else Instagram.
+	const { brand } = useSession();
+	const [channel, setChannel] = useState<ContentChannel>(() => channelFromLinks(brand?.links));
 	const [error, setError] = useState<string | null>(null);
 	const [sending, setSending] = useState(false);
 
@@ -139,7 +157,7 @@ export function NewPieceView() {
 				<div className="grid gap-3 sm:grid-cols-2">
 					<div className="grid gap-1">
 						<label htmlFor={`${id}-format`} className="text-xs sm:text-sm font-medium">
-							Formato
+							Formato <span className="font-normal text-ink-muted">(opcional)</span>
 						</label>
 						<div className="relative">
 							<select
@@ -161,7 +179,7 @@ export function NewPieceView() {
 					</div>
 					<div className="grid gap-1">
 						<label htmlFor={`${id}-channel`} className="text-xs sm:text-sm font-medium">
-							Canal
+							Canal <span className="font-normal text-ink-muted">(según tu marca)</span>
 						</label>
 						<div className="relative">
 							<select

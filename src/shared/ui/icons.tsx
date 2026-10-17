@@ -213,3 +213,30 @@ export function MoreIcon(props: IconProps) {
 		</Svg>
 	);
 }
+
+export function CalendarIcon(props: IconProps) {
+	return (
+		<Svg {...props}>
+			<rect x="4" y="5.5" width="16" height="14" rx="2.5" />
+			<path d="M4 10h16M8.5 3.5v4M15.5 3.5v4" />
+		</Svg>
+	);
+}
+
+export function FileIcon(props: IconProps) {
+	return (
+		<Svg {...props}>
+			<path d="M13.5 3.5H7.5a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8.5z" />
+			<path d="M13.5 3.5v5h5M9 13h6M9 16.5h4" />
+		</Svg>
+	);
+}
+
+export function DownloadIcon(props: IconProps) {
+	return (
+		<Svg {...props}>
+			<path d="M12 4.5v11M7.5 11 12 15.5 16.5 11" />
+			<path d="M4.5 16.5v1a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-1" />
+		</Svg>
+	);
+}
