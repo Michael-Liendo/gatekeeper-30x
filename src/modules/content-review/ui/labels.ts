@@ -1,7 +1,10 @@
+import type { BrandProfile } from "@/modules/brand/domain/brand-profile";
+import { defaultBrand } from "@/modules/brand/domain/default-brand";
 import type { ContentChannel, ContentFormat, ContentPiece } from "../domain/content-piece";
 import type { DecisionProvider } from "../domain/decision";
 import type { EditorialPolicy, Route } from "../domain/editorial-policy";
-import { editorialQuestions } from "../domain/editorial-questions";
+import { editorialQuestions, topicLabel } from "../domain/editorial-questions";
+import type { ReviewResult } from "../domain/review";
 
 /** Spanish labels and route styling shared by the panel components. */
 
@@ -80,7 +83,7 @@ export const QUESTION_LABEL = {
 	exaggerated_promises: "Promesas exageradas",
 	unsourced_claims: "Datos sin fuente",
 	brand_risk: "Riesgo de marca",
-	offers_unsold_product: "Ofrece algo que 30X no vende",
+	offers_unsold_product: "Ofrece algo que la marca no vende",
 	is_spam: "Spam",
 } as const;
 
@@ -97,23 +100,38 @@ export const FLAG_KEYS = [
 
 export type FlagKey = (typeof FLAG_KEYS)[number];
 
-export const CHOICE_OPTION_LABEL: Record<(typeof CHOICE_KEYS)[number], Record<string, string>> = {
-	topic: {
-		ai: "Inteligencia artificial",
-		sales: "Ventas",
-		growth: "Growth y marketing",
-		startups_fundraising: "Startups y capital",
-		leadership: "Liderazgo",
-		other: "Otro",
-	},
-	format: {
-		post: "Post",
-		video_script: "Guion de video",
-		clip: "Clip",
-		newsletter: "Newsletter",
-		other: "Otro",
-	},
+const FORMAT_OPTION_LABEL: Record<string, string> = {
+	post: "Post",
+	video_script: "Guion de video",
+	clip: "Clip",
+	newsletter: "Newsletter",
+	other: "Otro",
 };
+
+/**
+ * Spanish label of a choice answer. Topic keys (`topic_1..topic_n`, `other`) come from
+ * the brand the piece was judged against, so they need that brand to be readable.
+ */
+export function choiceOptionLabel(
+	key: (typeof CHOICE_KEYS)[number],
+	option: string,
+	brand: BrandProfile,
+): string {
+	if (key === "topic") return topicLabel(brand, option);
+	return FORMAT_OPTION_LABEL[option] ?? option;
+}
+
+/**
+ * Brand a result was judged against: dataset pieces use the 30X default brand,
+ * pasted pieces the signed-in user's brand.
+ */
+export function brandForResult(
+	result: Pick<ReviewResult, "brandId">,
+	sessionBrand: BrandProfile | null,
+): BrandProfile {
+	if (!result.brandId || result.brandId === defaultBrand.id) return defaultBrand;
+	return sessionBrand ?? defaultBrand;
+}
 
 export function scoreLevelLabels(key: (typeof SCORE_KEYS)[number]): string[] {
 	return editorialQuestions[key].levels.map((level) => level.label);
@@ -164,7 +182,7 @@ export const POLICY_FIELDS: readonly {
 		key: "riskBlock",
 		label: "Bloqueo por riesgo",
 		description:
-			"Riesgo de marca, promesas exageradas o productos que 30X no vende van a una persona.",
+			"Riesgo de marca, promesas exageradas o productos que la marca no vende van a una persona.",
 	},
 	{
 		key: "spamReject",

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import { describe, it } from "node:test";
+import type { BrandProfile } from "../../brand/domain/brand-profile";
 import type { ContentPiece } from "../domain/content-piece";
 import type { DecisionAnswer, DecisionRequest, DecisionResult } from "../domain/decision";
 import type { EditorialSuggestions } from "../domain/review";
@@ -24,9 +25,11 @@ registerHooks({
 // Loaded by URL so the same file runs under `node --test` (which needs the .ts extension)
 // and type-checks under tsc (which rejects .ts extensions in static imports).
 const reviewModule = new URL("./review-piece.ts", import.meta.url).href;
-const { reviewPiece, suggestFixesForPiece, DECISION_UNAVAILABLE_MESSAGE } = (await import(
-	reviewModule
-)) as typeof import("./review-piece");
+const { reviewPiece, suggestFixesForPiece, decisionCacheKey, DECISION_UNAVAILABLE_MESSAGE } =
+	(await import(reviewModule)) as typeof import("./review-piece");
+const { defaultBrand } = (await import(
+	new URL("../../brand/domain/default-brand.ts", import.meta.url).href
+)) as typeof import("../../brand/domain/default-brand");
 
 const yesNo = (probability: number): DecisionAnswer => ({ type: "yes_no", probability });
 const choice = (value: string, confidence = 0.95): DecisionAnswer => ({
@@ -45,7 +48,7 @@ const score = (value: number, confidence = 0.95): DecisionAnswer => ({
 /** Clean, relevant, actionable answers that auto-approve under the default policy. */
 function goodAnswers(overrides: Record<string, DecisionAnswer> = {}) {
 	return {
-		topic: choice("sales"),
+		topic: choice("topic_2"),
 		format: choice("post"),
 		relevance: score(2),
 		actionable: score(2),
@@ -241,5 +244,91 @@ describe("suggestFixesForPiece", () => {
 			suggestFixesForPiece(piece, {}, { decide: async () => decision(goodAnswers()) }),
 			{ name: "SuggestionsNotConfiguredError" },
 		);
+	});
+});
+
+const customBrand: BrandProfile = {
+	...defaultBrand,
+	id: "brand-cafe",
+	name: "Café Andino",
+	audience: "Amantes del café de especialidad",
+	offerings: ["Café en grano", "Cursos de barismo"],
+	tone: "Cálido y cercano",
+	topics: ["Café", "Recetas"],
+	forbidden: ["Política"],
+	updatedAt: "2026-10-18T00:00:00.000Z",
+};
+
+describe("reviewPiece with a brand", () => {
+	function recordingDeps() {
+		const requests: { request: DecisionRequest; cacheKey?: string }[] = [];
+		const deps: ReviewDeps = {
+			decide: async (request, cacheKey) => {
+				requests.push({ request, cacheKey });
+				return decision(goodAnswers());
+			},
+		};
+		return { deps, requests };
+	}
+
+	it("defaults to the 30X brand and reports its id", async () => {
+		const { deps, requests } = recordingDeps();
+		const result = await reviewPiece(piece, {}, deps);
+		assert.equal(result.brandId, defaultBrand.id);
+		const input = requests[0]?.request.input as Record<string, unknown>;
+		assert.deepEqual(input.brand, { name: "30X", tone: defaultBrand.tone });
+	});
+
+	it("judges the piece against the given brand", async () => {
+		const { deps, requests } = recordingDeps();
+		const result = await reviewPiece(piece, { brand: customBrand }, deps);
+		assert.equal(result.brandId, "brand-cafe");
+		const request = requests[0]?.request;
+		assert.ok(request);
+		assert.deepEqual((request.input as Record<string, unknown>).brand, {
+			name: "Café Andino",
+			tone: "Cálido y cercano",
+		});
+		assert.match(request.questions.offers_unsold_product?.instructions ?? "", /Cursos de barismo/);
+	});
+
+	it("scopes the decision cache key by brand id and version", async () => {
+		const { deps, requests } = recordingDeps();
+		await reviewPiece(piece, {}, deps);
+		await reviewPiece(piece, { brand: customBrand }, deps);
+		await reviewPiece(
+			piece,
+			{ brand: { ...customBrand, updatedAt: "2026-10-19T00:00:00.000Z" } },
+			deps,
+		);
+		const keys = requests.map((r) => r.cacheKey);
+		assert.equal(keys[0], decisionCacheKey(piece.id, defaultBrand));
+		assert.equal(new Set(keys).size, 3, "a different brand or brand version is a different key");
+	});
+
+	it("shares one cache namespace for pasted pieces of the same brand", () => {
+		assert.equal(
+			decisionCacheKey("custom-1", customBrand),
+			decisionCacheKey("custom-2", customBrand),
+		);
+		assert.notEqual(
+			decisionCacheKey("custom-1", customBrand),
+			decisionCacheKey("custom-1", defaultBrand),
+		);
+	});
+
+	it("passes the brand to the LLM fixer", async () => {
+		const calls: SuggestInput[] = [];
+		const deps: ReviewDeps = {
+			decide: async () => decision(goodAnswers({ too_promotional: yesNo(0.91) })),
+			suggest: async (input) => {
+				calls.push(input);
+				return suggestions;
+			},
+		};
+		await reviewPiece(piece, { enrich: true, brand: customBrand }, deps);
+		assert.equal(calls[0]?.brand.id, "brand-cafe");
+		await suggestFixesForPiece(piece, {}, deps);
+		assert.equal(calls[1]?.brand.id, defaultBrand.id);
 	});
 });

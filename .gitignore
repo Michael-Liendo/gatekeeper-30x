@@ -20,6 +20,9 @@
 # production
 /build
 
+# local SQLite database
+/data/gatekeeper.db*
+
 # misc
 .DS_Store
 *.pem

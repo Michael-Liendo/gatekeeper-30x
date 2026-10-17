@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getCurrentBrand, getDefaultBrand } from "@/modules/brand/infrastructure/current-brand";
 import { reviewPiece } from "@/modules/content-review/application/review-piece";
 import {
 	hasImageIssue,
@@ -12,6 +13,7 @@ import { getReviewDeps } from "@/modules/content-review/infrastructure/review-de
  * Reviews a piece pasted by the user in the live test ("Prueba en vivo"): text, a PNG/JPEG
  * screenshot as a `data:` URL (max 4 MB decoded), or both. Route handlers have no body size
  * limit of their own (only `proxyClientMaxBodySize`, 10 MB, applies if a proxy is added).
+ * The piece is judged against the signed-in user's brand (30X when there is none).
  */
 export async function POST(request: Request) {
 	let json: unknown;
@@ -43,5 +45,6 @@ export async function POST(request: Request) {
 		createdAt: now.toISOString(),
 	};
 
-	return Response.json(await reviewPiece(piece, { policy, enrich }, getReviewDeps()));
+	const brand = (await getCurrentBrand()) ?? getDefaultBrand();
+	return Response.json(await reviewPiece(piece, { policy, enrich, brand }, getReviewDeps()));
 }

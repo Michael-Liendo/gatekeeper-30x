@@ -1,9 +1,13 @@
 import { z } from "zod";
+import { getDefaultBrand } from "@/modules/brand/infrastructure/current-brand";
 import { reviewBatch } from "@/modules/content-review/application/review-batch";
 import { reviewBatchRequestSchema } from "@/modules/content-review/application/review-schemas";
 import { getReviewDeps } from "@/modules/content-review/infrastructure/review-deps";
 
-/** Reviews the sample dataset (or some ids) with optional policy overrides. */
+/**
+ * Reviews the sample dataset (or some ids) with optional policy overrides. The simulated
+ * pieces are 30X content, so they are always judged against the default 30X brand.
+ */
 export async function POST(request: Request) {
 	let json: unknown;
 	try {
@@ -27,5 +31,5 @@ export async function POST(request: Request) {
 		return Response.json({ error: `Piezas desconocidas: ${unknown.join(", ")}.` }, { status: 404 });
 	}
 
-	return Response.json(await reviewBatch(parsed.data, deps));
+	return Response.json(await reviewBatch({ ...parsed.data, brand: getDefaultBrand() }, deps));
 }
