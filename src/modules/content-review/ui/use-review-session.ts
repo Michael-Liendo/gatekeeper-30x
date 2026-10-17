@@ -153,7 +153,16 @@ export function useReviewSession(): ReviewSession {
 		saveSession(session);
 	}, [hydrated, policy, batch, submitted, editorActions, enrichments, runMs, analyzedAt]);
 
-	const baseline = useMemo(() => [...submitted, ...batch], [submitted, batch]);
+	// A batch saved in the browser may predate dataset changes (e.g. sample images), so
+	// each result shows the current version of its piece when the dataset still has it.
+	const baseline = useMemo(() => {
+		const fresh = new Map(pieces.map((piece) => [piece.id, piece]));
+		const current = batch.map((result) => {
+			const piece = fresh.get(result.piece.id);
+			return piece ? { ...result, piece: { ...result.piece, ...piece } } : result;
+		});
+		return [...submitted, ...current];
+	}, [submitted, batch, pieces]);
 	const results = useMemo(
 		() => baseline.map((result) => applyPolicy(result, policy)),
 		[baseline, policy],
