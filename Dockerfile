@@ -20,8 +20,10 @@ WORKDIR /app
 ENV NODE_ENV=production \
 	NEXT_TELEMETRY_DISABLED=1 \
 	PORT=3000 \
-	HOSTNAME=0.0.0.0
-RUN addgroup -S nodejs && adduser -S nextjs -G nodejs
+	HOSTNAME=0.0.0.0 \
+	DATA_DIR=/app/data
+RUN addgroup -S nodejs && adduser -S nextjs -G nodejs \
+	&& mkdir -p /app/data && chown nextjs:nodejs /app/data
 COPY --from=build --chown=nextjs:nodejs /app/public ./public
 COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
