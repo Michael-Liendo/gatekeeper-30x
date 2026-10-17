@@ -556,11 +556,12 @@ ul.points li::before {
 	gap: 6px;
 	overflow: hidden;
 }
+/* Real screenshots: show the whole image, padded with its own background color. */
 .shot.photo {
 	width: 100%;
+	height: 168px;
 	padding: 0;
-	object-fit: cover;
-	object-position: top left;
+	object-fit: contain;
 	border: 1px solid var(--line, #eceef2);
 }
 .shot.spam {
@@ -761,4 +762,18 @@ body.notes #notes {
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
 	}
+}
+
+.shot.photo.antes {
+	background: #ffde00;
+}
+.shot.photo.despues {
+	background: #e3f64d;
+}
+.versus .flags {
+	gap: 4px;
+}
+.versus .flag {
+	padding: 3px 12px;
+	font-size: 13px;
 }
