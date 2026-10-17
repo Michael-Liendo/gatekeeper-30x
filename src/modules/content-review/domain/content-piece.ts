@@ -13,6 +13,11 @@ export interface ContentPiece {
 	author: string;
 	createdAt: string;
 	/**
+	 * Public path of a bundled sample image (e.g. "/samples/cp-001.jpg"), only in the
+	 * simulated dataset. Generated with gpt-image-2; no real people or third-party media.
+	 */
+	imagePath?: string;
+	/**
 	 * Optional screenshot of the piece (post, slide, thumbnail) as a PNG or JPEG
 	 * `data:` URL. When present, the decision engine judges the image too.
 	 */
