@@ -78,9 +78,9 @@ export async function regenerateImage(input: ImageRegenerationInput): Promise<st
 			model: OPENAI_IMAGE_MODEL,
 			image: file,
 			prompt: buildImagePrompt(input),
-			// Best available editor; keep the original's details and aspect ratio.
+			// Best available editor; keep the original's aspect ratio. (sunburst rejects
+			// `input_fidelity`; fidelity to the original comes from the prompt.)
 			quality: "high",
-			input_fidelity: "high",
 			size: "auto",
 			// JPEG keeps a high-quality result under the 4 MB review limit.
 			output_format: "jpeg",
