@@ -1,13 +1,12 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type FormEvent, useId, useState } from "react";
 import { ImageDropZone } from "@/shared/ui/image-drop-zone";
 import type { ContentChannel, ContentFormat } from "../domain/content-piece";
 import { errorMessage } from "./api";
 import { CHANNEL_LABEL, FORMAT_LABEL } from "./labels";
 import { PageHeader } from "./page-header";
-import { PieceDetail } from "./piece-detail";
 import { useReview } from "./review-session-provider";
 
 const FORMATS = Object.keys(FORMAT_LABEL) as ContentFormat[];
@@ -19,9 +18,17 @@ const MAX_BODY = 4000;
 const field =
 	"w-full rounded-2xl border border-line bg-surface-muted px-4 text-sm focus-visible:border-ink focus-visible:bg-surface";
 
-/** Submit a piece to the gatekeeper: a screenshot, its text, or both. */
+/** First words of the text, so a text-only piece doesn't show up as "Captura sin título". */
+function titleFromText(text: string): string | undefined {
+	if (!text) return undefined;
+	const firstLine = text.split("\n")[0].trim();
+	return firstLine.length > 70 ? `${firstLine.slice(0, 67).trimEnd()}…` : firstLine;
+}
+
+/** Full-page form to submit a piece (screenshot, text or both); opens its result page. */
 export function NewPieceView() {
-	const { submit, results } = useReview();
+	const { submit } = useReview();
+	const router = useRouter();
 	const id = useId();
 	const [image, setImage] = useState<string | null>(null);
 	const [title, setTitle] = useState("");
@@ -30,10 +37,6 @@ export function NewPieceView() {
 	const [channel, setChannel] = useState<ContentChannel>("linkedin");
 	const [error, setError] = useState<string | null>(null);
 	const [sending, setSending] = useState(false);
-	const [lastId, setLastId] = useState<string | null>(null);
-
-	// Read the result from the shared state so it follows policy changes and editor actions.
-	const last = lastId ? (results.find((r) => r.piece.id === lastId) ?? null) : null;
 
 	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -46,24 +49,18 @@ export function NewPieceView() {
 		setSending(true);
 		try {
 			const result = await submit({
-				title: title.trim() || undefined,
+				title: title.trim() || titleFromText(text),
 				body: text || undefined,
 				imageDataUrl: image ?? undefined,
 				format,
 				channel,
 			});
-			setLastId(result.piece.id);
-			setImage(null);
-			setTitle("");
-			setBody("");
+			router.push(`/pieza/${encodeURIComponent(result.piece.id)}`);
 		} catch (submitError) {
 			setError(errorMessage(submitError));
-		} finally {
 			setSending(false);
 		}
 	}
-
-	const needsEditor = last && (last.route === "HUMAN_REVIEW" || last.route === "ENRICH_WITH_LLM");
 
 	return (
 		<>
@@ -71,11 +68,12 @@ export function NewPieceView() {
 				title="Sube una pieza para revisar"
 				description="Una captura, el texto o ambos. En segundos sabrás si se aprueba sola o si necesita tu ojo."
 			/>
-			<div className="grid items-start gap-8 xl:grid-cols-[minmax(0,34rem)_minmax(0,1fr)] xl:gap-10">
+			<div className="mx-auto w-full max-w-3xl">
 				<form
 					onSubmit={handleSubmit}
 					noValidate
-					className="grid gap-5"
+					className="grid gap-6"
+					aria-busy={sending}
 					aria-describedby={error ? `${id}-error` : undefined}
 				>
 					<fieldset className="grid gap-2">
@@ -126,7 +124,7 @@ export function NewPieceView() {
 						/>
 					</div>
 
-					<div className="grid grid-cols-2 gap-3">
+					<div className="grid gap-3 sm:grid-cols-2">
 						<div className="grid gap-1">
 							<label htmlFor={`${id}-format`} className="text-sm font-medium">
 								Formato
@@ -177,38 +175,14 @@ export function NewPieceView() {
 						type="submit"
 						disabled={sending}
 						aria-busy={sending}
-						className="inline-flex min-h-12 items-center justify-center rounded-full bg-primary px-7 text-sm font-medium text-primary-ink hover:opacity-90 disabled:cursor-progress disabled:opacity-70 sm:justify-self-start"
+						className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-8 text-base font-medium text-primary-ink hover:opacity-90 disabled:cursor-progress disabled:opacity-70 sm:w-auto sm:justify-self-end"
 					>
-						{sending ? "Revisando…" : "Revisar pieza"}
+						{sending ? "Revisando tu pieza…" : "Revisar pieza"}
 					</button>
+					<p aria-live="polite" className="sr-only">
+						{sending ? "Revisando tu pieza, en unos segundos verás el resultado." : ""}
+					</p>
 				</form>
-
-				<div aria-live="polite" className="grid gap-3">
-					{last ? (
-						<>
-							<p className="text-sm text-ink-muted">
-								{needsEditor ? (
-									<>
-										También quedó en tu{" "}
-										<Link href="/" className="font-medium text-ink underline underline-offset-2">
-											bandeja
-										</Link>
-										. Puedes decidirla aquí mismo.
-									</>
-								) : (
-									"Se resolvió sola. También la verás en Contenido."
-								)}
-							</p>
-							<div className="rounded-card border border-line p-5 sm:p-7">
-								<PieceDetail key={last.piece.id} result={last} />
-							</div>
-						</>
-					) : (
-						<div className="grid min-h-56 place-items-center rounded-card bg-surface-muted p-8 text-center text-sm text-ink-muted">
-							{sending ? "Leyendo la pieza…" : "Aquí verás qué se decidió con tu pieza y por qué."}
-						</div>
-					)}
-				</div>
 			</div>
 		</>
 	);
