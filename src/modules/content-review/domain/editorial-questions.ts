@@ -128,11 +128,26 @@ export function buildEditorialQuestions(brand: BrandProfile) {
 		},
 		actionable: {
 			type: "score",
-			instructions: "¿La pieza deja algo útil que el lector pueda aplicar?",
+			// Key kept for stored answers; it now measures any kind of value, not only how-tos,
+			// so event announcements, stories and invitations aren't penalized by design.
+			instructions:
+				"¿Cuánto le aporta la pieza a quien la lee? Cuenta como aporte cualquiera de estos: una enseñanza que se pueda aplicar, una historia o ejemplo que inspire, información útil y concreta (por ejemplo, un evento con fecha, lugar y cómo participar) o una invitación clara a hacer algo.",
 			levels: [
-				{ label: "Nada", description: "Solo opinión o anuncio, sin nada que aplicar." },
-				{ label: "Algo", description: "Da una idea general que se podría aplicar." },
-				{ label: "Mucho", description: "Da pasos, ejemplos o marcos concretos para aplicar." },
+				{
+					label: "Nada",
+					description:
+						"Relleno: frases vacías, sin dato, historia, enseñanza ni invitación concreta.",
+				},
+				{
+					label: "Algo",
+					description:
+						"Tiene un aporte, pero general o incompleto (falta el dato, el ejemplo o el siguiente paso).",
+				},
+				{
+					label: "Mucho",
+					description:
+						"Aporte claro y concreto: una enseñanza aplicable, una historia con lección, o información completa con un siguiente paso claro.",
+				},
 			],
 		},
 		too_promotional: {
