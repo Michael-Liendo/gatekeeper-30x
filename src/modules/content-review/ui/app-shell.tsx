@@ -264,8 +264,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 				<SignOutIconButton tone="light" />
 			</header>
 
-			<main id="contenido-principal" className="min-w-0 px-2 pb-28 sm:px-3 lg:p-3 lg:pl-0">
-				<div className="min-h-[calc(100dvh-5rem)] rounded-[28px] bg-surface px-4 py-7 sm:px-8 sm:py-9 lg:min-h-[calc(100dvh-1.5rem)] lg:rounded-[var(--radius-panel)] lg:px-12 lg:py-11">
+			<main
+				id="contenido-principal"
+				className="min-w-0 px-3 pt-3 pb-28 sm:px-4 sm:pt-4 sm:pb-32 lg:p-6 xl:p-8"
+			>
+				<div className="flex min-h-[calc(100dvh-3rem)] flex-col rounded-[28px] bg-surface px-4 py-6 sm:px-8 sm:py-8 lg:min-h-[calc(100dvh-3rem)] xl:min-h-[calc(100dvh-4rem)] lg:rounded-[var(--radius-panel)] lg:px-10 lg:py-8">
 					<RunNotice />
 					{children}
 				</div>

@@ -78,20 +78,20 @@ export function ImageDropZone({
 
 	if (value) {
 		return (
-			<div className="grid gap-2">
+			<div className="relative group overflow-hidden rounded-card bg-surface-muted">
 				<Image
 					src={value}
 					alt="Vista previa de la captura"
 					width={1200}
 					height={900}
 					unoptimized
-					className="max-h-80 w-full rounded-card bg-surface-muted object-contain"
+					className="max-h-36 sm:max-h-40 w-full object-contain"
 				/>
 				<button
 					type="button"
 					onClick={() => onChange(null)}
 					disabled={disabled}
-					className="inline-flex min-h-11 items-center justify-self-start rounded-full border border-line-strong bg-surface px-5 text-sm font-medium hover:bg-surface-muted"
+					className="absolute top-2.5 right-2.5 inline-flex h-8 items-center rounded-full border border-line-strong bg-surface/95 px-3 text-xs font-medium text-ink shadow-xs backdrop-blur hover:bg-surface"
 				>
 					Quitar captura
 				</button>
@@ -113,25 +113,25 @@ export function ImageDropZone({
 				}}
 				onDragLeave={() => setDragging(false)}
 				onDrop={handleDrop}
-				className={`group block w-full rounded-card bg-linear-to-br p-[3px] text-center disabled:cursor-progress ${
+				className={`group block w-full rounded-card bg-linear-to-br p-[2px] text-center disabled:cursor-progress ${
 					dragging
 						? "from-lilac-to via-lilac-from to-aqua-to"
 						: "from-lilac-from via-lilac-to to-aqua-from"
 				}`}
 			>
 				<span
-					className={`grid min-h-56 place-items-center content-center gap-3 rounded-[22px] px-6 py-10 transition-colors ${
+					className={`grid min-h-20 sm:min-h-24 place-items-center content-center gap-1 sm:gap-1.5 rounded-[18px] px-4 py-2.5 sm:py-3 transition-colors ${
 						dragging ? "bg-surface/70" : "bg-surface group-hover:bg-surface/85"
 					}`}
 				>
 					<span
 						aria-hidden="true"
-						className="grid size-14 place-items-center rounded-full bg-linear-to-br from-lilac-from to-lilac-to"
+						className="grid size-8 sm:size-9 place-items-center rounded-full bg-linear-to-br from-lilac-from to-lilac-to text-primary-ink"
 					>
-						<UploadIcon size={24} />
+						<UploadIcon size={18} />
 					</span>
-					<span className="text-lg font-normal">{label}</span>
-					<span id={hintId} className="max-w-sm text-sm text-ink-muted">
+					<span className="text-xs sm:text-sm font-medium">{label}</span>
+					<span id={hintId} className="max-w-md text-[0.6875rem] sm:text-xs text-ink-muted">
 						{hint}
 					</span>
 				</span>
