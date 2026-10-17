@@ -18,6 +18,7 @@ import { LoadingBlock } from "./loading-block";
 import { PageHeader } from "./page-header";
 import { useReview } from "./review-session-provider";
 import { RouteBar } from "./route-bar";
+import { StressCard } from "./stress-card";
 
 /** "Decide en menos de un segundo" / "Decide en unos 3 segundos". */
 function speedText(avgMs: number): string {
@@ -75,9 +76,12 @@ export function MetricsView() {
 		return (
 			<>
 				{header}
-				<EmptyState title="Aún no hay números" action={<AnalyzeButton />}>
-					<p>Revisa el contenido de ejemplo y vuelve aquí para ver cuánto se resuelve solo.</p>
-				</EmptyState>
+				<div className="grid gap-8">
+					<EmptyState title="Aún no hay números" action={<AnalyzeButton />}>
+						<p>Revisa el contenido de ejemplo y vuelve aquí para ver cuánto se resuelve solo.</p>
+					</EmptyState>
+					<StressCard />
+				</div>
 			</>
 		);
 	}
@@ -122,6 +126,8 @@ export function MetricsView() {
 						{costText(metrics.costPer1kUsd)}
 					</li>
 				</ul>
+
+				<StressCard />
 
 				<RouteBar
 					metrics={metrics}
