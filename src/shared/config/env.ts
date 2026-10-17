@@ -10,7 +10,6 @@ const optionalSecret = z.preprocess((v) => (v === "" ? undefined : v), z.string(
 
 const envSchema = z.object({
 	TYPESAFE_API_KEY: optionalSecret,
-	TYPESAFE_MODEL: z.string().default("jev-latest"),
 	OPENAI_API_KEY: optionalSecret,
 	/** Model for the OpenAI Decisions API (fallback decision engine). */
 	OPENAI_DECISIONS_MODEL: z.string().default("gpt-6-luna"),
