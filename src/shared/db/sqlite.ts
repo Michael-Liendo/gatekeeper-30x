@@ -31,7 +31,44 @@ CREATE TABLE IF NOT EXISTS brands (
 	created_at TEXT NOT NULL,
 	updated_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS pieces (
+	id TEXT PRIMARY KEY,
+	user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+	brand_id TEXT NOT NULL,
+	author_name TEXT NOT NULL,
+	author_role TEXT NOT NULL,
+	title TEXT NOT NULL,
+	body TEXT NOT NULL,
+	format TEXT NOT NULL,
+	channel TEXT NOT NULL,
+	image_file TEXT,
+	status TEXT NOT NULL,
+	review TEXT NOT NULL,
+	version INTEGER NOT NULL DEFAULT 1,
+	created_at TEXT NOT NULL,
+	updated_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS pieces_user_created ON pieces(user_id, created_at);
+
+CREATE TABLE IF NOT EXISTS piece_events (
+	id TEXT PRIMARY KEY,
+	piece_id TEXT NOT NULL REFERENCES pieces(id) ON DELETE CASCADE,
+	type TEXT NOT NULL,
+	actor_name TEXT NOT NULL,
+	summary TEXT NOT NULL,
+	created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS piece_events_piece ON piece_events(piece_id, created_at);
 `;
+
+/** Adds a column unless it already exists (SQLite has no ADD COLUMN IF NOT EXISTS). */
+function addColumnIfMissing(db: DatabaseSync, table: string, column: string, definition: string) {
+	const columns = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+	if (!columns.some((c) => c.name === column)) {
+		db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+	}
+}
 
 /** Opens (creating if needed) the database in `dir` and applies migrations. */
 export function openDatabase(dir: string): DatabaseSync {
@@ -41,6 +78,7 @@ export function openDatabase(dir: string): DatabaseSync {
 	db.exec("PRAGMA foreign_keys = ON;");
 	db.exec("PRAGMA busy_timeout = 5000;");
 	db.exec(MIGRATIONS);
+	addColumnIfMissing(db, "users", "role", "TEXT NOT NULL DEFAULT 'other'");
 	return db;
 }
 

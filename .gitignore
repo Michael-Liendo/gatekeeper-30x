@@ -22,6 +22,7 @@
 
 # local SQLite database
 /data/gatekeeper.db*
+/data/uploads/
 
 # misc
 .DS_Store
@@ -43,3 +44,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/.claude/
