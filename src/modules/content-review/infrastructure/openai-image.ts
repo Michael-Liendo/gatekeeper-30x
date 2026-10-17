@@ -28,23 +28,46 @@ export function shortLine(body: string, max = 90): string {
 	return first.length > max ? `${first.slice(0, max - 1).trimEnd()}…` : first;
 }
 
+/** Checks that mean the original visual itself is the problem (spam, off-brand, unsold offer). */
+const REDESIGN_CHECKS = /spam|riesgo de marca|no vende|tema "otro"|promesas exageradas/i;
+
 /**
- * Prompt for the image model: an in-place edit of the real piece, short and concrete
- * (what to keep, the exact text, what to remove). Never a new flat text card: the
- * original photo, illustration, layout, logos and typography style stay.
+ * Prompt for the image model, short and concrete. Two modes:
+ * - retouch: the original visual is fine, so keep it and only fix the text;
+ * - redesign: the visual itself is the problem, so compose a new editorial post the way
+ *   a strong brand does on Instagram: a real-looking photo (people, places, objects),
+ *   a bold headline over it with key words in the brand color, and the brand name small.
  */
 export function buildImagePrompt(input: ImageRegenerationInput): string {
 	const { brand } = input;
 	const line = shortLine(input.body);
+	const primary = brand.colors[0];
+	const redesign = input.failedChecks.some((check) => REDESIGN_CHECKS.test(check));
+	const text = `titular «${input.title}»${line ? ` y, debajo, una sola línea corta: «${line}»` : ""}`;
+	const people =
+		"Puedes usar personas, ambientes y objetos realistas (equipos trabajando, fundadores en una reunión, oficinas, ciudades de Latinoamérica, escritorios, eventos), siempre personas genéricas que no sean figuras públicas reales ni personajes conocidos.";
+	const common = [
+		"Calidad de fotografía editorial: luz natural, profundidad de campo, texturas reales; nunca un fondo plano con solo texto, ni clipart, ni aspecto de imagen generada por IA.",
+		"Texto en español, escrito exactamente como se indica y con tildes; nada de texto adicional ni párrafos largos.",
+		"No uses logos de otras marcas ni marcas de agua.",
+	];
+	if (redesign) {
+		return [
+			`Diseña un post de Instagram cuadrado para ${brand.name}, al nivel de una escuela de negocios con mucho estilo.`,
+			"Usa la imagen adjunta solo como referencia de tema; no copies sus elementos de spam, sellos, monedas, cohetes ni promesas.",
+			`Fondo: una foto realista a sangre completa relacionada con el mensaje, con una viñeta oscura suave para que el texto se lea. ${people}`,
+			`Texto sobre la foto: ${text}. Titular grande en sans-serif bold, alineado a la izquierda, con 2 o 3 palabras clave resaltadas${primary ? ` en el color de la marca ${primary}` : " en un color de acento"}.`,
+			`Pon el nombre «${brand.name}» pequeño, en texto, abajo a la izquierda, como firma de marca.`,
+			...common,
+		].join(" ");
+	}
 	return [
-		`Edita esta pieza real de redes sociales de ${brand.name} como lo haría su diseñador: es un retoque, no una imagen nueva.`,
-		"Conserva todo lo visual del original: la foto o ilustración de fondo, la composición, la paleta, el estilo tipográfico, los logos y elementos que ya están en la imagen y el mismo formato y proporción.",
-		"Cambia solo el texto que haga falta y quita solo lo problemático. Si el texto original ya estaba bien, déjalo igual.",
-		`Texto nuevo, escrito exactamente así y con tildes: titular «${input.title}»${line ? `; si el original tenía una línea secundaria, usa: «${line}»` : ""}.`,
-		"Respeta la cantidad de texto del original: si casi no tenía texto, no agregues párrafos; nunca pongas el cuerpo completo del post en la imagen.",
-		"Quita sellos, insignias, íconos o frases de resultados garantizados, dinero rápido, cripto o urgencia falsa, si los hay.",
-		"Debe verse como un post real y atractivo de Instagram: con profundidad, textura y la calidad del original. Nunca un fondo plano con solo texto.",
-		"No agregues logos nuevos, personas, rostros, personajes conocidos ni marcas de terceros que no estuvieran en el original.",
+		`Retoca esta pieza real de redes sociales de ${brand.name} como lo haría su diseñador.`,
+		"Conserva lo visual del original: la foto o ilustración, la composición, la paleta, el estilo tipográfico, los logos que ya están y el mismo formato.",
+		`Cambia solo el texto por: ${text}. Respeta la cantidad de texto del original.`,
+		"Quita sellos, insignias o frases de resultados garantizados, dinero rápido o urgencia falsa, si los hay.",
+		`Si el original es solo texto sobre un fondo plano, conviértelo en un post con una foto realista de fondo relacionada con el mensaje. ${people}`,
+		...common,
 	].join(" ");
 }
 
