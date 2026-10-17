@@ -22,9 +22,12 @@ guiones, clips, newsletters, capturas PNG/JPG), pasa por una sola pregunta:
 
 **Por qué JEV y no un LLM.** JEV no escribe, decide: devuelve probabilidades
 tipadas, no texto libre que haya que interpretar. Medido en producción con
-`jev-1.13.0` (TypeSafe): **~100–210 ms por pieza** y **~USD 0,046 por 1.000
-piezas** (USD 0,042 por millón de tokens de entrada, salida gratis). El LLM solo
-entra donde hay que escribir: la zona gris.
+`jev-1.13.0` (TypeSafe): **1.000 decisiones en 4,5 s** (128 ms cada una) por
+**USD 0,06 en total** (USD 0,042 por millón de tokens de entrada, salida gratis).
+El LLM solo entra donde hay que escribir: la zona gris.
+
+Es la primera de dos decisiones que ya funcionan sobre el mismo motor; la
+segunda (¿a qué programa va este inscrito y lo llamamos ya?) está en la sección 6.
 
 ## 2. Esquema de preguntas
 
@@ -115,23 +118,37 @@ Aprobado · Rechazado, y cada pieza guarda autor, rol, versiones e historial.
 
 ## 5. Cómo se mide
 
-Calibrado el 17 oct 2026 con **45 piezas simuladas y etiquetadas** contra JEV real
-(`jev-1.13.0`), probando umbrales sobre las mismas respuestas:
+**Escala.** Prueba en producción (17 oct 2026): 1.000 decisiones reales de
+contenido contra JEV `jev-1.13.0`, 32 a la vez. Se repite desde **Métricas →
+Prueba de escala** o `POST /api/stress`.
+
+| Total | Por segundo | p50 | p95 | Costo total | Respaldo |
+|---:|---:|---:|---:|---:|---:|
+| **4,5 s** | **222** | **128 ms** | **250 ms** | **USD 0,06** | 0 de 1.000 |
+
+Con ese costo, 10.000 piezas al día cuestan ~USD 0,60.
+
+**Calidad.** Calibrado el 17 oct 2026 con **45 piezas simuladas y etiquetadas**
+contra JEV real, probando umbrales sobre las mismas respuestas:
 
 | | Política inicial | **Calibrada** |
 |---|---:|---:|
-| Coincide con la ruta esperada | 53 % (24/45) | **82 % (37/45)** · corridas posteriores 80–87 % |
-| Resuelto sin persona | 18 % | **40 %** |
+| Coincide con la ruta esperada | 53 % (24/45) | **80–87 % según la corrida** (82 % en la calibración) |
+| Resuelto sin persona | 18 % | **40–42 %** |
 | Pieza riesgosa o spam aprobada sola | 0 | **0** |
+
+La última corrida ya lleva imagen en las 45 piezas y preguntas adaptadas a la
+marca: **80 % (36/45)**, 42 % sin persona, 0 riesgosas aprobadas solas, ~0,3 s por
+pieza con imagen. JEV no es 100 % determinista: por eso damos el rango.
 
 | KPI | Valor medido | Cómo se mide |
 |---|---|---|
-| % automático | 40 % | Aprobado + Descartado / total |
-| % a persona o al LLM | 60 % | Revisar + Mejorar con IA / total |
-| Acierto vs. decisión esperada | 82 % (80–87 %) | Ruta de JEV vs. etiqueta |
-| Latencia | ~100–210 ms por pieza | Medida en cada llamada |
-| Costo | ~USD 0,046 por 1.000 piezas | Tokens de entrada × USD 0,042/M |
-| Respaldo usado | 0 en 45/45 | Conteo de fallbacks |
+| % automático | 42 % | Aprobado + Descartado / total |
+| % a persona o al LLM | 58 % | Revisar + Mejorar con IA / total |
+| Acierto vs. decisión esperada | 80–87 % | Ruta de JEV vs. etiqueta |
+| Latencia | 128 ms (p95 250 ms) solo texto · ~0,3 s con imagen | Medida en cada llamada |
+| Costo | ~USD 0,06 por 1.000 decisiones | Tokens de entrada × USD 0,042/M |
+| Respaldo usado | 0 de 1.000 y 0 de 45 | Conteo de fallbacks |
 | Horas ahorradas | — | Piezas resueltas sin persona × minutos por revisión |
 
 **Todos los errores son conservadores:** 5 piezas buenas van a «Mejorar con IA»
@@ -144,18 +161,37 @@ etiqueta nueva. Con piezas reales etiquetadas se recalibran los umbrales.
 Capturas: probado en producción con capturas PNG simuladas; una de spam fue
 **Descartado** en 187 ms.
 
-## 6. Escala y próximos pasos
+## 6. Escala: la segunda decisión ya está construida
 
 El motor no es de contenido: es **estado + preguntas + umbrales + acciones**.
-Otra decisión de 30X es un set de preguntas nuevo con sus umbrales, sin código
-nuevo:
+Lo probamos con la idea n.° 1 de 30X, los **inscritos de Luma** (pantalla
+**Inscritos**, detalle en [12-segmentacion.md](../12-segmentacion.md)):
+**¿a qué programa va este inscrito y lo llamamos ya?**
 
-- **Clusterización de inscritos:** ¿qué programa le sirve a cada inscrito?
-- **Riesgo de abandono:** ¿este alumno necesita que alguien lo llame?
-- **Guardrails de agentes:** ¿esta respuesta del agente puede salir?
+- **Estado:** solo lo que la persona deja al inscribirse (rol, país, dolor,
+  objetivo, temas, relación con 30X). Las etiquetas y el CRM de 30X nunca se le
+  envían a JEV: solo sirven para medir.
+- **Preguntas (una pasada):** `program` (choice, 5 programas + «Sin programa
+  claro») · `seniority` y `ai_maturity` (score) · `sales_ready` y `has_context` (noul).
+- **Umbrales → acción:** programa claro + lista + cargo alto → **Pasar a un
+  asesor**; programa claro → **Enviar la propuesta**; poco contexto o sin
+  programa → **Nutrir con clases gratis**; sin respuesta o duda fuerte →
+  **Revisión humana**. Se **recalcula** cuando cambia un dato.
 
-**Próximos pasos:** recalibrar con piezas reales etiquetadas por el editor,
-invitar a todo el equipo a una misma marca e integrarlo con la publicación.
+Medido con JEV en producción sobre **200 de los 697 perfiles anónimos** de 30X:
+
+| Coincide con el programa de 30X | Donde 30X sugirió uno | AI Sales | «Listo para un asesor»: precisión | Por persona | Costo de 200 |
+|---:|---:|---:|---:|---:|---:|
+| **55,5 %** | 60 % | **95 %** | **88 %** | 93 ms | USD 0,009 |
+
+Es una **primera iteración** sobre perfiles con muy poca información (el 73 % no
+declara su rol) y contra etiquetas de 30X que a veces usan historial del CRM que
+JEV no ve. Lo que ya sirve hoy es **a quién llamar primero**.
+
+**Próximos pasos:** recalibrar ambas decisiones con datos reales etiquetados;
+sumar **riesgo de abandono** (¿este alumno necesita que alguien lo llame?) y
+**guardrails de agentes** (¿esta respuesta puede salir?); integrar con la
+publicación y el CRM.
 
 *Todos los datos de la demo son simulados. Ninguna cifra de este playbook es
 estimada: todas se midieron con el prototipo.*

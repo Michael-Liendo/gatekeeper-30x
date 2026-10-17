@@ -60,3 +60,14 @@ post de ventas → tema "ventas", todas las alertas < 0,15. JEV acepta imágenes
 
 Recalibrar con piezas reales etiquetadas por el editor (cada "Aprobar excepción" o
 "Rechazar" en la Bandeja es una etiqueta nueva).
+
+## Prueba de escala (producción, 17 oct 2026)
+
+1.000 decisiones reales de contenido (solo texto) contra JEV `jev-1.13.0`, concurrencia 32:
+
+| Total | Decisiones por segundo | p50 | p95 | Costo total | Proveedor |
+|---|---|---|---|---|---|
+| **4,5 s** | **222** | **128 ms** | **250 ms** | **USD 0,06** | JEV 1.000 / 0 fallbacks |
+
+Proyección con lo medido: a 222 decisiones por segundo, ~19 millones de decisiones al día
+por ~USD 1.150; o, más realista para 30X, 10.000 piezas al día por ~USD 0,60.

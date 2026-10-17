@@ -133,3 +133,24 @@ Acierto por programa sugerido por 30X:
 2. Abre "Ver detalle técnico" para el acierto por programa y quién respondió.
 3. API: `POST /api/segment/run { "size": 50 | 100 | 200 }` y
    `POST /api/segment/profile { rol, pais, dolor, objetivo, temas, relacion, cambios? }`.
+
+## Medición con JEV en producción (17 oct 2026)
+
+200 perfiles (muestra estratificada, semilla fija), todos respondidos por **JEV `jev-1.13.0`**, 0 fallbacks:
+
+| Métrica | Resultado |
+|---|---|
+| Coincide con el "programa sugerido" por 30X (todos) | **55,5 %** |
+| Coincide, solo donde 30X sugirió un programa | **60 %** |
+| AI Sales | **95 %** (58/61) |
+| Inmersión Ejecutiva / Sales Machine / Hardcore AI / Achievers | 37 % / 38 % / 20 % / 33 % |
+| "Listo para un asesor" coincide con afinidad alta o muy alta | **73 %** |
+| De los que marcó listos, afinidad alta según 30X | **88 %** |
+| Acciones | Asesor 20 · Propuesta 20 · Nutrir 158 · Revisión humana 2 |
+| Latencia promedio por persona | **93 ms** |
+| Costo de las 200 decisiones | **USD 0,009** |
+
+Lectura honesta: es una primera iteración sobre perfiles con muy poca información (el 73 %
+no declara rol y muchos no declaran dolor). Donde el perfil tiene señal clara (ventas + IA)
+acierta 95 %; donde 30X decidió con historial del CRM que el motor no ve, acierta menos.
+Lo que más sirve hoy es **a quién llamar primero**: 88 % de precisión al marcar "listo para un asesor".

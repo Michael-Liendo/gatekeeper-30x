@@ -22,38 +22,52 @@ function getOpenAI(): OpenAI {
 	return client;
 }
 
-function listOf(items: readonly string[]): string {
-	return items
-		.map((item) => item.trim())
-		.filter(Boolean)
-		.join(", ");
-}
-
 /** First sentence of the body, short enough for one line on the image. */
 export function shortLine(body: string, max = 90): string {
 	const first = body.trim().split(/(?<=[.!?¿¡])\s+/)[0] ?? "";
 	return first.length > max ? `${first.slice(0, max - 1).trimEnd()}…` : first;
 }
 
+/** Checks that mean the original visual itself is the problem (spam, off-brand, unsold offer). */
+const REDESIGN_CHECKS = /spam|riesgo de marca|no vende|tema "otro"|promesas exageradas/i;
+
 /**
- * Prompt for the image model: short and concrete (format, exact text overlay, style, what
- * to remove), the way it works best for image models. Quality pieces keep their design and
- * only change the text; spammy or off-brand pieces are restyled with the brand palette.
+ * Prompt for the image model, short and concrete. Two modes:
+ * - retouch: the original visual is fine, so keep it and only fix the text;
+ * - redesign: the visual itself is the problem, so compose a new editorial post the way
+ *   a strong brand does on Instagram: a real-looking photo (people, places, objects),
+ *   a bold headline over it with key words in the brand color, and the brand name small.
  */
 export function buildImagePrompt(input: ImageRegenerationInput): string {
 	const { brand } = input;
-	const colors = listOf(brand.colors);
-	const restyle = input.failedChecks.some((check) => /spam|riesgo de marca|no vende/i.test(check));
 	const line = shortLine(input.body);
+	const primary = brand.colors[0];
+	const redesign = input.failedChecks.some((check) => REDESIGN_CHECKS.test(check));
+	const text = `titular «${input.title}»${line ? ` y, debajo, una sola línea corta: «${line}»` : ""}`;
+	const people =
+		"Puedes usar personas, ambientes y objetos realistas (equipos trabajando, fundadores en una reunión, oficinas, ciudades de Latinoamérica, escritorios, eventos), siempre personas genéricas que no sean figuras públicas reales ni personajes conocidos.";
+	const common = [
+		"Calidad de fotografía editorial: luz natural, profundidad de campo, texturas reales; nunca un fondo plano con solo texto, ni clipart, ni aspecto de imagen generada por IA.",
+		"Texto en español, escrito exactamente como se indica y con tildes; nada de texto adicional ni párrafos largos.",
+		"No uses logos de otras marcas ni marcas de agua.",
+	];
+	if (redesign) {
+		return [
+			`Diseña un post de Instagram cuadrado para ${brand.name}, al nivel de una escuela de negocios con mucho estilo.`,
+			"Usa la imagen adjunta solo como referencia de tema; no copies sus elementos de spam, sellos, monedas, cohetes ni promesas.",
+			`Fondo: una foto realista a sangre completa relacionada con el mensaje, con una viñeta oscura suave para que el texto se lea. ${people}`,
+			`Texto sobre la foto: ${text}. Titular grande en sans-serif bold, alineado a la izquierda, con 2 o 3 palabras clave resaltadas${primary ? ` en el color de la marca ${primary}` : " en un color de acento"}.`,
+			`Pon el nombre «${brand.name}» pequeño, en texto, abajo a la izquierda, como firma de marca.`,
+			...common,
+		].join(" ");
+	}
 	return [
-		`Edita esta imagen de redes sociales de ${brand.name}. Mismo formato y proporción.`,
-		restyle
-			? `Rediséñala como una pieza editorial limpia de la marca: fondo de color plano ${colors ? `de su paleta (${colors})` : "sobrio"}, tipografía sans-serif grande y negra, mucho espacio en blanco.`
-			: "Conserva exactamente el diseño: los mismos colores de fondo, la misma tipografía, los mismos elementos gráficos y la misma posición de cada elemento. Solo cambia el texto.",
-		`Texto de la imagen, escrito exactamente así y con tildes: titular «${input.title}»${line ? `; una línea debajo: «${line}»` : ""}. No agregues ningún otro texto.`,
-		"Quita sellos, insignias, íconos o frases de resultados garantizados, dinero rápido, cripto o urgencia falsa.",
-		"Estilo: natural y profesional, como un post real de una marca; sin brillos, degradados, efectos 3D ni aspecto de imagen generada por IA.",
-		"NO incluyas logos nuevos, personas, rostros, personajes conocidos ni marcas de terceros.",
+		`Retoca esta pieza real de redes sociales de ${brand.name} como lo haría su diseñador.`,
+		"Conserva lo visual del original: la foto o ilustración, la composición, la paleta, el estilo tipográfico, los logos que ya están y el mismo formato.",
+		`Cambia solo el texto por: ${text}. Respeta la cantidad de texto del original.`,
+		"Quita sellos, insignias o frases de resultados garantizados, dinero rápido o urgencia falsa, si los hay.",
+		`Si el original es solo texto sobre un fondo plano, conviértelo en un post con una foto realista de fondo relacionada con el mensaje. ${people}`,
+		...common,
 	].join(" ");
 }
 

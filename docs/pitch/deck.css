@@ -1216,3 +1216,211 @@ body.notes #notes {
 	color: #8a8f9c;
 	margin-bottom: 4px;
 }
+
+/* ── Las dos decisiones (portada, lámina 3) ─────────────────── */
+
+.cover-lede {
+	margin-top: 20px;
+	font-size: 23px;
+	font-weight: 300;
+	line-height: 1.38;
+	color: var(--ink-soft);
+	max-width: 32ch;
+	text-wrap: pretty;
+}
+.cover-lede strong {
+	color: var(--ink);
+	font-weight: 500;
+}
+.engine-line {
+	margin-top: 18px;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	background: var(--ink);
+	color: #fff;
+	border-radius: 14px;
+	padding: 9px 16px;
+	font-size: 15.5px;
+}
+.engine-line .icon {
+	width: 18px;
+	height: 18px;
+	color: #e3f64d;
+}
+.area {
+	font-size: 12px;
+	font-weight: 500;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--ink-soft);
+}
+.q-mini {
+	font-size: 17px;
+	font-weight: 500;
+	line-height: 1.3;
+}
+
+.decisions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 18px;
+}
+.decision {
+	border-radius: 26px;
+	padding: 22px 24px 24px;
+	display: grid;
+	align-content: start;
+	gap: 14px;
+}
+.decisions .decision .q {
+	min-height: 2.4em;
+}
+.decision .q {
+	font-size: 25px;
+	font-weight: 500;
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+}
+.decision .outs {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+}
+.decision .outs .route {
+	justify-content: flex-start;
+	font-size: 14.5px;
+	padding: 8px 12px 8px 10px;
+	white-space: normal;
+}
+.decision .extra {
+	font-size: 14.5px;
+	line-height: 1.4;
+	color: var(--ink);
+}
+
+/* ── Flujo de inscritos ─────────────────────────────────────── */
+
+.flow {
+	display: grid;
+	grid-template-columns: 1fr 34px 1.15fr 34px 1fr;
+	align-items: stretch;
+	gap: 8px;
+}
+.flow .arrow {
+	display: grid;
+	place-items: center;
+	color: var(--ink-muted);
+}
+.flow .arrow .icon {
+	width: 26px;
+	height: 26px;
+}
+.flow .card {
+	padding: 16px 18px;
+	display: grid;
+	align-content: start;
+	gap: 8px;
+}
+.flow .tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+.flow .tag {
+	background: rgba(255, 255, 255, 0.75);
+	border-radius: 10px;
+	padding: 4px 10px;
+	font-size: 13px;
+}
+.flow .card.dark .tag {
+	background: rgba(255, 255, 255, 0.12);
+	color: #fff;
+}
+.flow .route {
+	font-size: 13px;
+	padding: 4px 11px 4px 9px;
+	justify-self: start;
+}
+.stat-row {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 14px;
+}
+.stat-row .card {
+	padding: 14px 18px 16px;
+}
+.stat-mid {
+	font-size: 38px;
+	font-weight: 300;
+	letter-spacing: -0.02em;
+	line-height: 1.05;
+	font-variant-numeric: tabular-nums;
+	margin-top: 6px;
+}
+.stat-mid .unit {
+	font-size: 16px;
+	letter-spacing: 0;
+	margin-left: 4px;
+}
+.stat-note {
+	font-size: 13px;
+	line-height: 1.35;
+	color: var(--ink-soft);
+	margin-top: 4px;
+}
+.card.dark .stat-note {
+	color: #b9bcc6;
+}
+
+/* ── Resultados: la prueba de escala ────────────────────────── */
+
+.hero-grid {
+	display: grid;
+	grid-template-columns: 1.75fr 1fr;
+	gap: 16px;
+}
+.hero-num {
+	font-size: 54px;
+	font-weight: 300;
+	letter-spacing: -0.03em;
+	line-height: 1.02;
+	font-variant-numeric: tabular-nums;
+	margin-top: 10px;
+}
+.hero-num em {
+	font-style: normal;
+	color: #e3f64d;
+}
+.hero-sub {
+	margin-top: 12px;
+	font-size: 16px;
+	line-height: 1.45;
+	color: #c9ccd6;
+}
+.pair {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+}
+.minis {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 10px;
+	margin-top: 10px;
+}
+.minis b {
+	display: block;
+	font-size: 30px;
+	font-weight: 300;
+	letter-spacing: -0.02em;
+	line-height: 1.05;
+	font-variant-numeric: tabular-nums;
+}
+.minis span {
+	display: block;
+	font-size: 13px;
+	line-height: 1.3;
+	color: var(--ink-soft);
+	margin-top: 4px;
+}

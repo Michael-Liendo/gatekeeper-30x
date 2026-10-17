@@ -314,85 +314,87 @@
 	</section>
 
 	<!-- ═══════════════════════════ 07 · Cómo se mide ═══════════════════════════ -->
-	<section class="slide" data-notes="¿Cómo se mide? Calibramos con cuarenta y cinco piezas simuladas y etiquetadas, contra JEV real. Con los umbrales del diseño inicial acertábamos el 53 por ciento; calibrados, el 82, y entre 80 y 87 en corridas posteriores. Las piezas resueltas sin persona pasaron de 18 a 40 por ciento, y ninguna pieza riesgosa o spam se aprobó sola: cada error es del lado prudente. Cada decisión del editor en la bandeja se convierte en una etiqueta nueva para recalibrar con datos reales.">
+	<section class="slide" data-notes="¿Cómo se mide? Primero, la escala: corrimos mil decisiones reales con JEV en producción. Tardaron cuatro segundos y medio, doscientas veintidós por segundo, ciento veintiocho milisegundos cada una y doscientos cincuenta en el peor cinco por ciento, por seis centavos de dólar en total y sin un solo respaldo. Después, la calidad: con cuarenta y cinco piezas simuladas y etiquetadas, la política inicial acertaba el 53 por ciento; calibrada, entre 80 y 87 según la corrida. Resuelve sin persona el 42 por ciento, y ninguna pieza riesgosa o spam se aprobó sola. Cada decisión del editor en la bandeja es una etiqueta nueva para recalibrar con datos reales.">
 		<div class="head">
 			<span class="num">07</span>
 			<span class="eyebrow">Cómo se mide</span>
 		</div>
 		<div class="body">
 			<h2 style="font-size:34px">Medido con JEV real, no estimado</h2>
-			<div class="grid-3 mt">
-				<div class="card lilac">
-					<div class="card-label">Acierto vs. ruta esperada <svg aria-hidden="true" class="icon"><use href="#i-check"/></svg></div>
-					<div class="big"><span class="before">53 %</span>82 %</div>
-					<p class="small" style="color:var(--ink); margin-top:4px">37/45 · corridas posteriores: 80–87 %</p>
-				</div>
-				<div class="card aqua">
-					<div class="card-label">Resuelto sin persona <svg aria-hidden="true" class="icon"><use href="#i-bolt"/></svg></div>
-					<div class="big"><span class="before">18 %</span>40 %</div>
-					<p class="small" style="color:var(--ink); margin-top:4px">El 60 % restante llega a una persona o al LLM</p>
-				</div>
-				<div class="card dark">
-					<div class="card-label">Riesgo o spam aprobado solo <svg aria-hidden="true" class="icon"><use href="#i-shield"/></svg></div>
-					<div class="big">0</div>
-					<p class="small" style="margin-top:4px">Cada error es conservador</p>
-				</div>
-				<div class="card">
-					<div class="card-label">Latencia <svg aria-hidden="true" class="icon"><use href="#i-clock"/></svg></div>
-					<div class="big" style="font-size:34px">100–210<span class="unit">ms / pieza</span></div>
-				</div>
-				<div class="card">
-					<div class="card-label">Costo <svg aria-hidden="true" class="icon"><use href="#i-coin"/></svg></div>
-					<div class="big" style="font-size:34px">USD 0,046<span class="unit">/ 1.000</span></div>
-				</div>
-				<div class="card">
-					<div class="card-label">Respaldo usado <svg aria-hidden="true" class="icon"><use href="#i-loop"/></svg></div>
-					<div class="big" style="font-size:34px">0<span class="unit">fallbacks en 45/45</span></div>
+			<div class="card dark mt" style="padding:18px 24px">
+				<div class="card-label">Prueba de escala · 1.000 decisiones reales de contenido, 32 a la vez <svg aria-hidden="true" class="icon"><use href="#i-bolt"/></svg></div>
+				<div class="scale-row">
+					<div><div class="big" style="color:#e3f64d">4,5 s</div><span>las 1.000</span></div>
+					<div><div class="big">222</div><span>decisiones por segundo</span></div>
+					<div><div class="big">128<span class="unit">ms</span></div><span>cada una · p95 250 ms</span></div>
+					<div><div class="big">USD 0,06</div><span>en total · 10.000/día ≈ USD 0,60</span></div>
+					<div><div class="big">0</div><span>respaldos usados</span></div>
 				</div>
 			</div>
-			<div class="card muted-bg mt" style="padding:14px 22px">
+			<div class="grid-3 mt-s">
+				<div class="card lilac">
+					<div class="card-label">Acierto vs. ruta esperada <svg aria-hidden="true" class="icon"><use href="#i-check"/></svg></div>
+					<div class="big"><span class="before">53 %</span>80–87 %</div>
+					<p class="small" style="color:var(--ink); margin-top:4px">Según la corrida · con imágenes: 80 % (36/45)</p>
+				</div>
+				<div class="card aqua">
+					<div class="card-label">Resuelto sin persona <svg aria-hidden="true" class="icon"><use href="#i-user"/></svg></div>
+					<div class="big"><span class="before">18 %</span>42 %</div>
+					<p class="small" style="color:var(--ink); margin-top:4px">El resto llega a una persona o al LLM</p>
+				</div>
+				<div class="card">
+					<div class="card-label">Riesgo o spam aprobado solo <svg aria-hidden="true" class="icon"><use href="#i-shield"/></svg></div>
+					<div class="big">0</div>
+					<p class="small" style="margin-top:4px">Cada error es conservador · ~0,3 s con imagen</p>
+				</div>
+			</div>
+			<div class="card muted-bg mt-s" style="padding:12px 22px">
 				<p class="small" style="color: var(--ink)"><strong>Horas ahorradas</strong> = piezas resueltas sin persona × minutos que tarda una revisión. <strong>Cada «Aprobar excepción» o «Rechazar» del editor es una etiqueta nueva</strong> para recalibrar con piezas reales.</p>
 			</div>
 		</div>
-		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>7 / 8 · 45 piezas simuladas · jev-1.13.0</span></div>
+		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>7 / 8 · jev-1.13.0, 17 oct 2026 · calidad sobre 45 piezas simuladas</span></div>
 	</section>
 
 	<!-- ═══════════════════════════ 08 · Escala ═══════════════════════════ -->
-	<section class="slide" data-notes="El motor no es de contenido: es estado, preguntas, umbrales y acciones. Para otra decisión de 30X, como agrupar inscritos, detectar riesgo de abandono o poner guardrails a sus agentes, se escribe un set de preguntas y sus umbrales, sin código nuevo. Los próximos pasos: recalibrar con piezas reales etiquetadas por el editor, invitar a todo el equipo a una misma marca e integrarlo con la publicación. Está funcionando en la URL de la demo y el repositorio es público. Gracias.">
+	<section class="slide" data-notes="El motor no es de contenido: es estado, preguntas, umbrales y acciones. Y ya lo probamos con una segunda decisión, la idea número uno de 30X: los inscritos de Luma. Cinco preguntas en una pasada deciden programa, cargo, madurez en IA y si la persona está lista para un asesor, y el código elige la acción. Con doscientos perfiles anónimos de 30X coincide con su programa sugerido el 55,5 por ciento, 95 en AI Sales, y acierta el 88 por ciento al marcar a quién llamar. Es una primera iteración con perfiles muy escasos. Lo siguiente: recalibrar con datos reales y sumar riesgo de abandono y guardrails de agentes. Gracias.">
 		<div class="head">
 			<span class="num">08</span>
 			<span class="eyebrow">Escala y próximos pasos</span>
 		</div>
 		<div class="body">
-			<h2 style="font-size:34px">El mismo motor, otras decisiones de 30X: preguntas nuevas, cero código nuevo</h2>
-			<div class="grid-3 mt">
-				<div class="card lilac">
-					<h3>Clusterización de inscritos</h3>
-					<p class="small mt-s" style="color:var(--ink)">¿Qué programa le sirve a cada inscrito?</p>
+			<h2 style="font-size:32px">El mismo motor, otra decisión de 30X: ya está construida</h2>
+			<p class="lede" style="font-size:17px; margin-top:6px; max-width:none">El motor es estado + preguntas tipadas + umbrales + acciones. Otra decisión es otro set de preguntas, no otro sistema.</p>
+			<div class="split mt" style="grid-template-columns: 1.65fr 1fr; gap: 16px">
+				<div class="card lilac" style="padding:20px 24px">
+					<div class="card-label">Inscritos de Luma · idea n.° 1 de 30X · pantalla Inscritos</div>
+					<h3 style="font-size:21px; margin-top:8px">¿A qué programa va este inscrito y lo llamamos ya?</h3>
+					<p class="small" style="color:var(--ink); margin-top:8px; line-height:1.9">
+						<span class="type choice">program</span> <span class="type score">seniority</span> <span class="type score">ai_maturity</span> <span class="type noul">sales_ready</span> <span class="type noul">has_context</span>
+						→ asesor · propuesta · nutrir · revisión humana
+					</p>
+					<div class="seg-stats mt-s">
+						<div><b>55,5 %</b><span>coincide con el programa de 30X · 60 % donde sugirió uno · 95 % en AI Sales</span></div>
+						<div><b>88 %</b><span>precisión de «listo para un asesor»</span></div>
+						<div><b>93 ms</b><span>por persona</span></div>
+						<div><b>USD 0,009</b><span>por 200 personas</span></div>
+					</div>
+					<p class="small" style="color:var(--ink); margin-top:10px">200 de 697 perfiles anónimos de 30X, JEV en producción, 0 respaldos. Primera iteración: perfiles escasos (73 % sin rol).</p>
 				</div>
-				<div class="card aqua">
-					<h3>Riesgo de abandono</h3>
-					<p class="small mt-s" style="color:var(--ink)">¿Este alumno necesita que alguien lo llame?</p>
-				</div>
-				<div class="card peach">
-					<h3>Guardrails de agentes</h3>
-					<p class="small mt-s" style="color:var(--ink)">¿Esta respuesta del agente puede salir?</p>
-				</div>
-			</div>
-			<div class="split mt" style="grid-template-columns: 1fr 1fr; gap: 16px">
-				<div class="card">
-					<div class="card-label" style="margin-bottom:12px">Próximos pasos</div>
-					<ul class="points">
-						<li>Recalibrar con piezas reales etiquetadas por el editor</li>
-						<li>Invitar a todo el equipo a una misma marca</li>
-						<li>Integrarlo con la publicación</li>
-					</ul>
-				</div>
-				<div class="card dark">
-					<div class="card-label" style="margin-bottom:12px">Pruébalo</div>
-					<p style="font-size:17px; line-height:1.5"><a href="https://gatekeeper-30x.michaelliendo.com">gatekeeper-30x.michaelliendo.com</a></p>
-					<p style="font-size:17px; line-height:1.5"><a href="https://github.com/Michael-Liendo/gatekeeper-30x">github.com/Michael-Liendo/gatekeeper-30x</a></p>
-					<p class="small mt-s">En producción · código abierto AGPL-3.0 · DevGain</p>
+				<div style="display:grid; gap:16px">
+					<div class="card">
+						<div class="card-label" style="margin-bottom:10px">Próximos pasos</div>
+						<ul class="points" style="gap:6px">
+							<li style="font-size:15px">Recalibrar con piezas e inscritos reales</li>
+							<li style="font-size:15px">Riesgo de abandono y guardrails de agentes</li>
+							<li style="font-size:15px">Integrar con la publicación y el CRM</li>
+						</ul>
+					</div>
+					<div class="card dark">
+						<div class="card-label" style="margin-bottom:8px">Pruébalo</div>
+						<p style="font-size:15px; line-height:1.5"><a href="https://gatekeeper-30x.michaelliendo.com">gatekeeper-30x.michaelliendo.com</a></p>
+						<p style="font-size:15px; line-height:1.5"><a href="https://github.com/Michael-Liendo/gatekeeper-30x">github.com/Michael-Liendo/gatekeeper-30x</a></p>
+						<p class="small" style="margin-top:6px">En producción · AGPL-3.0 · DevGain</p>
+					</div>
 				</div>
 			</div>
 		</div>

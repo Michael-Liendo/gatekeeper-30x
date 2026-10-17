@@ -23,6 +23,10 @@ export const SITE_FETCH_LIMITS = {
 
 export const BOT_USER_AGENT = "GatekeeperBot/1.0 (+https://gatekeeper-30x.michaelliendo.com)";
 
+/** Social networks only serve their public preview tags (og:*) to link-preview crawlers. */
+export const PREVIEW_USER_AGENT =
+	"facebookexternalhit/1.1 (+http://www.facebook.com/externalhit_uatext.php)";
+
 const ALLOWED_PORTS = new Set(["", "80", "443"]);
 const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
 const HTML_TYPES = ["text/html", "application/xhtml+xml"];
@@ -85,7 +89,7 @@ const safeLookup: LookupFunction = (hostname, options, callback) => {
 	});
 };
 
-function request(url: URL, signal: AbortSignal): Promise<IncomingMessage> {
+function request(url: URL, signal: AbortSignal, userAgent: string): Promise<IncomingMessage> {
 	const client = url.protocol === "https:" ? https : http;
 	return new Promise((resolve, reject) => {
 		const req = client.request(
@@ -95,7 +99,7 @@ function request(url: URL, signal: AbortSignal): Promise<IncomingMessage> {
 				lookup: safeLookup,
 				signal,
 				headers: {
-					"User-Agent": BOT_USER_AGENT,
+					"User-Agent": userAgent,
 					Accept: "text/html,application/xhtml+xml;q=0.9,*/*;q=0.1",
 					"Accept-Language": "es,en;q=0.8",
 					"Accept-Encoding": "gzip, deflate, br",
@@ -194,13 +198,16 @@ function describeNetworkError(error: unknown): SiteFetchError {
  * Fetches one HTML page under the limits in SITE_FETCH_LIMITS. Throws SiteFetchError
  * (Spanish message) on any failure.
  */
-export async function fetchSiteHtml(rawUrl: string): Promise<FetchedPage> {
+export async function fetchSiteHtml(
+	rawUrl: string,
+	userAgent: string = BOT_USER_AGENT,
+): Promise<FetchedPage> {
 	const signal = AbortSignal.timeout(SITE_FETCH_LIMITS.timeoutMs);
 	let url = assertFetchableUrl(rawUrl);
 
 	try {
 		for (let hop = 0; ; hop++) {
-			const response = await request(url, signal);
+			const response = await request(url, signal, userAgent);
 			const status = response.statusCode ?? 0;
 
 			if (REDIRECT_STATUSES.has(status)) {

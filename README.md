@@ -2,9 +2,18 @@
 
 > **JEV decide, el LLM corrige, y el equipo solo revisa lo que de verdad importa.**
 
-Un filtro editorial que usa [JEV de TypeSafe](https://docs.typesafe.ai) para **aprobar,
-mandar a mejorar, escalar a una persona o descartar** cada pieza de contenido de una marca
-en milisegundos, y que con un clic reescribe con IA lo que falló y se lo vuelve a pasar a JEV.
+Decisiones de 30X que [JEV de TypeSafe](https://docs.typesafe.ai) toma miles de veces al día,
+en milisegundos y por fracciones de centavo. Dos ya funcionan sobre el mismo motor:
+
+1. **Media: ¿esta pieza sale?** JEV decide si cada pieza de contenido se **aprueba, se manda a
+   mejorar, va a una persona o se descarta**; con un clic la IA reescribe lo que falló y JEV
+   vuelve a revisar la versión nueva.
+2. **Comercial: ¿a qué programa va este inscrito de Luma y lo llamamos ya?** JEV decide
+   programa, cargo, madurez en IA y si la persona está lista para un asesor; el código elige la
+   siguiente acción.
+
+**Medido en producción:** 1.000 decisiones reales en **4,5 s** (222 por segundo, 128 ms cada
+una, p95 250 ms) por **USD 0,06** en total y 0 respaldos.
 
 Proyecto del equipo **DevGain** para el **Hackathon 30X (octubre 2026) · Reto 30X: JEV**.
 
@@ -12,6 +21,7 @@ Proyecto del equipo **DevGain** para el **Hackathon 30X (octubre 2026) · Reto 3
 |---|---|
 | Demo en línea | https://gatekeeper-30x.michaelliendo.com |
 | Playbook (8 slides) | [`docs/playbook/`](docs/playbook/) · versión en texto: [`docs/playbook/playbook.md`](docs/playbook/playbook.md) |
+| Pitch (10 láminas) | [`docs/pitch/`](docs/pitch/) · guion: [`docs/pitch/guion.md`](docs/pitch/guion.md) |
 | Video demo | [VIDEO] |
 | Repositorio | https://github.com/Michael-Liendo/gatekeeper-30x |
 
@@ -50,7 +60,7 @@ aprueba sin respuesta**.
 ### 2. Subir una pieza (captura o texto) → JEV → ruta
 - `/nueva`: arrastras una captura (PNG/JPG hasta 4 MB, también con Ctrl/Cmd+V), pegas el texto
   o ambos, y eliges formato y canal.
-- JEV responde todas las preguntas en una sola llamada (unos 100–210 ms por pieza). Las
+- JEV responde todas las preguntas en una sola llamada (128 ms por pieza de texto, ~0,3 s con imagen). Las
   capturas también las juzga JEV: lee el texto visible y considera lo que muestra.
 - El código aplica los umbrales y abre `/pieza/[id]` con la ruta, el porqué y el estado.
 
@@ -85,6 +95,29 @@ En la Bandeja, **"Revisar contenido de ejemplo"** pasa por JEV 45 piezas simulad
 [`docs/04-dataset.md`](docs/04-dataset.md)). `/contenido` las lista y `/metricas` muestra
 cuánto se resuelve solo, cuánto llega a una persona, cuánto acierta, latencia y costo.
 
+### 7. Prueba de escala
+En `/metricas`, **"Correr 1.000 decisiones"** lanza 1.000 decisiones reales de contenido contra
+JEV (solo texto, sin caché, 32 a la vez) y muestra tiempo total, decisiones por segundo, p50/p95,
+costo y quién respondió. Una corrida por minuto por usuario. Medido el 17 oct 2026 con
+`jev-1.13.0`: **4,5 s · 222 decisiones por segundo · 128 ms (p95 250 ms) · USD 0,06 · 0
+respaldos**; 10.000 piezas al día costarían ~USD 0,60.
+
+### 8. Inscritos de Luma (segmentación)
+La idea n.° 1 de 30X, con el mismo motor. En **Inscritos** (`/segmentos`):
+- **"Segmentar 100 inscritos de ejemplo"** decide sobre perfiles anónimos de
+  `data/perfiles-30x.csv` (697 que compartió 30X) y compara con el programa que sugiere 30X.
+- **"Nuevo inscrito"** segmenta un perfil en vivo; **"Cambió su situación"** cambia un dato,
+  recalcula y muestra el antes y el ahora.
+- JEV ve solo lo que alguien deja al inscribirse (rol, país, dolor, objetivo, temas, relación
+  con 30X), nunca las etiquetas ni el CRM de 30X. Responde 5 preguntas en una pasada
+  (`program`, `seniority`, `ai_maturity`, `sales_ready`, `has_context`) y
+  `domain/segment-policy.ts` elige: **pasar a un asesor**, **enviar la propuesta**, **nutrir
+  con clases gratis** o **revisión humana**.
+- Medido con JEV sobre 200 perfiles: **55,5 %** coincide con el programa de 30X (60 % donde 30X
+  sugirió uno; **95 % en AI Sales**), **88 %** de precisión en "listo para un asesor", 93 ms por
+  persona, USD 0,009 por las 200. Primera iteración sobre perfiles muy escasos; detalle en
+  [`docs/12-segmentacion.md`](docs/12-segmentacion.md).
+
 ## Preguntas tipadas y umbrales
 
 JEV contesta 12 preguntas en una pasada. **JEV decide, el código calcula**: contar, sumar y
@@ -109,19 +142,19 @@ Política **Equilibrado** (calibrada con JEV real, ver [`docs/05-calibracion.md`
 | Todo lo demás | — | Mejorar con IA |
 
 Resultados medidos en las 45 piezas etiquetadas: coincidencia con la ruta esperada de 53 % con
-la política inicial a **82 %** con la calibrada (entre 80 y 87 % en corridas posteriores),
-**40 %** resuelto sin persona, **0** piezas riesgosas aprobadas solas, ~100–210 ms por pieza y
-~USD 0,046 por 1.000 piezas. El detalle de decisiones, umbrales, quién opera y cómo se mide
+la política inicial a **80–87 %** con la calibrada (según la corrida; la última, con imágenes y
+preguntas por marca, 80 %), **42 %** resuelto sin persona, **0** piezas riesgosas aprobadas
+solas y ~0,3 s por pieza con imagen. A escala, 1.000 decisiones de texto en 4,5 s por USD 0,06. El detalle de decisiones, umbrales, quién opera y cómo se mide
 está en el [playbook](docs/playbook/playbook.md).
 
 ## Arquitectura
 
 ```mermaid
 flowchart LR
-  U[Equipo de Media<br/>navegador] --> P[proxy.ts<br/>sesión y onboarding]
+  U[Media y Comercial<br/>navegador] --> P[proxy.ts<br/>sesión y onboarding]
   P --> R[Rutas de Next.js<br/>src/app y src/app/api]
-  R --> UC[Casos de uso<br/>review-piece · regenerate-piece · piece-workflow]
-  UC --> POL[Política editorial<br/>domain: reglas y umbrales]
+  R --> UC[Casos de uso<br/>review-piece · regenerate-piece · stress-run<br/>segment-batch · segment-profile]
+  UC --> POL[Políticas<br/>editorial-policy · segment-policy]
   UC --> DE{{Puerto DecisionEngine}}
   DE -->|principal| JEV[JEV · TypeSafe<br/>@typesafe-ai/sdk]
   DE -->|respaldo si falla o tarda| OAD[OpenAI Decisions<br/>gpt-6-luna]
@@ -140,7 +173,7 @@ src/
 │   ├── (auth)/ingresar         # Ingreso con email
 │   ├── (onboarding)/bienvenida # Onboarding de marca
 │   ├── (app)/                  # Bandeja, tablero, mis-piezas, contenido, nueva,
-│   │                           # pieza/[id], politica, metricas, marca
+│   │                           # pieza/[id], politica, metricas, marca, segmentos
 │   └── api/                    # Route handlers (ver tabla)
 ├── modules/
 │   ├── content-review/         # El gatekeeper: preguntas, política, JEV, LLM, regeneración
@@ -148,6 +181,7 @@ src/
 │   │   ├── application/        # review-piece, review-batch, regenerate-piece
 │   │   ├── infrastructure/     # jev-client, DecisionEngine (JEV + fallback OpenAI), openai-*
 │   │   └── ui/                 # Bandeja, nueva pieza, política, métricas
+│   ├── segmentation/           # Inscritos de Luma: preguntas, segment-policy, lote y recálculo
 │   ├── brand/                  # Perfil de marca y "Analizar mi marca" (lectura del sitio + IA)
 │   ├── accounts/               # Usuarios, sesiones, ingreso
 │   └── workspace/              # CRM liviano: piezas, estados, versiones, historial, tablero
@@ -195,6 +229,9 @@ Errores siempre como `{ error }` en español. Todo requiere sesión salvo lo ind
 | POST | `/api/review/piece` | Revisa una pieza suelta (texto y/o captura) sin guardarla |
 | POST | `/api/enrich` | Sugerencias del LLM para una pieza |
 | POST | `/api/decide` | Prueba manual del motor de decisiones con preguntas arbitrarias |
+| POST | `/api/stress` | Prueba de escala: `{ count: 100 \| 1000 }` decisiones reales de contenido (1 por minuto) |
+| POST | `/api/segment/run` | Segmenta una muestra fija de inscritos: `{ size: 50 \| 100 \| 200 }` → decisiones y métricas vs. 30X |
+| POST | `/api/segment/profile` | Segmenta un inscrito `{ rol, pais, dolor, objetivo, temas, relacion, cambios? }`; con `cambios`, recalcula y devuelve antes y ahora |
 | GET | `/api/content` | Las 45 piezas simuladas |
 
 Contratos detallados: [`docs/06-contrato-marca.md`](docs/06-contrato-marca.md) y
@@ -256,7 +293,8 @@ La demo corre en Coolify con despliegue automático desde `main`.
 
 Más contexto en `docs/`: [reto](docs/01-reto.md), [diseño](docs/02-diseno.md),
 [pitch](docs/03-pitch.md), [dataset](docs/04-dataset.md),
-[calibración](docs/05-calibracion.md), [guía visual](docs/07-estilo.md).
+[calibración y prueba de escala](docs/05-calibracion.md),
+[segmentación de inscritos](docs/12-segmentacion.md), [guía visual](docs/07-estilo.md).
 
 ## Licencia
 

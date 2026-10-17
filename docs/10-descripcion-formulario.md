@@ -2,59 +2,39 @@ Nombre del proyecto: Gatekeeper Editorial 30X
 
 ---
 
-Gatekeeper Editorial 30X es un filtro editorial donde JEV decide, el LLM corrige y el equipo solo revisa lo que de verdad importa.
+Decisiones de 30X que JEV toma miles de veces al día, en milisegundos y por fracciones de centavo. JEV decide; la IA generativa solo escribe cuando hace falta; una persona revisa solo lo que importa.
 
-EL PROBLEMA
-30X produce mucho contenido (posts, guiones, clips, newsletters, miniaturas) y cada vez más con IA. Revisarlo a mano es lento; pasarlo todo por un LLM es caro, tarda segundos y no da un "sí o no" confiable. Y una sola pieza promocional, exagerada o fuera de tono puede dañar la marca.
+LAS DOS DECISIONES
+1. Media: ¿esta pieza sale? Cada post, guion, clip o captura, hecho por el equipo o por una IA.
+2. Comercial: ¿a qué programa va este inscrito de Luma y lo llamamos ya? Es la idea n.° 1 que propuso 30X.
+Hoy las dos se toman a mano: lento, con criterios distintos, y equivocarse cuesta marca o ventas.
 
-LA SOLUCIÓN
-Una app web donde diseñadores, copywriters y el editor de Media suben cada pieza (una captura, el texto o ambos). JEV la revisa en milisegundos contra la marca y el código la manda a una de cuatro rutas:
-- Aprobado: se publica sin que nadie haga nada.
-- Mejorar con IA: zona gris; un LLM propone los cambios.
-- Revisar: riesgo o poca seguridad; lo decide una persona.
-- Descartado: spam o fuera de tema.
-Cada decisión explica qué regla falló, por ejemplo "Demasiado promocional (0,91)".
+ESCALA, MEDIDA EN PRODUCCIÓN
+1.000 decisiones reales con JEV (jev-1.13.0) en 4,5 s: 222 por segundo, 128 ms cada una (p95 250 ms), USD 0,06 en total y 0 respaldos. Con ese costo, 10.000 piezas al día cuestan ~USD 0,60. Se repite en vivo desde Métricas → Prueba de escala.
 
-Si una pieza no pasa, "Regenerar con IA" la reescribe con la voz de la marca corrigiendo solo lo que JEV marcó (y redibuja la captura si era una imagen), y JEV vuelve a revisar la versión nueva antes de guardarla. Ejemplo real: una captura de spam salió Descartada; la IA la reescribió con la voz de 30X y la redibujó en el lima de la marca; JEV la aprobó y quedó como Versión 2.
-
-QUÉ DECIDE JEV
-JEV no escribe: decide. En una sola llamada responde 12 preguntas tipadas sobre la pieza:
-- choice: tema (los temas de la marca + "Otro") y formato.
-- score: relevancia para la audiencia, si deja algo accionable y potencial de alcance (solo informativo).
-- sí/no con probabilidad: demasiado promocional, promesas exageradas, datos sin fuente, riesgo de marca, ofrece algo que la marca no vende, spam y si encaja con la línea editorial.
-Las preguntas se arman con el perfil de cada marca, que la app prellena leyendo su web en el onboarding (pegas 30x.com y listo). JEV también juzga capturas: lee el texto visible y lo que muestran.
-
-UMBRALES (JEV decide, el código calcula)
-Contar, sumar y comparar vive en código, nunca dentro de una pregunta:
+DECISIÓN 1: ¿ESTA PIEZA SALE?
+JEV responde 12 preguntas tipadas en una llamada (tema y formato; relevancia, accionable y alcance; sí/no con probabilidad: promocional, promesas exageradas, datos sin fuente, riesgo de marca, oferta que la marca no vende, spam, línea editorial). Las preguntas se arman con el perfil de la marca, que la app lee de su web (pegas 30x.com). JEV también juzga capturas.
+El código aplica los umbrales y elige la ruta:
 - Spam ≥ 0,60: se descarta.
-- Riesgo de marca, promesas exageradas u oferta que la marca no vende ≥ 0,60: a una persona.
-- Seguridad muy baja o tema "Otro": a una persona.
-- Seguridad ≥ 0,50, ninguna alerta en rojo y puntaje editorial ≥ 0,50: se aprueba solo.
-- Todo lo demás: mejorar con IA.
-- Si JEV no responde, nunca se aprueba: va a una persona.
-Los umbrales son datos: Media elige entre Estricto, Equilibrado (calibrado) y Flexible, o ajusta cada valor, y los cambios se aplican al instante sin deploy.
+- Riesgo de marca, promesas u oferta ajena ≥ 0,60, o poca seguridad: a una persona.
+- Seguridad ≥ 0,50, sin alertas y buen puntaje: se aprueba sola.
+- Lo demás: mejorar con IA.
+- Si JEV no responde, nunca se aprueba.
+"Regenerar con IA" reescribe el texto con la voz de la marca y redibuja la imagen; JEV revisa la versión nueva antes de guardarla. Caso real: una captura de spam salió Descartada; la IA la convirtió en una invitación a las clases gratis de 30X, en el lima de la marca; JEV la aprobó como Versión 2.
+Medido con 45 piezas simuladas y etiquetadas: 80–87 % de acierto según la corrida (53 % antes de calibrar), 42 % resuelto sin persona, 0 piezas riesgosas aprobadas solas, ~0,3 s con imagen. Todos los errores son conservadores.
+
+DECISIÓN 2: ¿A QUÉ PROGRAMA VA Y LO LLAMAMOS YA?
+JEV lee solo lo que la persona deja al inscribirse (rol, país, dolor, objetivo, temas) y decide en una pasada: programa (AI Sales, Inmersión Ejecutiva, Sales Machine, Hardcore AI, Achievers o sin programa claro), cargo, madurez en IA, si está lista para un asesor y si hay contexto suficiente. El código elige la acción: pasar a un asesor, enviar la propuesta, nutrir con clases gratis o revisión humana. Si cambia un dato, se recalcula y se ve el antes y el ahora.
+Medido con JEV sobre 200 de los 697 perfiles anónimos que compartió 30X: 55,5 % coincide con el programa que sugiere 30X (60 % donde sugirió uno; 95 % en AI Sales); 88 % de precisión al marcar "listo para un asesor"; 93 ms por persona; USD 0,009 por las 200. Es una primera iteración sobre perfiles muy escasos (el 73 % no declara rol); lo que ya sirve es saber a quién llamar primero.
 
 QUIÉN LO OPERA
-El editor o líder de Media de 30X, desde la Bandeja (solo lo que necesita su ojo), un tablero por estado (Por revisar, Por mejorar, Aprobado, Rechazado) y el historial de cada pieza con versiones. Cada persona del equipo sube sus piezas y ve qué le pidieron cambiar.
-
-RESULTADOS MEDIDOS
-Calibramos con JEV real (jev-1.13.0) sobre 45 piezas simuladas de 30X con la ruta esperada etiquetada:
-- Coincidencia con la ruta esperada: de 53 % con la política inicial a 82 % con la calibrada (80–87 % en corridas posteriores).
-- 40 % resuelto sin que intervenga una persona.
-- 0 piezas riesgosas o spam aprobadas solas; todos los desaciertos son conservadores.
-- Unos 100–210 ms por pieza.
-- Unos USD 0,046 por cada 1.000 piezas.
-- Respaldo con OpenAI (gpt-6-luna) si JEV falla o tarda: usado 0 veces.
-- Una captura de spam descartada en 187 ms.
+Media: el editor ve solo su Bandeja (lo riesgoso y lo dudoso), un tablero por estado y el historial con versiones; elige la política (Estricto, Equilibrado o Flexible) sin deploy. Comercial: la pantalla Inscritos dice a quién llamar, qué proponer y a quién nutrir. Cada corrección humana es una etiqueta para recalibrar.
 
 CÓMO ESCALA
-- Costo y latencia permiten revisar miles de piezas al día por centavos, sin contratar.
-- Multimarca: cada cuenta tiene su propio perfil y las preguntas se adaptan solas.
-- Cada "aprobar" o "rechazar" del editor es una etiqueta nueva para recalibrar los umbrales.
-- El mismo motor (estado + preguntas tipadas + umbrales + acciones) sirve después para leads, alumnos en riesgo o guardrails de agentes: cada decisión nueva es configuración, no código nuevo.
+El motor es estado + preguntas tipadas + umbrales + acciones. La segunda decisión reutilizó todo; la siguiente (riesgo de abandono, guardrails de agentes) es otro set de preguntas, no otro sistema. Multimarca: cada cuenta tiene su perfil.
 
 CÓMO ESTÁ HECHO
-Next.js 16, TypeScript, DDD liviano. JEV vía @typesafe-ai/sdk detrás de un puerto de decisiones con OpenAI de respaldo. SQLite, Docker y Coolify. Solo datos simulados; los usuarios de la demo son de prueba. Licencia AGPL-3.0.
+Next.js 16, TypeScript, DDD liviano. JEV vía @typesafe-ai/sdk detrás de un puerto de decisiones, con OpenAI de respaldo (usado 0 veces en las mediciones). SQLite, Docker y Coolify. Solo datos simulados o anónimos. AGPL-3.0.
 
 ENLACES
 - Demo: https://gatekeeper-30x.michaelliendo.com
