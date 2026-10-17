@@ -95,3 +95,9 @@ export function hasImageIssue(error: z.ZodError): boolean {
 				issue.errors.some((branch) => branch.some((i) => i.path[0] === "imageDataUrl"))),
 	);
 }
+
+/** "Regenerar con IA": a stored/sample piece by id, or the full piece inline. */
+export const regenerateRequestSchema = z.union([
+	z.object({ pieceId: z.string().min(1) }),
+	customPieceFields.superRefine(requireContent),
+]);

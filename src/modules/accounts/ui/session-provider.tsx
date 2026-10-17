@@ -13,6 +13,8 @@ export interface Session {
 	brand: BrandProfile | null;
 	/** Replaces the brand after it is saved, so the shell updates without a refetch. */
 	setBrand: (brand: BrandProfile) => void;
+	/** Replaces the user after a profile change (e.g. role). */
+	setUser: (user: UserAccount) => void;
 }
 
 const SessionContext = createContext<Session | null>(null);
@@ -24,14 +26,14 @@ const SessionContext = createContext<Session | null>(null);
 export function SessionProvider({ children }: { children: ReactNode }) {
 	const router = useRouter();
 	const [status, setStatus] = useState<Session["status"]>("loading");
-	const [user, setUser] = useState<UserAccount | null>(null);
+	const [user, setUserState] = useState<UserAccount | null>(null);
 	const [brand, setBrandState] = useState<BrandProfile | null>(null);
 
 	useEffect(() => {
 		const controller = new AbortController();
 		fetchMe(controller.signal)
 			.then((me) => {
-				setUser(me.user);
+				setUserState(me.user);
 				setBrandState(me.brand);
 				setStatus("ready");
 				if (!me.brand) router.replace("/bienvenida");
@@ -48,8 +50,11 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 	}, [router]);
 
 	const setBrand = useCallback((next: BrandProfile) => setBrandState(next), []);
+	const setUser = useCallback((next: UserAccount) => setUserState(next), []);
 
-	return <SessionContext value={{ status, user, brand, setBrand }}>{children}</SessionContext>;
+	return (
+		<SessionContext value={{ status, user, brand, setBrand, setUser }}>{children}</SessionContext>
+	);
 }
 
 export function useSession(): Session {

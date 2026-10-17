@@ -9,18 +9,28 @@ import { primaryColor } from "@/modules/brand/ui/brand-input";
 import { BrandMark } from "@/modules/brand/ui/brand-mark";
 import { readableInk } from "@/shared/ui/contrast";
 import {
+	BoardIcon,
 	ChartIcon,
 	GridIcon,
 	InboxIcon,
 	PlusIcon,
 	SignOutIcon,
 	SlidersIcon,
+	StackIcon,
 	TagIcon,
 } from "@/shared/ui/icons";
 import { useToast } from "@/shared/ui/toast";
 import { useReview } from "./review-session-provider";
 
-type Href = "/" | "/contenido" | "/nueva" | "/politica" | "/metricas" | "/marca";
+type Href =
+	| "/"
+	| "/tablero"
+	| "/mis-piezas"
+	| "/contenido"
+	| "/nueva"
+	| "/politica"
+	| "/metricas"
+	| "/marca";
 
 interface NavItem {
 	href: Href;
@@ -31,6 +41,8 @@ interface NavItem {
 
 const NAV: readonly NavItem[] = [
 	{ href: "/", label: "Bandeja", icon: InboxIcon, badge: "pending" },
+	{ href: "/tablero", label: "Tablero", icon: BoardIcon },
+	{ href: "/mis-piezas", label: "Mis piezas", icon: StackIcon },
 	{ href: "/contenido", label: "Contenido", icon: GridIcon },
 	{ href: "/nueva", label: "Nueva pieza", icon: PlusIcon },
 	{ href: "/politica", label: "Política", icon: SlidersIcon },
@@ -84,7 +96,9 @@ function NavIcons({
 							href={item.href}
 							aria-current={active ? "page" : undefined}
 							aria-label={accessible}
-							className={`relative grid size-11 place-items-center rounded-2xl transition-colors ${
+							className={`relative grid place-items-center rounded-2xl transition-colors ${
+								layout === "rail" ? "size-11" : "size-10"
+							} ${
 								active
 									? "bg-surface text-ink"
 									: "text-rail-muted hover:bg-surface/10 hover:text-rail-ink"
