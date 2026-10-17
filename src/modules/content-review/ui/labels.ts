@@ -227,7 +227,10 @@ export function pieceImage(piece: ContentPiece): string | null {
 	const value: unknown = (piece as ContentPiece & { imageDataUrl?: unknown }).imageDataUrl;
 	if (typeof value === "string" && value.startsWith("data:image/")) return value;
 	const path: unknown = piece.imagePath;
-	return typeof path === "string" && path.startsWith("/samples/") ? path : null;
+	return typeof path === "string" &&
+		(path.startsWith("/samples/") || path.startsWith("/api/pieces/"))
+		? path
+		: null;
 }
 
 export const EDITOR_ACTION_LABEL = {

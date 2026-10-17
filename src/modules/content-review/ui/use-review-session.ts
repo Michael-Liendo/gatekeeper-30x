@@ -1,11 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+	type PieceStatus,
+	STATUS_FROM_ROUTE,
+	type WorkspacePiece,
+} from "@/modules/workspace/domain/workspace";
+import { listPieces, movePiece } from "@/modules/workspace/ui/workspace-api";
 import type { ContentPiece } from "../domain/content-piece";
 import { defaultEditorialPolicy, type EditorialPolicy } from "../domain/editorial-policy";
 import { computeMetrics } from "../domain/metrics";
 import type { EditorialSuggestions, ReviewMetrics, ReviewResult } from "../domain/review";
 import {
+	enrichContent,
 	enrichPiece,
 	errorMessage,
 	fetchContent,
@@ -60,6 +67,8 @@ export interface ReviewSession {
 	enrich: (id: string) => Promise<void>;
 	submit: (input: SubmitInput) => Promise<ReviewResult>;
 	clearAll: () => void;
+	/** Reloads the team pieces stored in the database. */
+	refreshWorkspace: () => Promise<void>;
 }
 
 export const QUEUE_ROUTES: ReadonlySet<ReviewResult["route"]> = new Set([
@@ -82,6 +91,24 @@ function withoutLargeImage(result: ReviewResult): ReviewResult {
 	return result;
 }
 
+/**
+ * A stored team piece as a review result, so the inbox, content list and metrics show
+ * it next to the sample pieces. Its image is served by the pieces API.
+ */
+function workspaceResult(piece: WorkspacePiece): ReviewResult {
+	return {
+		...piece.review,
+		piece: { ...piece.review.piece, id: piece.id, imagePath: piece.imageUrl },
+	};
+}
+
+/** Editor decision implied by a stored piece's board status (none while it's pending). */
+function actionFromStatus(status: PieceStatus): EditorAction | null {
+	if (status === "approved") return "approved";
+	if (status === "rejected") return "rejected";
+	return null;
+}
+
 /** Client state of the editor app: analysis, policy tuning, submissions and editor decisions. */
 export function useReviewSession(): ReviewSession {
 	const [hydrated, setHydrated] = useState(false);
@@ -95,6 +122,27 @@ export function useReviewSession(): ReviewSession {
 	const [policy, setPolicy] = useState<EditorialPolicy>(defaultEditorialPolicy);
 	const [editorActions, setEditorActions] = useState<Record<string, EditorAction>>({});
 	const [enrichments, setEnrichments] = useState<Record<string, EnrichState>>({});
+	const [workspace, setWorkspace] = useState<WorkspacePiece[]>([]);
+
+	// Team pieces live in the database. Reload them on mount, when the window regains
+	// focus, every 20 s and right after a submission, so uploads show up everywhere.
+	const refreshWorkspace = useCallback(async () => {
+		try {
+			setWorkspace(await listPieces());
+		} catch {
+			// Signed out or offline: the sample analysis still works.
+		}
+	}, []);
+	useEffect(() => {
+		void refreshWorkspace();
+		const onFocus = () => void refreshWorkspace();
+		window.addEventListener("focus", onFocus);
+		const timer = window.setInterval(onFocus, 20_000);
+		return () => {
+			window.removeEventListener("focus", onFocus);
+			window.clearInterval(timer);
+		};
+	}, [refreshWorkspace]);
 
 	// Restore the previous session once, after mount (localStorage is browser-only).
 	useEffect(() => {
@@ -161,8 +209,8 @@ export function useReviewSession(): ReviewSession {
 			const piece = fresh.get(result.piece.id);
 			return piece ? { ...result, piece: { ...result.piece, ...piece } } : result;
 		});
-		return [...submitted, ...current];
-	}, [submitted, batch, pieces]);
+		return [...workspace.map(workspaceResult), ...submitted, ...current];
+	}, [workspace, submitted, batch, pieces]);
 	const results = useMemo(
 		() => baseline.map((result) => applyPolicy(result, policy)),
 		[baseline, policy],
@@ -171,7 +219,21 @@ export function useReviewSession(): ReviewSession {
 		() => new Map(baseline.map((result) => [result.piece.id, result.route])),
 		[baseline],
 	);
-	const submittedIds = useMemo(() => new Set(submitted.map((r) => r.piece.id)), [submitted]);
+	const workspaceIds = useMemo(() => new Set(workspace.map((p) => p.id)), [workspace]);
+	const submittedIds = useMemo(
+		() => new Set([...workspaceIds, ...submitted.map((r) => r.piece.id)]),
+		[workspaceIds, submitted],
+	);
+	// Stored pieces carry their decision in the board status, shared with the team board.
+	const allEditorActions = useMemo(() => {
+		const merged: Record<string, EditorAction> = { ...editorActions };
+		for (const piece of workspace) {
+			const action = actionFromStatus(piece.status);
+			if (action && !merged[piece.id]) merged[piece.id] = action;
+			if (!action) delete merged[piece.id];
+		}
+		return merged;
+	}, [editorActions, workspace]);
 	const metrics = useMemo(
 		() =>
 			batch.length === 0
@@ -187,8 +249,8 @@ export function useReviewSession(): ReviewSession {
 		return ids;
 	}, [results, originalRoutes]);
 	const pendingCount = useMemo(
-		() => results.filter((r) => QUEUE_ROUTES.has(r.route) && !editorActions[r.piece.id]).length,
-		[results, editorActions],
+		() => results.filter((r) => QUEUE_ROUTES.has(r.route) && !allEditorActions[r.piece.id]).length,
+		[results, allEditorActions],
 	);
 
 	const run = useCallback(async () => {
@@ -217,27 +279,51 @@ export function useReviewSession(): ReviewSession {
 
 	const resetPolicy = useCallback(() => setPolicy(defaultEditorialPolicy), []);
 
-	const setEditorAction = useCallback((id: string, action: EditorAction | null) => {
-		setEditorActions((current) => {
-			const next = { ...current };
-			if (action) next[id] = action;
-			else delete next[id];
-			return next;
-		});
-	}, []);
+	const setEditorAction = useCallback(
+		(id: string, action: EditorAction | null) => {
+			setEditorActions((current) => {
+				const next = { ...current };
+				if (action) next[id] = action;
+				else delete next[id];
+				return next;
+			});
+			const stored = workspace.find((piece) => piece.id === id);
+			if (!stored) return;
+			// Same decision on the team board: approve/reject, or back to its JEV column.
+			const status: PieceStatus =
+				action === "rejected"
+					? "rejected"
+					: action
+						? "approved"
+						: STATUS_FROM_ROUTE[stored.review.route];
+			setWorkspace((current) => current.map((p) => (p.id === id ? { ...p, status } : p)));
+			movePiece(id, status)
+				.then((updated) =>
+					setWorkspace((current) => current.map((p) => (p.id === id ? updated : p))),
+				)
+				.catch(() => void refreshWorkspace());
+		},
+		[workspace, refreshWorkspace],
+	);
 
-	const enrich = useCallback(async (id: string) => {
-		setEnrichments((current) => ({ ...current, [id]: { status: "loading" } }));
-		try {
-			const suggestions = await enrichPiece(id);
-			setEnrichments((current) => ({ ...current, [id]: { status: "done", suggestions } }));
-		} catch (error) {
-			setEnrichments((current) => ({
-				...current,
-				[id]: { status: "error", message: errorMessage(error) },
-			}));
-		}
-	}, []);
+	const enrich = useCallback(
+		async (id: string) => {
+			setEnrichments((current) => ({ ...current, [id]: { status: "loading" } }));
+			try {
+				const stored = workspace.find((piece) => piece.id === id);
+				const suggestions = stored
+					? await enrichContent(stored.review.piece)
+					: await enrichPiece(id);
+				setEnrichments((current) => ({ ...current, [id]: { status: "done", suggestions } }));
+			} catch (error) {
+				setEnrichments((current) => ({
+					...current,
+					[id]: { status: "error", message: errorMessage(error) },
+				}));
+			}
+		},
+		[workspace],
+	);
 
 	const submit = useCallback(
 		async (input: SubmitInput) => {
@@ -281,7 +367,7 @@ export function useReviewSession(): ReviewSession {
 		submittedIds,
 		metrics,
 		changedIds,
-		editorActions,
+		editorActions: allEditorActions,
 		enrichments,
 		pendingCount,
 		run,
@@ -291,5 +377,6 @@ export function useReviewSession(): ReviewSession {
 		enrich,
 		submit,
 		clearAll,
+		refreshWorkspace,
 	};
 }

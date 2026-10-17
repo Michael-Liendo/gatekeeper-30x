@@ -90,3 +90,15 @@ export function reviewPiece(payload: ReviewPieceRequest): Promise<ReviewResult> 
 export function enrichPiece(id: string): Promise<EditorialSuggestions> {
 	return request<EditorialSuggestions>("/api/enrich", { id });
 }
+
+/** Suggestions for a piece that isn't in the sample dataset (sent by content). */
+export function enrichContent(
+	piece: Pick<ContentPiece, "title" | "body" | "format" | "channel">,
+): Promise<EditorialSuggestions> {
+	return request<EditorialSuggestions>("/api/enrich", {
+		title: piece.title,
+		body: piece.body,
+		format: piece.format,
+		channel: piece.channel,
+	});
+}
