@@ -9,7 +9,7 @@ interface BrandMarkProps {
 
 /** Brand logo, or the brand's initial on its primary color when there is no logo. */
 export function BrandMark({ name, color, logoUrl, size = "sm" }: BrandMarkProps) {
-	const box = size === "lg" ? "size-14 rounded-xl text-2xl" : "size-9 rounded-lg text-base";
+	const box = size === "lg" ? "size-16 rounded-[20px] text-2xl" : "size-10 rounded-2xl text-base";
 	if (logoUrl) {
 		return (
 			// Logos come from arbitrary brand domains, so next/image remote patterns can't list them.
@@ -25,7 +25,7 @@ export function BrandMark({ name, color, logoUrl, size = "sm" }: BrandMarkProps)
 	return (
 		<span
 			aria-hidden="true"
-			className={`${box} grid shrink-0 place-items-center font-semibold`}
+			className={`${box} grid shrink-0 place-items-center font-medium`}
 			style={{ backgroundColor: color, color: readableInk(color) }}
 		>
 			{initial}

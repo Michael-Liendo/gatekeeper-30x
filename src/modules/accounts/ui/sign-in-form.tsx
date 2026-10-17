@@ -2,13 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useRef, useState } from "react";
+import { primaryButtonLarge, underlineInput } from "@/shared/ui/button-styles";
 import { ApiError } from "@/shared/ui/fetch-json";
 import { fetchMe, needsName, signIn } from "./auth-api";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-const input =
-	"min-h-11 w-full rounded-lg border border-line-strong bg-surface px-3 text-base sm:text-sm";
 
 /** Email-only sign-in; asks for the name the first time (400 + needsName). */
 export function SignInForm() {
@@ -66,9 +64,9 @@ export function SignInForm() {
 	}
 
 	return (
-		<form onSubmit={(event) => void onSubmit(event)} noValidate className="grid gap-4">
-			<div className="grid gap-1.5">
-				<label htmlFor="email" className="text-sm font-medium">
+		<form onSubmit={(event) => void onSubmit(event)} noValidate className="grid gap-7">
+			<div className="grid gap-1">
+				<label htmlFor="email" className="text-xs font-medium text-ink-muted">
 					Tu email
 				</label>
 				<input
@@ -85,16 +83,16 @@ export function SignInForm() {
 					placeholder="ana@tumarca.com"
 					aria-invalid={error && !askName ? true : undefined}
 					aria-describedby={error ? "sign-in-error" : undefined}
-					className={input}
+					className={underlineInput}
 				/>
 			</div>
 
 			{askName ? (
-				<div className="grid gap-1.5">
-					<label htmlFor="name" className="text-sm font-medium">
+				<div className="grid gap-1">
+					<label htmlFor="name" className="text-xs font-medium text-ink-muted">
 						Tu nombre
 					</label>
-					<p id="name-hint" className="text-xs text-ink-muted">
+					<p id="name-hint" className="text-sm text-ink">
 						Es tu primera vez aquí. ¿Cómo te llamamos?
 					</p>
 					<input
@@ -106,7 +104,7 @@ export function SignInForm() {
 						onChange={(event) => setName(event.target.value)}
 						placeholder="Ana Pérez"
 						aria-describedby={error ? "name-hint sign-in-error" : "name-hint"}
-						className={input}
+						className={underlineInput}
 					/>
 				</div>
 			) : null}
@@ -123,7 +121,7 @@ export function SignInForm() {
 				type="submit"
 				disabled={pending}
 				aria-busy={pending}
-				className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-4 text-sm font-semibold text-primary-ink hover:opacity-90 disabled:cursor-progress disabled:opacity-80"
+				className={`${primaryButtonLarge} w-full`}
 			>
 				{pending ? "Entrando…" : askName ? "Crear mi cuenta" : "Continuar"}
 			</button>

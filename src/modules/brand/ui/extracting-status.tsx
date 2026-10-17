@@ -3,16 +3,16 @@
 import { useEffect, useState } from "react";
 
 const MESSAGES = [
-	"Leyendo tu sitio…",
-	"Detectando colores…",
+	"Leyendo tu página web…",
+	"Mirando tus colores…",
 	"Entendiendo qué vendes…",
-	"Identificando tu audiencia…",
+	"Pensando en tu público…",
 	"Armando el perfil de tu marca…",
 ];
 
 const ROTATE_MS = 2200;
 
-/** Rotating progress copy while the brand extractor works. */
+/** Friendly loading card while we read the brand's pages: slow pastel wash + rotating copy. */
 export function ExtractingStatus() {
 	const [index, setIndex] = useState(0);
 
@@ -27,13 +27,28 @@ export function ExtractingStatus() {
 	return (
 		<div
 			role="status"
-			className="flex items-center gap-3 rounded-card border border-line bg-surface px-4 py-3 text-sm"
+			className="relative isolate overflow-hidden rounded-[var(--radius-card)] px-6 py-7 sm:px-8 sm:py-9"
 		>
 			<span
 				aria-hidden="true"
-				className="size-4 shrink-0 animate-spin rounded-full border-2 border-line border-t-brand"
+				className="-inset-1/2 absolute -z-10 bg-conic from-(--grad-lilac-from) via-(--grad-aqua-from) to-(--grad-lilac-from) blur-2xl motion-safe:animate-spin motion-safe:[animation-duration:9s]"
 			/>
-			<span>{MESSAGES[index]}</span>
+			<span aria-hidden="true" className="absolute inset-0 -z-10 bg-surface/35" />
+			<div className="flex items-center gap-4">
+				<span aria-hidden="true" className="flex gap-1.5">
+					{[0, 1, 2].map((dot) => (
+						<span
+							key={dot}
+							className="size-2 rounded-full bg-ink motion-safe:animate-pulse"
+							style={{ animationDelay: `${dot * 200}ms` }}
+						/>
+					))}
+				</span>
+				<p key={index} className="text-lg font-light text-ink sm:text-xl">
+					{MESSAGES[index]}
+				</p>
+			</div>
+			<p className="mt-2 text-sm text-ink/60">Esto toma unos segundos.</p>
 		</div>
 	);
 }

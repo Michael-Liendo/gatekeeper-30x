@@ -1,6 +1,7 @@
 "use client";
 
 import { type KeyboardEvent, useId, useState } from "react";
+import { softInput } from "./button-styles";
 
 interface ChipInputProps {
 	label: string;
@@ -51,12 +52,12 @@ export function ChipInput({
 		}
 	}
 
-	const chipStyle = tone === "danger" ? "bg-danger-soft text-danger" : "bg-surface-muted text-ink";
+	const chipStyle = tone === "danger" ? "bg-danger-soft text-danger" : "bg-pill text-pill-ink";
 	const describedBy = [hint ? hintId : null, error ? errorId : null].filter(Boolean).join(" ");
 
 	return (
-		<div className="grid gap-1.5">
-			<label htmlFor={id} className="text-sm font-medium">
+		<div className="grid gap-2">
+			<label htmlFor={id} className="text-sm font-medium text-ink">
 				{label}
 			</label>
 			{hint ? (
@@ -69,16 +70,26 @@ export function ChipInput({
 					{values.map((value) => (
 						<li
 							key={value}
-							className={`inline-flex max-w-full items-center gap-1 rounded-full py-1 pr-1 pl-3 text-sm ${chipStyle}`}
+							className={`inline-flex max-w-full items-center gap-0.5 rounded-full py-1 pr-1 pl-3.5 text-sm ${chipStyle}`}
 						>
 							<span className="min-w-0 truncate">{value}</span>
 							<button
 								type="button"
 								onClick={() => onChange(values.filter((item) => item !== value))}
 								aria-label={`Quitar ${value}`}
-								className="grid size-7 shrink-0 place-items-center rounded-full hover:bg-line"
+								className="grid size-7 shrink-0 place-items-center rounded-full opacity-60 hover:bg-surface hover:opacity-100"
 							>
-								<span aria-hidden="true">×</span>
+								<svg
+									aria-hidden="true"
+									viewBox="0 0 16 16"
+									className="size-3.5"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="1.5"
+									strokeLinecap="round"
+								>
+									<path d="M4 4l8 8M12 4l-8 8" />
+								</svg>
 							</button>
 						</li>
 					))}
@@ -94,13 +105,13 @@ export function ChipInput({
 					placeholder={placeholder}
 					aria-invalid={error ? true : undefined}
 					aria-describedby={describedBy || undefined}
-					className="min-h-11 min-w-0 flex-1 rounded-lg border border-line-strong bg-surface px-3 text-sm"
+					className={`${softInput} min-w-0 flex-1`}
 				/>
 				<button
 					type="button"
 					onClick={add}
 					disabled={draft.trim() === ""}
-					className="min-h-11 shrink-0 rounded-lg border border-line-strong bg-surface px-3 text-sm font-medium hover:bg-surface-muted disabled:opacity-50"
+					className="min-h-11 shrink-0 rounded-full border border-line-strong bg-surface px-4 text-sm font-medium text-ink hover:bg-surface-muted disabled:opacity-40"
 				>
 					Agregar
 				</button>
