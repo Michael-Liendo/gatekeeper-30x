@@ -6,6 +6,7 @@ import type { Route } from "../../content-review/domain/editorial-policy";
 import { SAMPLE_AUTHOR_NAME, SAMPLE_LOADED_SUMMARY } from "../domain/piece-timeline";
 import type { TeamRole } from "../domain/workspace";
 import { type Actor, createReviewedPiece } from "./piece-workflow";
+import { runPool } from "./run-pool";
 import type { WorkspaceDeps } from "./workspace-ports";
 
 /**
@@ -45,21 +46,6 @@ export function pickDemoSamples(
 		left[route] -= 1;
 		return true;
 	});
-}
-
-async function runPool<T>(
-	items: readonly T[],
-	limit: number,
-	work: (item: T, index: number) => Promise<void>,
-) {
-	let next = 0;
-	const worker = async () => {
-		while (next < items.length) {
-			const index = next++;
-			await work(items[index] as T, index);
-		}
-	};
-	await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
 }
 
 async function seed(user: Pick<Actor, "id">, brand: BrandProfile, deps: SeedDeps): Promise<number> {

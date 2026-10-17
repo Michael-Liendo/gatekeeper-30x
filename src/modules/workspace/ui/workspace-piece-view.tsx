@@ -15,7 +15,7 @@ import { RouteBadge } from "@/modules/content-review/ui/route-badge";
 import { primaryButton, primaryButtonLarge, secondaryButton } from "@/shared/ui/button-styles";
 import { CopyActions } from "@/shared/ui/copy-actions";
 import { ApiError } from "@/shared/ui/fetch-json";
-import { CheckIcon, CloseIcon, RefreshIcon } from "@/shared/ui/icons";
+import { CalendarIcon, CheckIcon, CloseIcon, RefreshIcon } from "@/shared/ui/icons";
 import { useToast } from "@/shared/ui/toast";
 import type { PieceEvent, PieceStatus, WorkspacePiece } from "../domain/workspace";
 import { PieceTimeline } from "./piece-timeline";
@@ -24,7 +24,13 @@ import { RegeneratePanel } from "./regenerate-panel";
 import { RoleChip } from "./role-chip";
 import { useAuthorRole } from "./use-author-role";
 import { getPiece, messageOf, movePiece } from "./workspace-api";
-import { STATUS_HINT, STATUS_LABEL, STATUS_STYLE, timeAgo } from "./workspace-labels";
+import {
+	formatScheduled,
+	STATUS_HINT,
+	STATUS_LABEL,
+	STATUS_STYLE,
+	timeAgo,
+} from "./workspace-labels";
 
 type State =
 	| { status: "loading" }
@@ -205,6 +211,29 @@ export function WorkspacePieceView({ id }: { id: string }) {
 							<span aria-hidden="true">·</span>
 							<time dateTime={piece.updatedAt}>{timeAgo(piece.updatedAt)}</time>
 						</p>
+						{piece.scheduledFor || piece.campaign ? (
+							<p className="flex flex-wrap items-center gap-2 text-sm">
+								{piece.scheduledFor ? (
+									<Link
+										href="/campana"
+										className="inline-flex items-center gap-1.5 rounded-full bg-pill px-3 py-1 text-xs font-medium text-pill-ink hover:opacity-85"
+									>
+										<CalendarIcon size={14} />
+										<span>
+											Programada:{" "}
+											<time dateTime={piece.scheduledFor}>
+												{formatScheduled(piece.scheduledFor)}
+											</time>
+										</span>
+									</Link>
+								) : null}
+								{piece.campaign ? (
+									<span className="rounded-full bg-surface-muted px-3 py-1 text-xs text-ink-muted">
+										Campaña: <span className="text-ink">{piece.campaign}</span>
+									</span>
+								) : null}
+							</p>
+						) : null}
 					</header>
 
 					{piece.imageUrl ? (

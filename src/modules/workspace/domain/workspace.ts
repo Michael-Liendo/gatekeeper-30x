@@ -64,6 +64,10 @@ export interface WorkspacePiece {
 	version: number;
 	/** True for the demo pieces loaded from the simulated dataset (not uploaded by the person). */
 	isExample: boolean;
+	/** Planned publication date (yyyy-mm-dd), set when the piece comes from a content grid. */
+	scheduledFor?: string;
+	/** Campaign name given when the grid was uploaded. */
+	campaign?: string;
 	createdAt: string;
 	updatedAt: string;
 }

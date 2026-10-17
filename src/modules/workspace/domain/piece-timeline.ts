@@ -45,6 +45,14 @@ export function versionSummary(version: number, changes: readonly string[] = [])
 
 export const SUBMITTED_SUMMARY = "Subió la pieza";
 
+/** First event of a piece that came in a content grid (Excel or CSV). */
+export const GRID_SUBMITTED_SUMMARY = "Cargada desde la grilla";
+
+/** "Nota de la grilla: <nota>" for the notes column. */
+export function gridNoteSummary(note: string): string {
+	return `Nota de la grilla: ${note}`;
+}
+
 /** First event of a demo piece loaded from the simulated dataset. */
 export const SAMPLE_LOADED_SUMMARY = "Pieza de ejemplo cargada";
 

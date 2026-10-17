@@ -116,3 +116,36 @@ export function formatDateTime(iso: string): string {
 		minute: "2-digit",
 	}).format(time);
 }
+
+/** Date-only values (yyyy-mm-dd) are formatted in UTC so the day never shifts. */
+const scheduledFormat = new Intl.DateTimeFormat("es", {
+	day: "numeric",
+	month: "short",
+	timeZone: "UTC",
+});
+
+/** "2026-10-21" → "21 oct". */
+export function formatScheduled(isoDate: string): string {
+	const time = Date.parse(`${isoDate.slice(0, 10)}T00:00:00Z`);
+	if (Number.isNaN(time)) return "";
+	return scheduledFormat.format(time).replace(".", "");
+}
+
+const weekdayFormat = new Intl.DateTimeFormat("es", { weekday: "short", timeZone: "UTC" });
+const longDayFormat = new Intl.DateTimeFormat("es", {
+	weekday: "long",
+	day: "numeric",
+	month: "long",
+	timeZone: "UTC",
+});
+
+/** "2026-10-21" → "mié". */
+export function formatWeekday(isoDate: string): string {
+	return weekdayFormat.format(Date.parse(`${isoDate}T00:00:00Z`)).replace(".", "");
+}
+
+/** "2026-10-21" → "Miércoles 21 de octubre". */
+export function formatLongDay(isoDate: string): string {
+	const text = longDayFormat.format(Date.parse(`${isoDate}T00:00:00Z`)).replace(",", "");
+	return text.charAt(0).toUpperCase() + text.slice(1);
+}

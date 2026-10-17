@@ -113,6 +113,12 @@ export interface NewPieceSpec {
 	submittedSummary: string;
 	/** Sample it comes from, for demo examples. */
 	sampleId?: string;
+	/** Planned publication date (yyyy-mm-dd), from a content grid. */
+	scheduledFor?: string;
+	/** Campaign the piece belongs to, from a content grid. */
+	campaign?: string;
+	/** Summary of a "note" event recorded right after "submitted" (e.g. grid notes). */
+	noteSummary?: string;
 }
 
 /**
@@ -158,11 +164,14 @@ export async function createReviewedPiece(
 		review,
 		version: 1,
 		isExample: spec.sampleId !== undefined,
+		...(spec.scheduledFor ? { scheduledFor: spec.scheduledFor } : {}),
+		...(spec.campaign ? { campaign: spec.campaign } : {}),
 		createdAt: createdAt.toISOString(),
 		updatedAt: reviewedAt.toISOString(),
 	};
 	deps.pieces.insert({ piece, imageFile, sampleId: spec.sampleId ?? null });
 	addEvent(deps, id, "submitted", spec.authorName, spec.submittedSummary, createdAt);
+	if (spec.noteSummary) addEvent(deps, id, "note", spec.authorName, spec.noteSummary, createdAt);
 	addEvent(deps, id, "reviewed", REVIEWER_NAME, reviewSummary(review), reviewedAt);
 	return piece;
 }

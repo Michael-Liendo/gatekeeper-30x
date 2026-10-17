@@ -28,10 +28,12 @@ interface PieceRow {
 	created_at: string;
 	updated_at: string;
 	sample_id: string | null;
+	scheduled_for: string | null;
+	campaign: string | null;
 }
 
 const COLUMNS =
-	"id, user_id, brand_id, author_name, author_role, title, body, format, channel, image_file, status, review, version, created_at, updated_at, sample_id";
+	"id, user_id, brand_id, author_name, author_role, title, body, format, channel, image_file, status, review, version, created_at, updated_at, sample_id, scheduled_for, campaign";
 
 function toPiece(row: PieceRow): WorkspacePiece {
 	return {
@@ -49,6 +51,8 @@ function toPiece(row: PieceRow): WorkspacePiece {
 		review: JSON.parse(row.review) as ReviewResult,
 		version: Number(row.version),
 		isExample: row.sample_id !== null,
+		...(row.scheduled_for ? { scheduledFor: row.scheduled_for } : {}),
+		...(row.campaign ? { campaign: row.campaign } : {}),
 		createdAt: row.created_at,
 		updatedAt: row.updated_at,
 	};
@@ -96,6 +100,8 @@ export function createPieceRepository(db: DatabaseSync): PieceRepository {
 				piece.createdAt,
 				piece.updatedAt,
 				sampleId ?? null,
+				piece.scheduledFor ?? null,
+				piece.campaign ?? null,
 			);
 		},
 		update({ piece, imageFile }) {

@@ -300,6 +300,32 @@ describe("workspace piece workflow", () => {
 		);
 	});
 
+	it("grid pieces: scheduledFor and campaign round-trip through SQLite", async () => {
+		const deps = makeDeps([answers()]);
+		const piece = await workflow.createReviewedPiece(
+			{
+				...textPiece,
+				image: null,
+				ownerId: ana.id,
+				authorName: "Ana",
+				authorRole: "copy",
+				submittedSummary: "Cargada desde la grilla",
+				scheduledFor: "2026-10-21",
+				campaign: "Lanzamiento",
+			},
+			defaultBrand,
+			deps,
+		);
+		const stored = deps.pieces.findById(piece.id)?.piece;
+		assert.equal(stored?.scheduledFor, "2026-10-21");
+		assert.equal(stored?.campaign, "Lanzamiento");
+		const plain = workflow
+			.listPieces(ana, undefined, deps)
+			.find((p) => p.scheduledFor === undefined);
+		assert.ok(plain, "pieces without a date have no scheduledFor key");
+		assert.equal("campaign" in (plain ?? {}), false);
+	});
+
 	it("migrations stay idempotent with the new tables and role column", () => {
 		openDatabase(dir).close();
 	});
