@@ -243,7 +243,8 @@ export function changePieceStatus(
 
 /**
  * Saves new content as the next version, re-reviews it with JEV (same brand) and sets
- * the status from the new route. A new screenshot replaces the old one; without it the
+ * the status from the new route. When JEV already judged this exact content (a saved AI
+ * proposal), `knownReview` is reused so the verdict the person saw is the one stored. A new screenshot replaces the old one; without it the
  * previous screenshot is kept and judged again.
  */
 export async function saveNewVersion(
@@ -252,6 +253,7 @@ export async function saveNewVersion(
 	actor: Actor,
 	brand: BrandProfile,
 	deps: WorkspaceDeps,
+	knownReview?: ReviewResult,
 ): Promise<WorkspacePiece> {
 	const stored = ownedPiece(pieceId, actor, deps);
 	const newImage = decodeImage(input.imageDataUrl);
@@ -274,7 +276,9 @@ export async function saveNewVersion(
 		createdAt: stored.piece.createdAt,
 		...(imageDataUrl ? { imageDataUrl } : {}),
 	};
-	const review = await runReview(content, brand, deps);
+	const review = knownReview
+		? withoutImage({ ...knownReview, piece: content })
+		: await runReview(content, brand, deps);
 	const reviewedAt = deps.now();
 
 	const { imageUrl: _old, ...rest } = stored.piece;

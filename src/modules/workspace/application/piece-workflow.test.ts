@@ -273,6 +273,26 @@ describe("workspace piece workflow", () => {
 		assert.equal(row?.image_file, `${piece.id}-v2.png`);
 	});
 
+	it("saveNewVersion keeps a verdict JEV already gave instead of reviewing again", async () => {
+		const deps = makeDeps([answers({ is_spam: yesNo(0.9) })]);
+		const piece = await workflow.submitPiece(textPiece, beto, defaultBrand, deps);
+		assert.equal(piece.status, "rejected");
+		const reviewsBefore = deps.seen.inputs.length;
+		const approvedReview = { ...piece.review, route: "AUTO_APPROVE" as const };
+
+		const next = await workflow.saveNewVersion(
+			piece.id,
+			{ title: "Versión aprobada", body: "Texto nuevo.", changes: [] },
+			beto,
+			defaultBrand,
+			deps,
+			approvedReview,
+		);
+		assert.equal(next.status, "approved");
+		assert.equal(next.review.piece.title, "Versión aprobada");
+		assert.equal(deps.seen.inputs.length, reviewsBefore);
+	});
+
 	it("ownership: other users get PieceNotFoundError everywhere", async () => {
 		const deps = makeDeps([answers()]);
 		const piece = await workflow.submitPiece(textPiece, beto, defaultBrand, deps);
