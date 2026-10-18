@@ -2,7 +2,7 @@ Nombre del proyecto: Gatekeeper Editorial 30X
 
 ---
 
-Decisiones de 30X que JEV toma miles de veces al día, en milisegundos y por fracciones de centavo. JEV decide; la IA generativa solo escribe cuando hace falta; una persona revisa solo lo que importa.
+La IA multiplicó lo que un equipo de contenido produce; nadie multiplicó la revisión. El cuello de botella pasó de crear a aprobar. Gatekeeper le devuelve el tiempo al equipo: JEV decide miles de veces al día, en milisegundos, si cada pieza sale; la IA corrige lo que falló; una persona revisa solo lo que de verdad lo necesita.
 
 LAS DOS DECISIONES
 1. Media: ¿esta pieza sale? Cada post, guion, clip o captura, hecho por el equipo o por una IA.
@@ -10,7 +10,7 @@ LAS DOS DECISIONES
 Hoy las dos se toman a mano: lento, con criterios distintos, y equivocarse cuesta marca o ventas.
 
 ESCALA, MEDIDA EN PRODUCCIÓN
-1.000 decisiones reales con JEV (jev-1.13.0) en 4,5 s: 222 por segundo, 128 ms cada una (p95 250 ms), USD 0,06 en total y 0 respaldos. Con ese costo, 10.000 piezas al día cuestan ~USD 0,60. Se repite en vivo desde Métricas → Prueba de escala.
+1.000 decisiones reales con JEV (jev-1.13.0) en 4,5 s: 222 por segundo, 128 ms cada una (p95 250 ms) y 0 respaldos. A ese ritmo, 10.000 piezas de un día se revisan en menos de un minuto: el equipo nunca espera al filtro. Se repite en vivo desde Métricas → Prueba de escala.
 
 DECISIÓN 1: ¿ESTA PIEZA SALE?
 JEV responde 12 preguntas tipadas en una llamada (tema y formato; relevancia, accionable y alcance; sí/no con probabilidad: promocional, promesas exageradas, datos sin fuente, riesgo de marca, oferta que la marca no vende, spam, línea editorial). Las preguntas se arman con el perfil de la marca, que la app lee de su web (pegas 30x.com). JEV también juzga capturas.
@@ -25,7 +25,15 @@ Medido con 45 piezas simuladas y etiquetadas: 80–87 % de acierto según la cor
 
 DECISIÓN 2: ¿A QUÉ PROGRAMA VA Y LO LLAMAMOS YA?
 JEV lee solo lo que la persona deja al inscribirse (rol, país, dolor, objetivo, temas) y decide en una pasada: programa (AI Sales, Inmersión Ejecutiva, Sales Machine, Hardcore AI, Achievers o sin programa claro), cargo, madurez en IA, si está lista para un asesor y si hay contexto suficiente. El código elige la acción: pasar a un asesor, enviar la propuesta, nutrir con clases gratis o revisión humana. Si cambia un dato, se recalcula y se ve el antes y el ahora.
-Medido con JEV sobre 200 de los 697 perfiles anónimos que compartió 30X: 55,5 % coincide con el programa que sugiere 30X (60 % donde sugirió uno; 95 % en AI Sales); 88 % de precisión al marcar "listo para un asesor"; 93 ms por persona; USD 0,009 por las 200. Es una primera iteración sobre perfiles muy escasos (el 73 % no declara rol); lo que ya sirve es saber a quién llamar primero.
+Medido con JEV sobre 200 de los 697 perfiles anónimos que compartió 30X: 55,5 % coincide con el programa que sugiere 30X (60 % donde sugirió uno; 95 % en AI Sales); 88 % de precisión al marcar "listo para un asesor"; 93 ms por persona. Es una primera iteración sobre perfiles muy escasos (el 73 % no declara rol); lo que ya sirve es saber a quién llamar primero.
+
+QUÉ CAMBIA PARA LOS EQUIPOS
+- Menos revisión manual: el 42 % se resuelve sin persona; el editor ya no revisa todo, solo lo riesgoso o dudoso.
+- Mismo criterio siempre: las reglas de la marca se aplican igual a cada pieza, la haga quien la haga.
+- Nada riesgoso sale solo: 0 piezas riesgosas aprobadas solas.
+- La IA arregla, el equipo no reescribe: corrige solo lo marcado y JEV lo verifica.
+- Comercial llama primero a quien está listo, y la lista se recalcula cuando cambia un dato.
+- Cada decisión del editor es una etiqueta para seguir mejorando.
 
 QUIÉN LO OPERA
 Media: el editor ve solo su Bandeja (lo riesgoso y lo dudoso), un tablero por estado y el historial con versiones; elige la política (Estricto, Equilibrado o Flexible) sin deploy. Comercial: la pantalla Inscritos dice a quién llamar, qué proponer y a quién nutrir. Cada corrección humana es una etiqueta para recalibrar.

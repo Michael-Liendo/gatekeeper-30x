@@ -1,27 +1,32 @@
 # El pitch
 
 Diez láminas para la final del Hackathon 30X, pensadas para la dirección de 30X
-y jurados de negocio. Responden la pregunta del reto (qué decisiones de 30X
-puede tomar JEV miles de veces al día, en milisegundos y por fracciones de
-centavo) con dos decisiones que ya funcionan y una prueba de escala real:
+y jurados de negocio. Parten del problema de los equipos que producen contenido
+con IA: la IA multiplicó lo que el equipo produce; nadie multiplicó la revisión.
+El cuello de botella pasó de crear a aprobar. Responden la pregunta del reto
+(qué decisiones de 30X puede tomar JEV miles de veces al día, en milisegundos)
+con dos decisiones que ya funcionan y una prueba de escala real:
 
 1. **Media:** ¿esta pieza sale?
-2. **Comercial:** ¿a qué programa va este inscrito de Luma y lo llamamos ya?
+2. **Comercial** (el mismo motor, otra decisión): ¿a qué programa va este
+   inscrito de Luma y lo llamamos ya?
 
-JEV es el protagonista: el motor que decide. Hablan de decisiones, tiempo,
-riesgo y dinero; lo técnico vive en el [playbook](../playbook/).
+JEV es el protagonista: el motor que decide. Hablan de cómo cambia el día del
+equipo: el editor solo ve lo dudoso, la IA corrige lo que falló y el equipo
+vuelve a crear. Lo técnico vive en el
+[playbook](../playbook/).
 
 | # | Lámina |
 |---|---|
-| 01 | Portada: decisiones de 30X que JEV toma miles de veces al día |
-| 02 | El problema: las mismas decisiones, a mano |
-| 03 | La solución: JEV decide, la IA generativa solo escribe cuando hace falta |
+| 01 | Portada: decisiones que JEV toma miles de veces al día, para que el equipo vuelva a crear |
+| 02 | El problema: la IA multiplicó lo que se produce, no la revisión |
+| 03 | La solución: JEV decide, el editor solo ve lo dudoso, la IA corrige |
 | 04 | Decisión 1: cómo se vive en Media |
 | 05 | Un caso real: de spam a post de 30X |
 | 06 | Hecho para tu marca |
 | 07 | Inscritos de Luma: el mismo motor, otra decisión |
-| 08 | Resultados: 1.000 decisiones en 4,5 segundos · USD 0,06 |
-| 09 | Qué gana 30X · por qué ahora |
+| 08 | Resultados: 1.000 decisiones en 4,5 segundos · 4 de 10 piezas sin revisión |
+| 09 | Qué gana 30X: el equipo deja de aprobar a mano y vuelve a crear |
 | 10 | Cierre: JEV ya está decidiendo |
 
 - `index.html` — las láminas, con lo que se dice en voz alta en cada una.
@@ -57,10 +62,10 @@ actual (`#5`).
 
 ## El tiempo
 
-El guion son ~770 palabras: **unos 4 minutos y medio** a ritmo de pitch. La
+El guion son ~850 palabras: **unos 5 minutos** a ritmo de pitch. La
 ventana de notas (`P`) calcula el tiempo a 150 palabras por minuto, así que ahí
 marcará algo más. Si vas justo, en `guion.md` cada lámina tiene una frase
-marcada que se puede quitar; sin ellas queda en unos 4 minutos. La **05** (el
+marcada que se puede quitar; sin ellas queda en unos 4 minutos y medio. La **05** (el
 caso real), la **07** (inscritos) y la **08** (resultados) no se recortan: son
 las que convencen.
 
@@ -70,10 +75,9 @@ Solo estas, y ninguna inventada:
 
 | Cifra | De dónde sale |
 |---|---|
-| 1.000 decisiones en 4,5 s · 222 por segundo · 128 ms cada una (p95 250 ms) · USD 0,06 en total · 0 respaldos | Prueba de escala con JEV `jev-1.13.0` en producción, 17 oct 2026, [05-calibracion.md](../05-calibracion.md) |
-| 10.000 piezas al día ≈ USD 0,60 | Proyección con el costo medido en la prueba de escala |
+| 1.000 decisiones en 4,5 s · 222 por segundo · 128 ms cada una (p95 250 ms) · 0 respaldos | Prueba de escala con JEV `jev-1.13.0` en producción, 17 oct 2026, [05-calibracion.md](../05-calibracion.md) |
 | 80–87 % de acierto según la corrida, 4 de 10 sin persona (42 %), 0 riesgosas aprobadas solas, ~0,3 s con imagen | 45 piezas simuladas de 30X, [05-calibracion.md](../05-calibracion.md) |
-| 55,5 % coincide con el programa de 30X (60 % donde 30X sugirió uno; 95 % en AI Sales), 88 % de precisión en «listo para un asesor», 93 ms por persona, USD 0,009 por 200 | 200 de los 697 perfiles anónimos de inscritos de 30X, JEV en producción, [12-segmentacion.md](../12-segmentacion.md) |
+| 55,5 % coincide con el programa de 30X (60 % donde 30X sugirió uno; 95 % en AI Sales), 88 % de precisión en «listo para un asesor», 93 ms por persona | 200 de los 697 perfiles anónimos de inscritos de 30X, JEV en producción, [12-segmentacion.md](../12-segmentacion.md) |
 | 697 inscritos | Hoja anónima de inscritos que compartió 30X |
 | 425 mil seguidores, 1.500+ publicaciones | Perfil público de @crece30x en Instagram |
 

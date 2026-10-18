@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { EmptyState } from "@/modules/content-review/ui/empty-state";
-import { formatPercent, formatUsd } from "@/modules/content-review/ui/format";
+import { formatPercent } from "@/modules/content-review/ui/format";
 import { PageHeader } from "@/modules/content-review/ui/page-header";
 import { ghostButton, primaryButton } from "@/shared/ui/button-styles";
 import { HighlightCard, HighlightRow } from "@/shared/ui/highlight-card";
@@ -25,13 +25,6 @@ type Filter = "all" | "match" | "miss";
 function secondsText(ms: number): string {
 	if (ms < 1000) return "<\u00a01\u00a0s";
 	return `${(ms / 1000).toLocaleString("es-ES", { maximumFractionDigits: 1 })}\u00a0s`;
-}
-
-function costNote(totalUsd: number, count: number): string {
-	const cents = Math.round(totalUsd * 100);
-	if (totalUsd * 100 < 1) return `menos de 1 centavo de dólar por ${count} inscritos`;
-	if (cents === 1) return `cerca de 1 centavo de dólar por ${count} inscritos`;
-	return `unos ${cents} centavos de dólar por ${count} inscritos`;
 }
 
 function providerText(metrics: SegmentMetrics): string {
@@ -61,7 +54,6 @@ function TechDetail({ metrics }: { metrics: SegmentMetrics }) {
 			value: formatPercent(metrics.readyPrecision),
 		},
 		{ label: "Respuesta promedio por inscrito", value: `${Math.round(metrics.avgLatencyMs)} ms` },
-		{ label: "Costo del lote", value: formatUsd(metrics.totalCostUsd) },
 		{ label: "Quién respondió", value: providerText(metrics) },
 		{ label: "Sin respuesta (a revisión humana)", value: String(metrics.failed) },
 	];
@@ -232,7 +224,7 @@ export function SegmentsView() {
 								tone="plain"
 								label="Tiempo para todo el lote"
 								value={secondsText(metrics.wallMs)}
-								note={costNote(metrics.totalCostUsd, metrics.total)}
+								note={`${metrics.total} inscritos, listos para tu equipo comercial`}
 								icon={<ClockIcon size={18} />}
 							/>
 						</HighlightRow>

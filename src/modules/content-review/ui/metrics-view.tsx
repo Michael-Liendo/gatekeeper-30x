@@ -1,18 +1,11 @@
 "use client";
 
 import { HighlightCard, HighlightRow } from "@/shared/ui/highlight-card";
-import {
-	CheckIcon,
-	ChevronDownIcon,
-	ClockIcon,
-	CoinIcon,
-	EyeIcon,
-	SparkleIcon,
-} from "@/shared/ui/icons";
+import { CheckIcon, ChevronDownIcon, ClockIcon, EyeIcon, SparkleIcon } from "@/shared/ui/icons";
 import type { ReviewMetrics } from "../domain/review";
 import { AnalyzeButton } from "./analyze-button";
 import { EmptyState } from "./empty-state";
-import { formatMs, formatPercent, formatUsd } from "./format";
+import { formatMs, formatPercent } from "./format";
 import { ROUTE_LABEL, ROUTES } from "./labels";
 import { LoadingBlock } from "./loading-block";
 import { PageHeader } from "./page-header";
@@ -27,20 +20,9 @@ function speedText(avgMs: number): string {
 	return `Decide en unos ${seconds} ${seconds === 1 ? "segundo" : "segundos"}`;
 }
 
-/** "Menos de 1 centavo por cada 100 piezas" / "Unos 12 centavos por cada 100 piezas". */
-function costText(costPer1kUsd: number): string {
-	const centsPer100 = (costPer1kUsd / 10) * 100;
-	if (centsPer100 < 1) return "Menos de 1 centavo de dólar por cada 100 piezas";
-	if (centsPer100 < 100)
-		return `Unos ${Math.round(centsPer100)} centavos de dólar por cada 100 piezas`;
-	return `Unos ${Math.round(centsPer100 / 100)} dólares por cada 100 piezas`;
-}
-
 function techFacts(metrics: ReviewMetrics) {
 	return [
 		{ label: "Latencia promedio", value: formatMs(metrics.avgLatencyMs) },
-		{ label: "Costo por 1.000 piezas", value: formatUsd(metrics.costPer1kUsd) },
-		{ label: "Costo de este lote", value: formatUsd(metrics.totalCostUsd) },
 		{
 			label: "Respuestas de respaldo (OpenAI)",
 			value: String(metrics.fallbackCount),
@@ -49,7 +31,7 @@ function techFacts(metrics: ReviewMetrics) {
 	];
 }
 
-/** Three numbers, one chart and plain-language speed and cost. Detail stays collapsed. */
+/** Three numbers, one chart and what changes for the team in plain words. Detail stays collapsed. */
 export function MetricsView() {
 	const { hydrated, metrics, results, submittedIds, changedIds } = useReview();
 	const batch = results.filter((r) => !submittedIds.has(r.piece.id));
@@ -122,8 +104,8 @@ export function MetricsView() {
 						{speedText(metrics.avgLatencyMs)}
 					</li>
 					<li className="flex items-center gap-3 rounded-[20px] bg-surface-muted px-5 py-4 text-sm">
-						<CoinIcon size={20} className="shrink-0" />
-						{costText(metrics.costPer1kUsd)}
+						<EyeIcon size={20} className="shrink-0" />
+						{metrics.total - toYou} de {metrics.total} piezas ya no pasan por tu equipo
 					</li>
 				</ul>
 

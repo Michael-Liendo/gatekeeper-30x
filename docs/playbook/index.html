@@ -72,7 +72,7 @@
 	</section>
 
 	<!-- ═══════════════════════════ 02 · La decisión ═══════════════════════════ -->
-	<section class="slide" data-notes="La decisión es una sola y se repite miles de veces al día: ¿esta pieza sale o no? Posts, guiones, clips, newsletters y capturas, hechos por el equipo creativo o por una IA. Hay cuatro salidas: aprobado, mejorar con IA, revisar o descartado. ¿Por qué JEV y no un LLM? Porque JEV no escribe, decide: responde con probabilidades tipadas en unos cien a doscientos milisegundos, y mil piezas cuestan menos de cinco centavos de dólar. El LLM solo entra donde hace falta escribir.">
+	<section class="slide" data-notes="La decisión es una sola y se repite miles de veces al día: ¿esta pieza sale o no? Posts, guiones, clips, newsletters y capturas, hechos por el equipo creativo o por una IA. Hay cuatro salidas: aprobado, mejorar con IA, revisar o descartado. ¿Por qué JEV y no un LLM? Porque JEV no escribe, decide: responde con probabilidades tipadas en unos cien a doscientos milisegundos, siempre con el mismo criterio. Para el equipo de Media eso significa que lo seguro sale solo, lo riesgoso nunca sale solo y el editor solo mira lo que de verdad necesita su ojo. El LLM solo entra donde hace falta escribir.">
 		<div class="head">
 			<span class="num">02</span>
 			<span class="eyebrow">La decisión</span>
@@ -104,15 +104,15 @@
 					<div class="big">100–210<span class="unit">ms / pieza</span></div>
 				</div>
 				<div class="card aqua">
-					<div class="card-label">Cuesta, por cada 1.000 piezas <svg aria-hidden="true" class="icon"><use href="#i-coin"/></svg></div>
-					<div class="big">USD 0,046</div>
+					<div class="card-label">Riesgosas aprobadas solas <svg aria-hidden="true" class="icon"><use href="#i-shield"/></svg></div>
+					<div class="big">0<span class="unit">en 45 piezas</span></div>
 				</div>
 				<div class="card">
 					<div class="card-label">Responde <svg aria-hidden="true" class="icon"><use href="#i-list"/></svg></div>
 					<div class="big" style="font-size:26px; line-height:1.25">Probabilidades tipadas, no texto libre</div>
 				</div>
 			</div>
-			<p class="small mt-s muted">Medido en producción con JEV <span class="mono">jev-1.13.0</span> (TypeSafe): USD 0,042 por millón de tokens de entrada, salida gratis.</p>
+			<p class="small mt-s muted">Medido en producción con JEV <span class="mono">jev-1.13.0</span> (TypeSafe). Mismo criterio en cada pieza: el editor ya no revisa todo, solo lo dudoso.</p>
 		</div>
 		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>2 / 8</span></div>
 	</section>
@@ -205,13 +205,17 @@
 	</section>
 
 	<!-- ═══════════════════════════ 05 · Quién lo opera ═══════════════════════════ -->
-	<section class="slide" data-notes="¿Quién lo opera? Diseño y copy suben la pieza, como captura o como texto. JEV la revisa con las reglas de la marca. Si está en zona gris, la IA propone el arreglo, texto e imagen, y JEV lo verifica antes de que nadie lo vea. El editor de Media solo ve su bandeja: lo riesgoso y lo dudoso, con aprobar excepción o rechazar. Y el equipo ajusta la política sin programar. Todo vive en un tablero compartido con historial y versiones de cada pieza.">
+	<section class="slide" data-notes="¿Quién lo opera? Diseño y copy suben la pieza, como captura o como texto. JEV la revisa con las reglas de la marca. Si está en zona gris, la IA propone el arreglo, texto e imagen, y JEV lo verifica antes de que nadie lo vea. El editor de Media solo ve su bandeja: lo riesgoso y lo dudoso, con aprobar excepción o rechazar. Y el equipo ajusta la política sin programar. Todo vive en un tablero compartido con historial y versiones de cada pieza. ¿Qué cambia en el día? Media deja de revisar todo: abre su bandeja, decide solo lo riesgoso o dudoso, y cuando algo está flojo la IA lo arregla en vez de reescribirlo a mano. Comercial abre Inscritos y ya sabe a quién llamar primero. Y cada decisión del editor queda como etiqueta para que el sistema siga mejorando.">
 		<div class="head">
 			<span class="num">05</span>
 			<span class="eyebrow">Quién lo opera</span>
 		</div>
 		<div class="body">
 			<h2 style="font-size:34px">Cada quien hace lo suyo; el editor solo ve su bandeja</h2>
+			<div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px">
+				<p class="small" style="color:var(--ink)"><strong>Media, en su día:</strong> ya no revisa todo. Abre la bandeja, decide lo riesgoso o dudoso y deja que la IA arregle lo flojo en vez de reescribirlo.</p>
+				<p class="small" style="color:var(--ink)"><strong>Comercial, en su día:</strong> abre Inscritos y sabe a quién llamar primero, qué proponerle y a quién nutrir. Cada decisión humana queda como etiqueta.</p>
+			</div>
 			<div class="row mt">
 				<div class="card lilac">
 					<div class="card-label">Diseño y Copy <svg aria-hidden="true" class="icon"><use href="#i-upload"/></svg></div>
@@ -314,7 +318,7 @@
 	</section>
 
 	<!-- ═══════════════════════════ 07 · Cómo se mide ═══════════════════════════ -->
-	<section class="slide" data-notes="¿Cómo se mide? Primero, la escala: corrimos mil decisiones reales con JEV en producción. Tardaron cuatro segundos y medio, doscientas veintidós por segundo, ciento veintiocho milisegundos cada una y doscientos cincuenta en el peor cinco por ciento, por seis centavos de dólar en total y sin un solo respaldo. Después, la calidad: con cuarenta y cinco piezas simuladas y etiquetadas, la política inicial acertaba el 53 por ciento; calibrada, entre 80 y 87 según la corrida. Resuelve sin persona el 42 por ciento, y ninguna pieza riesgosa o spam se aprobó sola. Cada decisión del editor en la bandeja es una etiqueta nueva para recalibrar con datos reales.">
+	<section class="slide" data-notes="¿Cómo se mide? Primero, la escala: corrimos mil decisiones reales con JEV en producción. Tardaron cuatro segundos y medio, doscientas veintidós por segundo, ciento veintiocho milisegundos cada una y doscientos cincuenta en el peor cinco por ciento, sin un solo respaldo. A ese ritmo, diez mil piezas de un día se revisan en menos de un minuto: el equipo nunca espera al filtro. Después, la calidad: con cuarenta y cinco piezas simuladas y etiquetadas, la política inicial acertaba el 53 por ciento; calibrada, entre 80 y 87 según la corrida. Resuelve sin persona el 42 por ciento: son horas que el equipo recupera para crear. Y ninguna pieza riesgosa o spam se aprobó sola. Cada decisión del editor en la bandeja es una etiqueta nueva para recalibrar con datos reales.">
 		<div class="head">
 			<span class="num">07</span>
 			<span class="eyebrow">Cómo se mide</span>
@@ -327,7 +331,7 @@
 					<div><div class="big" style="color:#e3f64d">4,5 s</div><span>las 1.000</span></div>
 					<div><div class="big">222</div><span>decisiones por segundo</span></div>
 					<div><div class="big">128<span class="unit">ms</span></div><span>cada una · p95 250 ms</span></div>
-					<div><div class="big">USD 0,06</div><span>en total · 10.000/día ≈ USD 0,60</span></div>
+					<div><div class="big">&lt;1<span class="unit">min</span></div><span>para 10.000 piezas a este ritmo</span></div>
 					<div><div class="big">0</div><span>respaldos usados</span></div>
 				</div>
 			</div>
@@ -349,14 +353,14 @@
 				</div>
 			</div>
 			<div class="card muted-bg mt-s" style="padding:12px 22px">
-				<p class="small" style="color: var(--ink)"><strong>Horas ahorradas</strong> = piezas resueltas sin persona × minutos que tarda una revisión. <strong>Cada «Aprobar excepción» o «Rechazar» del editor es una etiqueta nueva</strong> para recalibrar con piezas reales.</p>
+				<p class="small" style="color: var(--ink)"><strong>Horas que el equipo recupera</strong> = piezas resueltas sin persona × minutos que tarda una revisión. <strong>Cada «Aprobar excepción» o «Rechazar» del editor es una etiqueta nueva</strong> para recalibrar con piezas reales.</p>
 			</div>
 		</div>
 		<div class="foot"><span class="wordmark"><span class="logo"><svg aria-hidden="true" viewBox="0 0 24 24"><use href="#i-gate"/></svg></span>Gatekeeper Editorial 30X</span><span>7 / 8 · jev-1.13.0, 17 oct 2026 · calidad sobre 45 piezas simuladas</span></div>
 	</section>
 
 	<!-- ═══════════════════════════ 08 · Escala ═══════════════════════════ -->
-	<section class="slide" data-notes="El motor no es de contenido: es estado, preguntas, umbrales y acciones. Y ya lo probamos con una segunda decisión, la idea número uno de 30X: los inscritos de Luma. Cinco preguntas en una pasada deciden programa, cargo, madurez en IA y si la persona está lista para un asesor, y el código elige la acción. Con doscientos perfiles anónimos de 30X coincide con su programa sugerido el 55,5 por ciento, 95 en AI Sales, y acierta el 88 por ciento al marcar a quién llamar. Es una primera iteración con perfiles muy escasos. Lo siguiente: recalibrar con datos reales y sumar riesgo de abandono y guardrails de agentes. Gracias.">
+	<section class="slide" data-notes="El motor no es de contenido: es estado, preguntas, umbrales y acciones. Y ya lo probamos con una segunda decisión, la idea número uno de 30X: los inscritos de Luma. Cinco preguntas en una pasada deciden programa, cargo, madurez en IA y si la persona está lista para un asesor, y el código elige la acción. Con doscientos perfiles anónimos de 30X coincide con su programa sugerido el 55,5 por ciento, 95 en AI Sales, y acierta el 88 por ciento al marcar a quién llamar. Para Comercial eso es una lista que dice a quién llamar primero, qué proponerle y a quién nutrir, y que se recalcula sola cuando cambia un dato. Es una primera iteración con perfiles muy escasos. Lo siguiente: recalibrar con datos reales y sumar riesgo de abandono y guardrails de agentes. Gracias.">
 		<div class="head">
 			<span class="num">08</span>
 			<span class="eyebrow">Escala y próximos pasos</span>
@@ -376,7 +380,7 @@
 						<div><b>55,5 %</b><span>coincide con el programa de 30X · 60 % donde sugirió uno · 95 % en AI Sales</span></div>
 						<div><b>88 %</b><span>precisión de «listo para un asesor»</span></div>
 						<div><b>93 ms</b><span>por persona</span></div>
-						<div><b>USD 0,009</b><span>por 200 personas</span></div>
+						<div><b>Al día</b><span>se recalcula si cambia un dato</span></div>
 					</div>
 					<p class="small" style="color:var(--ink); margin-top:10px">200 de 697 perfiles anónimos de 30X, JEV en producción, 0 respaldos. Primera iteración: perfiles escasos (73 % sin rol).</p>
 				</div>

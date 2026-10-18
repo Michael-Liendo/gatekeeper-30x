@@ -1,7 +1,7 @@
 # Gatekeeper Editorial 30X — pitch
 
 **🎯 Problema**
-30X produce mucho contenido (posts, guiones, clips, newsletters), y con IA cada vez más. Revisar pieza por pieza a mano es lento. Pasar todo por un LLM es caro, lento y no da un "sí o no" confiable.
+30X produce mucho contenido (posts, guiones, clips, newsletters), y con IA cada vez más. Revisar pieza por pieza a mano es lento. Cada persona usa su criterio, y el equipo creativo termina revisando en vez de crear.
 
 **💡 Solución**
 Un filtro editorial con JEV que **aprueba, corrige o descarta cada pieza en milisegundos**, según las reglas de 30X. El equipo solo revisa los casos dudosos.
@@ -14,21 +14,22 @@ Un filtro editorial con JEV que **aprueba, corrige o descarta cada pieza en mili
    - **Media:** un LLM sugiere el ajuste.
    - **Baja:** pasa al editor.
 
-**💰 Valor para 30X**
-- **Escala sin contratar:** revisa miles de piezas al día por centavos.
+**🤝 Qué cambia para los equipos**
+- **Media se enfoca:** deja lo repetitivo y solo decide los casos dudosos, con el porqué de cada alerta.
 - **Protege la marca:** nada promocional, exagerado o riesgoso sale sin revisión.
-- **Ahorra tiempo:** el editor solo ve lo dudoso.
+- **La IA corrige, no el equipo:** lo que falló se reescribe con un clic y JEV lo vuelve a revisar.
+- **Comercial llama primero a quien está listo** y sabe qué programa ofrecerle.
 - **Reglas editables:** Media ajusta su política sin programar.
 
 **👤 Quién lo usa**
 El editor o líder de Media de 30X, desde un panel con la cola de casos escalados.
 
 **📊 Cómo se mide**
-% aprobado automático · % escalado · precisión validada por el editor · costo por pieza · horas ahorradas.
+% aprobado automático · % escalado · precisión validada por el editor · horas que el equipo recupera.
 
 **🚀 Por qué gana**
 - Es una de las ideas que 30X pidió.
-- Combina JEV (rápido y barato) con un LLM (solo para lo difícil).
+- JEV decide al instante; el LLM solo escribe donde hace falta; la persona decide lo importante.
 - El mismo motor sirve después para leads, alumnos o guardrails de agentes.
 
 > "JEV decide, el LLM corrige, y el equipo solo revisa lo que de verdad importa."

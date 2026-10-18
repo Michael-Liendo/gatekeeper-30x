@@ -12,7 +12,7 @@ import {
 import { useToast } from "@/shared/ui/toast";
 import type { ReviewResult } from "../domain/review";
 import { AnswerList } from "./answer-list";
-import { formatDecimal, formatMs, formatPercent, formatUsd } from "./format";
+import { formatDecimal, formatMs, formatPercent } from "./format";
 import {
 	brandForResult,
 	decisionCertainty,
@@ -95,7 +95,6 @@ export function PieceDetail({
 
 	const facts = [
 		{ label: "Tiempo de respuesta", value: formatMs(result.latencyMs) },
-		{ label: "Costo", value: formatUsd(result.costUsd) },
 		{
 			label: "Proveedor",
 			value: providerName
