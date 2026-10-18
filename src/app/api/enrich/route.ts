@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
+import { getCurrentUser } from "@/modules/accounts/infrastructure/session";
 import type { BrandProfile } from "@/modules/brand/domain/brand-profile";
 import { getCurrentBrand, getDefaultBrand } from "@/modules/brand/infrastructure/current-brand";
 import { withSampleImage } from "@/modules/content-review/application/review-batch";
@@ -19,6 +21,9 @@ import { getReviewDeps } from "@/modules/content-review/infrastructure/review-de
  * Sample pieces are 30X content (default brand); pasted pieces use the user's brand.
  */
 export async function POST(request: Request) {
+	const user = await getCurrentUser();
+	if (!user) return Response.json({ error: "Inicia sesión para continuar." }, { status: 401 });
+
 	let json: unknown;
 	try {
 		json = await request.json();
@@ -68,6 +73,9 @@ export async function POST(request: Request) {
 			createdAt: now.toISOString(),
 		};
 	}
+
+	const limited = enforceDailyLimit(user, { llm: 1 });
+	if (limited) return limited;
 
 	try {
 		return Response.json(await suggestFixesForPiece(piece, { policy, brand }, deps));

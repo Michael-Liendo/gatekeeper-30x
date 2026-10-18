@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
 import { bulkUploadPieces } from "@/modules/workspace/application/bulk-upload";
 import {
 	bulkUploadErrorMessage,
@@ -36,6 +37,9 @@ export async function POST(request: Request) {
 			{ status: 400 },
 		);
 	}
+
+	const limited = enforceDailyLimit(user, { decisions: parsed.data.pieces.length });
+	if (limited) return limited;
 
 	const result = await bulkUploadPieces(parsed.data, user, brandFor(user), getWorkspaceDeps(), {
 		onError: (index, error) => console.error(`[bulk] row ${index} failed`, error),

@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
+import { getCurrentUser } from "@/modules/accounts/infrastructure/session";
 import { getCurrentBrand, getDefaultBrand } from "@/modules/brand/infrastructure/current-brand";
 import { reviewPiece } from "@/modules/content-review/application/review-piece";
 import {
@@ -16,6 +18,9 @@ import { getReviewDeps } from "@/modules/content-review/infrastructure/review-de
  * The piece is judged against the signed-in user's brand (30X when there is none).
  */
 export async function POST(request: Request) {
+	const user = await getCurrentUser();
+	if (!user) return Response.json({ error: "Inicia sesión para continuar." }, { status: 401 });
+
 	let json: unknown;
 	try {
 		json = await request.json();
@@ -44,6 +49,10 @@ export async function POST(request: Request) {
 		author: "Prueba en vivo",
 		createdAt: now.toISOString(),
 	};
+
+	// Suggestions only run for gray-zone pieces, but are reserved up front.
+	const limited = enforceDailyLimit(user, { decisions: 1, llm: enrich ? 1 : 0 });
+	if (limited) return limited;
 
 	const brand = (await getCurrentBrand()) ?? getDefaultBrand();
 	return Response.json(await reviewPiece(piece, { policy, enrich, brand }, getReviewDeps()));

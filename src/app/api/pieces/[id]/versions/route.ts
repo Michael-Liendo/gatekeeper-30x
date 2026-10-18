@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
 import {
 	hasImageIssue,
 	INVALID_IMAGE_MESSAGE,
@@ -37,6 +38,9 @@ export async function POST(request: Request, ctx: RouteContext<"/api/pieces/[id]
 			{ status: 400 },
 		);
 	}
+
+	const limited = enforceDailyLimit(user, { decisions: 1 });
+	if (limited) return limited;
 
 	try {
 		return Response.json(

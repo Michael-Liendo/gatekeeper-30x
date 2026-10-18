@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
+import { getCurrentUser } from "@/modules/accounts/infrastructure/session";
 import { getDefaultBrand } from "@/modules/brand/infrastructure/current-brand";
 import { reviewBatch } from "@/modules/content-review/application/review-batch";
 import { reviewBatchRequestSchema } from "@/modules/content-review/application/review-schemas";
@@ -9,6 +11,9 @@ import { getReviewDeps } from "@/modules/content-review/infrastructure/review-de
  * pieces are 30X content, so they are always judged against the default 30X brand.
  */
 export async function POST(request: Request) {
+	const user = await getCurrentUser();
+	if (!user) return Response.json({ error: "Inicia sesión para continuar." }, { status: 401 });
+
 	let json: unknown;
 	try {
 		json = await request.json();
@@ -30,6 +35,13 @@ export async function POST(request: Request) {
 	if (unknown.length > 0) {
 		return Response.json({ error: `Piezas desconocidas: ${unknown.join(", ")}.` }, { status: 404 });
 	}
+
+	const ids = parsed.data.ids ? new Set(parsed.data.ids) : null;
+	const decisions = ids
+		? deps.content.filter((piece) => ids.has(piece.id)).length
+		: deps.content.length;
+	const limited = enforceDailyLimit(user, { decisions });
+	if (limited) return limited;
 
 	return Response.json(await reviewBatch({ ...parsed.data, brand: getDefaultBrand() }, deps));
 }

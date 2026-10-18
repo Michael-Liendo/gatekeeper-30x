@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
 import {
 	hasImageIssue,
 	INVALID_IMAGE_MESSAGE,
@@ -55,6 +56,9 @@ export async function POST(request: Request) {
 			{ status: 400 },
 		);
 	}
+
+	const limited = enforceDailyLimit(user, { decisions: 1 });
+	if (limited) return limited;
 
 	const piece = await submitPiece(parsed.data, user, brandFor(user), getWorkspaceDeps());
 	return Response.json(piece, { status: 201 });

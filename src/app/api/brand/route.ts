@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { consumeDailyUsage } from "@/modules/accounts/infrastructure/daily-limit";
 import { getCurrentUser } from "@/modules/accounts/infrastructure/session";
 import { brandProfileInputSchema } from "@/modules/brand/application/brand-schemas";
 import { getBrandByUser, upsertBrand } from "@/modules/brand/infrastructure/brand-repository";
 import { listPieces } from "@/modules/workspace/application/piece-workflow";
-import { seedDemoPieces } from "@/modules/workspace/application/seed-demo-pieces";
+import { DEMO_SEED_SIZE, seedDemoPieces } from "@/modules/workspace/application/seed-demo-pieces";
 import { getSeedDeps } from "@/modules/workspace/infrastructure/workspace-deps";
 
 const UNAUTHORIZED = { error: "Inicia sesión para continuar." };
@@ -51,7 +52,11 @@ export async function PUT(request: Request) {
 
 	if (isFirstSave) {
 		const deps = getSeedDeps();
-		if (listPieces(user, undefined, deps).length === 0) {
+		// Over the daily limit the examples are skipped silently; the empty board can load them.
+		if (
+			listPieces(user, undefined, deps).length === 0 &&
+			consumeDailyUsage(user.id, { decisions: DEMO_SEED_SIZE }).ok
+		) {
 			try {
 				await seedDemoPieces(user, brand, deps);
 			} catch (error) {

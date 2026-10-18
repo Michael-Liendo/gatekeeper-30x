@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
 import { getCurrentUser } from "@/modules/accounts/infrastructure/session";
 import { segmentBatch } from "@/modules/segmentation/application/segment-batch";
 import {
@@ -12,7 +13,8 @@ import { getSegmentDeps } from "@/modules/segmentation/infrastructure/segment-de
  * and measures the result against 30X's own "Programa sugerido".
  */
 export async function POST(request: Request) {
-	if (!(await getCurrentUser())) {
+	const user = await getCurrentUser();
+	if (!user) {
 		return Response.json({ error: "Inicia sesión para continuar." }, { status: 401 });
 	}
 
@@ -50,5 +52,9 @@ export async function POST(request: Request) {
 		);
 	}
 
-	return Response.json(await segmentBatch({ size: parsed.data.size ?? DEFAULT_BATCH_SIZE }, deps));
+	const size = parsed.data.size ?? DEFAULT_BATCH_SIZE;
+	const limited = enforceDailyLimit(user, { decisions: size });
+	if (limited) return limited;
+
+	return Response.json(await segmentBatch({ size }, deps));
 }
