@@ -1,0 +1,857 @@
+/*
+ * Las láminas del playbook.
+ *
+ * Un archivo y ninguna dependencia salvo Poppins: se abre desde disco en un
+ * navegador prestado, cinco minutos antes de presentar.
+ *
+ * La lámina no centra su contenido a ojo: es una rejilla de tres filas
+ * (cabecera, cuerpo, pie) con el cuerpo en `min-height: 0` y `overflow: hidden`,
+ * y `verificar.mjs` mide las ocho y falla si alguna se pasa.
+ *
+ * El estilo es el del producto (docs/07-estilo.md): lienzo blanco, tarjetas
+ * pastel en degradado, negro #1c1c1e para los acentos y los cuatro colores de
+ * ruta. Mismos valores que src/app/globals.css.
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap");
+
+:root {
+	--ground: #e9ebf0;
+	--surface: #ffffff;
+	--surface-muted: #f5f6f9;
+	--line: #eceef2;
+	--line-strong: #d9dce3;
+	--ink: #1c1c1e;
+	--ink-muted: #8a8f9c;
+	--ink-soft: #5d6270;
+	--pill: #e6f6f5;
+
+	--grad-lilac-from: #cfd0ff;
+	--grad-lilac-to: #f9c9ec;
+	--grad-aqua-from: #a9e6f2;
+	--grad-aqua-to: #c8f4ee;
+	--grad-peach-from: #ffe1c7;
+	--grad-peach-to: #ffd0d8;
+
+	--approve: #3bb59a;
+	--approve-soft: #e3f6f1;
+	--approve-ink: #1d6b58;
+	--enrich: #7b7ff0;
+	--enrich-soft: #eeeeff;
+	--enrich-ink: #3f43a8;
+	--human: #f0a35a;
+	--human-soft: #fff1e4;
+	--human-ink: #8a4d12;
+	--reject: #b4b8c2;
+	--reject-soft: #f2f3f6;
+	--reject-ink: #5a5f6b;
+
+	--sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+	--mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+	height: 100%;
+	background: var(--ground);
+	font-family: var(--sans);
+	color: var(--ink);
+	-webkit-font-smoothing: antialiased;
+}
+
+#stage {
+	position: fixed;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	overflow: hidden;
+}
+
+/* ── La lámina ──────────────────────────────────────────────── */
+
+.slide {
+	position: absolute;
+	width: 1280px;
+	height: 720px;
+	background: var(--surface);
+	border-radius: 36px;
+	display: none;
+	grid-template-rows: auto 1fr auto;
+	padding: 48px 64px 32px;
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.slide.on {
+	display: grid;
+}
+
+.body {
+	min-height: 0;
+	overflow: hidden;
+	align-self: center;
+	position: relative;
+	z-index: 1;
+}
+
+/* Una sola mancha pastel, sangrando por una esquina. */
+.slide::after {
+	content: "";
+	position: absolute;
+	z-index: 0;
+	width: 420px;
+	height: 420px;
+	border-radius: 50%;
+	right: -180px;
+	top: -200px;
+	background: linear-gradient(135deg, var(--grad-lilac-from), var(--grad-lilac-to));
+	opacity: 0.35;
+	filter: blur(8px);
+}
+
+/* ── Cabecera ───────────────────────────────────────────────── */
+
+.head {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	position: relative;
+	z-index: 1;
+}
+
+.num {
+	display: inline-grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 12px;
+	background: var(--ink);
+	color: #fff;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.eyebrow {
+	font-size: 13px;
+	font-weight: 500;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--ink-muted);
+}
+
+/* ── Tipografía: tres tamaños ───────────────────────────────── */
+
+h1 {
+	font-size: 68px;
+	font-weight: 300;
+	line-height: 1.08;
+	letter-spacing: -0.025em;
+	text-wrap: balance;
+}
+
+h2 {
+	font-size: 40px;
+	font-weight: 400;
+	line-height: 1.18;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+	max-width: 44ch;
+}
+
+h3 {
+	font-size: 18px;
+	font-weight: 500;
+	line-height: 1.3;
+}
+
+strong {
+	font-weight: 600;
+}
+
+.lede {
+	margin-top: 16px;
+	font-size: 21px;
+	font-weight: 300;
+	line-height: 1.45;
+	color: var(--ink-soft);
+	max-width: 52ch;
+	text-wrap: pretty;
+}
+
+.small {
+	font-size: 14px;
+	line-height: 1.45;
+	color: var(--ink-soft);
+}
+
+.muted {
+	color: var(--ink-muted);
+}
+
+.mono {
+	font-family: var(--mono);
+	font-size: 0.92em;
+}
+
+/* ── Rutas ──────────────────────────────────────────────────── */
+
+.route {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 5px 13px 5px 10px;
+	border-radius: 999px;
+	font-size: 14px;
+	font-weight: 500;
+	white-space: nowrap;
+}
+.route::before {
+	content: "";
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: currentColor;
+	flex: none;
+}
+.route.approve {
+	background: var(--approve-soft);
+	color: var(--approve-ink);
+}
+.route.approve::before {
+	background: var(--approve);
+}
+.route.enrich {
+	background: var(--enrich-soft);
+	color: var(--enrich-ink);
+}
+.route.enrich::before {
+	background: var(--enrich);
+}
+.route.human {
+	background: var(--human-soft);
+	color: var(--human-ink);
+}
+.route.human::before {
+	background: var(--human);
+}
+.route.reject {
+	background: var(--reject-soft);
+	color: var(--reject-ink);
+}
+.route.reject::before {
+	background: var(--reject);
+}
+
+/* En la portada caben las cuatro en una fila. */
+.cover-routes .route {
+	font-size: 12.5px;
+	padding: 4px 10px 4px 8px;
+	gap: 6px;
+}
+
+/* ── Tarjetas ───────────────────────────────────────────────── */
+
+.card {
+	border-radius: 24px;
+	padding: 22px 24px;
+	background: var(--surface);
+	border: 1px solid var(--line);
+	min-width: 0;
+	position: relative;
+}
+.card.lilac {
+	background: linear-gradient(135deg, var(--grad-lilac-from), var(--grad-lilac-to));
+	border-color: transparent;
+}
+.card.aqua {
+	background: linear-gradient(135deg, var(--grad-aqua-from), var(--grad-aqua-to));
+	border-color: transparent;
+}
+.card.peach {
+	background: linear-gradient(135deg, var(--grad-peach-from), var(--grad-peach-to));
+	border-color: transparent;
+}
+.card.muted-bg {
+	background: var(--surface-muted);
+	border-color: transparent;
+}
+.card.dark {
+	background: var(--ink);
+	color: #fff;
+	border-color: transparent;
+}
+.card.dark .small,
+.card.dark .muted {
+	color: #b9bcc6;
+}
+
+.card-label {
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--ink-soft);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+}
+.card.dark .card-label {
+	color: #b9bcc6;
+}
+
+.big {
+	font-size: 44px;
+	font-weight: 300;
+	line-height: 1.05;
+	letter-spacing: -0.02em;
+	font-variant-numeric: tabular-nums;
+	margin-top: 10px;
+}
+.big .unit {
+	font-size: 18px;
+	font-weight: 400;
+	letter-spacing: 0;
+	margin-left: 4px;
+}
+.big .before {
+	color: var(--ink-muted);
+	text-decoration: line-through;
+	text-decoration-thickness: 2px;
+	font-size: 28px;
+	margin-right: 6px;
+}
+
+.icon {
+	width: 20px;
+	height: 20px;
+	stroke: currentColor;
+	stroke-width: 1.5;
+	fill: none;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	flex: none;
+}
+
+/* ── Rejillas ───────────────────────────────────────────────── */
+
+.row {
+	display: grid;
+	grid-auto-flow: column;
+	grid-auto-columns: 1fr;
+	gap: 16px;
+}
+.grid-3 {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 14px;
+}
+.split {
+	display: grid;
+	grid-template-columns: 1.55fr 1fr;
+	gap: 24px;
+	align-items: start;
+}
+.mt-s {
+	margin-top: 12px;
+}
+.mt {
+	margin-top: 22px;
+}
+.mt-l {
+	margin-top: 30px;
+}
+
+/* ── Tablas ─────────────────────────────────────────────────── */
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 14px;
+}
+th {
+	text-align: left;
+	font-size: 12px;
+	font-weight: 500;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--ink-muted);
+	padding: 0 10px 8px;
+	border-bottom: 1px solid var(--line-strong);
+}
+td {
+	padding: 6px 10px;
+	border-bottom: 1px solid var(--line);
+	line-height: 1.3;
+	vertical-align: middle;
+}
+tr:last-child td {
+	border-bottom: 0;
+}
+td.num-cell,
+th.num-cell {
+	text-align: center;
+	font-variant-numeric: tabular-nums;
+}
+td.hl,
+th.hl {
+	background: var(--surface-muted);
+	font-weight: 600;
+}
+tr.info td {
+	color: var(--ink-muted);
+}
+
+.type {
+	display: inline-block;
+	padding: 2px 9px;
+	border-radius: 8px;
+	font-family: var(--mono);
+	font-size: 12px;
+	background: var(--surface-muted);
+	color: var(--ink-soft);
+}
+.type.choice {
+	background: #eceaff;
+	color: var(--enrich-ink);
+}
+.type.score {
+	background: #ddf3f6;
+	color: #1f6470;
+}
+.type.noul {
+	background: #fdeaf5;
+	color: #8a2f6a;
+}
+
+/* ── Reglas en orden ────────────────────────────────────────── */
+
+ol.rules {
+	list-style: none;
+	display: grid;
+	gap: 8px;
+	counter-reset: rule;
+}
+ol.rules li {
+	counter-increment: rule;
+	display: grid;
+	grid-template-columns: 30px 1fr auto;
+	align-items: center;
+	gap: 12px;
+	padding: 9px 14px 9px 10px;
+	border-radius: 16px;
+	background: var(--surface-muted);
+	font-size: 15px;
+	line-height: 1.3;
+}
+ol.rules li::before {
+	content: counter(rule);
+	display: grid;
+	place-items: center;
+	width: 26px;
+	height: 26px;
+	border-radius: 9px;
+	background: var(--ink);
+	color: #fff;
+	font-size: 12px;
+	font-weight: 500;
+}
+
+/* ── Listas ─────────────────────────────────────────────────── */
+
+ul.points {
+	list-style: none;
+	display: grid;
+	gap: 9px;
+}
+ul.points li {
+	position: relative;
+	padding-left: 20px;
+	font-size: 16px;
+	line-height: 1.4;
+}
+ul.points li::before {
+	content: "";
+	position: absolute;
+	left: 2px;
+	top: 0.55em;
+	width: 8px;
+	height: 8px;
+	border-radius: 3px;
+	background: var(--ink);
+}
+.card.dark ul.points li::before {
+	background: #fff;
+}
+
+/* ── Mini tablero (lámina 5) ────────────────────────────────── */
+
+.board {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 12px;
+}
+.lane {
+	background: var(--surface-muted);
+	border-radius: 18px;
+	padding: 12px;
+	display: grid;
+	gap: 8px;
+	align-content: start;
+}
+.lane-head {
+	font-size: 13px;
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.dot {
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	flex: none;
+}
+.chip {
+	background: #fff;
+	border-radius: 12px;
+	padding: 8px 10px;
+	font-size: 12.5px;
+	line-height: 1.3;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.chip .thumb {
+	width: 22px;
+	height: 22px;
+	border-radius: 7px;
+	flex: none;
+	background: linear-gradient(135deg, var(--grad-lilac-from), var(--grad-lilac-to));
+}
+.chip.selected {
+	background: var(--ink);
+	color: #fff;
+}
+
+/* ── Antes y después (lámina 6) ─────────────────────────────── */
+
+.versus {
+	display: grid;
+	grid-template-columns: 1fr 172px 1fr;
+	gap: 18px;
+	align-items: stretch;
+}
+.shot {
+	height: 118px;
+	border-radius: 16px;
+	padding: 16px 18px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 6px;
+	overflow: hidden;
+}
+/* Real screenshots: show the whole image, padded with its own background color. */
+.shot.photo {
+	width: 100%;
+	height: 168px;
+	padding: 0;
+	object-fit: contain;
+	border: 1px solid var(--line, #eceef2);
+}
+.shot.spam {
+	background: repeating-linear-gradient(-45deg, #2a1d10, #2a1d10 14px, #33230f 14px, #33230f 28px);
+	color: #ffd400;
+	font-weight: 600;
+	font-size: 23px;
+	line-height: 1.1;
+	text-transform: uppercase;
+}
+.shot.spam .sub {
+	font-size: 13px;
+	font-weight: 500;
+	color: #ff8a3d;
+	text-transform: none;
+}
+.shot.brand {
+	background: #c8f04b;
+	color: var(--ink);
+}
+.shot.brand .bar {
+	height: 12px;
+	border-radius: 6px;
+	background: rgba(28, 28, 30, 0.85);
+}
+.shot.brand .bar.thin {
+	height: 8px;
+	background: rgba(28, 28, 30, 0.35);
+}
+.flags {
+	display: grid;
+	gap: 5px;
+	margin-top: 12px;
+}
+.flag {
+	display: flex;
+	justify-content: space-between;
+	font-size: 14px;
+	padding: 6px 12px;
+	border-radius: 10px;
+	background: var(--surface-muted);
+}
+.flag b {
+	font-weight: 600;
+	font-variant-numeric: tabular-nums;
+}
+.bridge {
+	display: grid;
+	place-items: center;
+	align-content: center;
+	gap: 10px;
+	text-align: center;
+}
+.bridge .btn {
+	background: var(--ink);
+	color: #fff;
+	border-radius: 14px;
+	padding: 10px 12px;
+	font-size: 13.5px;
+	font-weight: 500;
+	white-space: nowrap;
+	display: inline-flex;
+	gap: 6px;
+	align-items: center;
+}
+
+.steps {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 12px;
+}
+.step {
+	border-radius: 18px;
+	padding: 12px 16px;
+	background: var(--surface-muted);
+	font-size: 14px;
+	line-height: 1.35;
+}
+.step b {
+	display: block;
+	font-size: 15px;
+	font-weight: 600;
+	margin-bottom: 2px;
+}
+
+/* ── Pie ────────────────────────────────────────────────────── */
+
+.foot {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	position: relative;
+	z-index: 1;
+	font-size: 12px;
+	color: var(--ink-muted);
+	letter-spacing: 0.03em;
+}
+
+.wordmark {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	font-weight: 500;
+	font-size: 14px;
+	color: var(--ink);
+}
+.wordmark .logo {
+	width: 22px;
+	height: 22px;
+	border-radius: 7px;
+	background: var(--ink);
+	display: grid;
+	place-items: center;
+}
+.wordmark .logo svg {
+	width: 13px;
+	height: 13px;
+	stroke: #fff;
+	stroke-width: 2;
+	fill: none;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+a {
+	color: inherit;
+}
+
+/* ── Notas y ayuda ──────────────────────────────────────────── */
+
+#notes {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	max-height: 34vh;
+	overflow-y: auto;
+	padding: 18px 26px 22px;
+	background: var(--ink);
+	color: #e4e5ea;
+	font-size: 16px;
+	line-height: 1.5;
+	display: none;
+}
+body.notes #notes {
+	display: block;
+}
+#notes b {
+	color: #cfd0ff;
+	font-size: 12px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	display: block;
+	margin-bottom: 7px;
+}
+
+#help {
+	position: fixed;
+	right: 16px;
+	top: 12px;
+	font-size: 11.5px;
+	color: var(--ink-muted);
+	letter-spacing: 0.04em;
+}
+
+/* ── Imprimir a PDF ─────────────────────────────────────────── */
+
+@page {
+	size: 13.333in 7.5in;
+	margin: 0;
+}
+
+@media print {
+	html,
+	body {
+		background: #fff;
+		height: auto;
+	}
+	#stage {
+		position: static;
+		display: block;
+		overflow: visible;
+	}
+	.slide,
+	.slide.on {
+		display: grid !important;
+		position: relative;
+		transform: none !important;
+		border-radius: 0;
+		page-break-after: always;
+		break-after: page;
+	}
+	#notes,
+	#help {
+		display: none !important;
+	}
+	.slide {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+	}
+}
+
+.shot.photo.antes {
+	background: #ffde00;
+}
+.shot.photo.despues {
+	background: #e3f64d;
+}
+.versus .flags {
+	gap: 4px;
+}
+.versus .flag {
+	padding: 3px 12px;
+	font-size: 13px;
+}
+
+/* Slide 6: the real before/after copy, set as type so it stays crisp and fills the card. */
+.post {
+	height: 168px;
+	border-radius: 16px;
+	padding: 18px 22px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 6px;
+	font-family: "Arial", "Helvetica Neue", sans-serif;
+	color: #111;
+	font-size: 14px;
+	line-height: 1.4;
+}
+.post p {
+	margin: 0;
+}
+.post .post-title {
+	font-weight: 800;
+	font-size: 24px;
+	line-height: 1.1;
+	letter-spacing: -0.01em;
+}
+.post .post-close {
+	font-weight: 700;
+}
+.post.antes {
+	background: #ffde00;
+}
+.post.despues {
+	background: #e3f64d;
+}
+
+/* ── Prueba de escala y segmentación (láminas 7 y 8) ────────── */
+
+.scale-row {
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 14px;
+	margin-top: 4px;
+}
+.scale-row .big {
+	font-size: 36px;
+	margin-top: 4px;
+}
+.scale-row span:not(.unit) {
+	display: block;
+	font-size: 13px;
+	line-height: 1.35;
+	color: #b9bcc6;
+	margin-top: 2px;
+}
+.seg-stats {
+	display: grid;
+	grid-template-columns: 1.4fr 1fr 0.8fr 1fr;
+	gap: 10px;
+}
+.seg-stats > div {
+	background: rgba(255, 255, 255, 0.75);
+	border-radius: 14px;
+	padding: 10px 12px;
+}
+.seg-stats b {
+	display: block;
+	font-size: 26px;
+	font-weight: 300;
+	letter-spacing: -0.02em;
+	line-height: 1.1;
+	font-variant-numeric: tabular-nums;
+}
+.seg-stats span {
+	display: block;
+	font-size: 12.5px;
+	line-height: 1.3;
+	color: var(--ink-soft);
+	margin-top: 3px;
+}
