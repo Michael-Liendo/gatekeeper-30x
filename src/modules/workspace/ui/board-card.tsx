@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { describePiece, pieceHighlights } from "@/modules/content-review/ui/labels";
 import { SparkleIcon } from "@/shared/ui/icons";
 import type { PieceStatus, TeamRole, WorkspacePiece } from "../domain/workspace";
+import { DemoPublishButton } from "./demo-publish-button";
 import { ExampleChip } from "./example-chip";
 import { MoveMenu } from "./move-menu";
 import { requestImprove } from "./regenerate-panel";
@@ -73,6 +74,7 @@ export function BoardCard({ piece, role, moving, onMove }: BoardCardProps) {
 				<RoleChip role={role} />
 				{piece.isExample ? <ExampleChip /> : null}
 			</div>
+			{piece.status === "approved" ? <DemoPublishButton piece={piece} /> : null}
 			{piece.status === "needs_changes" ? (
 				// Above the stretched link; the tooltip says what the AI will do.
 				<div className="group/improve relative z-10">
