@@ -20,6 +20,9 @@ export const DEMO_SEED_MIX: Readonly<Record<Route, number>> = {
 	REJECT: 2,
 };
 
+/** How many examples (and JEV reviews) seeding makes at most. */
+export const DEMO_SEED_SIZE = Object.values(DEMO_SEED_MIX).reduce((sum, n) => sum + n, 0);
+
 /** Reviews running at the same time while seeding. */
 export const DEMO_SEED_CONCURRENCY = 4;
 

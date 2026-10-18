@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
 import { getCurrentUser } from "@/modules/accounts/infrastructure/session";
 import { resegment, segmentProfile } from "@/modules/segmentation/application/segment-profile";
 import {
@@ -12,7 +13,8 @@ import { getSegmentEngineDeps } from "@/modules/segmentation/infrastructure/segm
  * person's situation changed and returns the previous and the new segment.
  */
 export async function POST(request: Request) {
-	if (!(await getCurrentUser())) {
+	const user = await getCurrentUser();
+	if (!user) {
 		return Response.json({ error: "Inicia sesión para continuar." }, { status: 401 });
 	}
 
@@ -35,6 +37,10 @@ export async function POST(request: Request) {
 	}
 
 	const { cambios, ...fields } = parsed.data;
+	// Recalculating segments the profile twice (before and after the change).
+	const limited = enforceDailyLimit(user, { decisions: cambios ? 2 : 1 });
+	if (limited) return limited;
+
 	const profile = toLeadProfile(fields);
 	const deps = getSegmentEngineDeps();
 

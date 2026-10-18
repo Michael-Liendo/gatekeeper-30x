@@ -60,6 +60,15 @@ CREATE TABLE IF NOT EXISTS piece_events (
 	created_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS piece_events_piece ON piece_events(piece_id, created_at);
+
+-- Daily provider usage per scope ('user:<id>' or 'global') and bucket. day = UTC YYYY-MM-DD.
+CREATE TABLE IF NOT EXISTS usage_counters (
+	day TEXT NOT NULL,
+	scope TEXT NOT NULL,
+	bucket TEXT NOT NULL,
+	count INTEGER NOT NULL DEFAULT 0,
+	PRIMARY KEY (day, scope, bucket)
+);
 `;
 
 /** Adds a column unless it already exists (SQLite has no ADD COLUMN IF NOT EXISTS). */

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
 import { requireUser, UnauthorizedError } from "@/modules/accounts/infrastructure/session";
 import {
 	BRAND_EXTRACTION_CONFIG,
@@ -26,8 +27,9 @@ const extractRequestSchema = z.union([
 
 /** "Analizar mi marca": scrapes the brand's site(s) and returns a BrandProfileDraft. */
 export async function POST(request: Request) {
+	let user: Awaited<ReturnType<typeof requireUser>>;
 	try {
-		await requireUser();
+		user = await requireUser();
 	} catch (error) {
 		if (error instanceof UnauthorizedError) {
 			return Response.json({ error: "Inicia sesión para continuar." }, { status: 401 });
@@ -52,6 +54,9 @@ export async function POST(request: Request) {
 			{ status: 400 },
 		);
 	}
+
+	const limited = enforceDailyLimit(user, { llm: 1 });
+	if (limited) return limited;
 
 	const urls = "url" in parsed.data ? [parsed.data.url] : parsed.data.urls;
 	return Response.json(await extractBrandDraft(urls));

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
 import { requireUser, UnauthorizedError } from "@/modules/accounts/infrastructure/session";
 import { getDefaultBrand } from "@/modules/brand/infrastructure/current-brand";
 import { runStress } from "@/modules/content-review/application/stress-run";
@@ -71,6 +72,9 @@ export async function POST(request: Request) {
 		}
 		throw error;
 	}
+
+	const limited = enforceDailyLimit({ id: userId }, { decisions: parsed.data.count });
+	if (limited) return limited;
 
 	lastRunAt.set(userId, startedAt);
 	const report = await runStress(

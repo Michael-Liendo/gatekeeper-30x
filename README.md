@@ -256,6 +256,20 @@ Variables de `.env.local`:
 | `OPENAI_API_KEY` | Respaldo de decisiones, sugerencias, "Analizar mi marca" y "Regenerar con IA" |
 | `DECISION_TIMEOUT_MS` | Tiempo que JEV tiene antes del respaldo (por defecto `4000`) |
 | `DATA_DIR` | Carpeta de la base SQLite y las capturas (por defecto `./data`) |
+| `DAILY_LIMIT_<BOLSA>_<USER\|GLOBAL>` | Opcional. Cambia un límite diario de uso (ver abajo); `0` lo bloquea |
+
+**Límites diarios de uso.** Para que nadie agote las claves creando cuentas, cada persona
+y la demo completa tienen un tope diario por bolsa. Son generosos: el uso normal no los toca.
+El día es el día calendario UTC (se reinicia a las 19:00 de Bogotá). Al pasarlo, la API
+responde `429` con un mensaje en español y `Retry-After`.
+
+| Bolsa | Qué cuenta | Por persona | Total demo |
+|---|---|---|---|
+| `DECISIONS` | Decisiones de JEV/OpenAI (una por pieza o perfil) | 20.000 | 200.000 |
+| `LLM` | Sugerencias, reescrituras y "Analizar mi marca" | 300 | 3.000 |
+| `IMAGES` | Imágenes regeneradas | 30 | 300 |
+
+Ejemplo: `DAILY_LIMIT_IMAGES_USER=10`. `GET /api/me/usage` muestra el uso de hoy.
 
 Con una sola de las dos claves la app funciona con ese proveedor. Los modelos (JEV y OpenAI)
 están fijos en el código, no en variables.

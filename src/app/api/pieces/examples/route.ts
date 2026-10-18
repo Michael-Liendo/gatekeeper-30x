@@ -1,4 +1,9 @@
-import { removeDemoPieces, seedDemoPieces } from "@/modules/workspace/application/seed-demo-pieces";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
+import {
+	DEMO_SEED_SIZE,
+	removeDemoPieces,
+	seedDemoPieces,
+} from "@/modules/workspace/application/seed-demo-pieces";
 import { brandFor, currentUser, unauthorized } from "@/modules/workspace/infrastructure/piece-http";
 import { getSeedDeps, getWorkspaceDeps } from "@/modules/workspace/infrastructure/workspace-deps";
 
@@ -6,6 +11,9 @@ import { getSeedDeps, getWorkspaceDeps } from "@/modules/workspace/infrastructur
 export async function POST() {
 	const user = await currentUser();
 	if (!user) return unauthorized();
+
+	const limited = enforceDailyLimit(user, { decisions: DEMO_SEED_SIZE });
+	if (limited) return limited;
 
 	try {
 		const created = await seedDemoPieces(user, brandFor(user), getSeedDeps());

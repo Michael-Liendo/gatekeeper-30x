@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
+import { getCurrentUser } from "@/modules/accounts/infrastructure/session";
 import type { DecisionQuestion, DecisionRequest } from "@/modules/content-review/domain/decision";
 import { getDecisionEngine } from "@/modules/content-review/infrastructure/decision-engine";
 
@@ -27,6 +29,9 @@ const bodySchema = z.object({
 
 /** Manual testing endpoint: runs the configured decision engine on arbitrary questions. */
 export async function POST(request: Request) {
+	const user = await getCurrentUser();
+	if (!user) return Response.json({ error: "Inicia sesión para continuar." }, { status: 401 });
+
 	let json: unknown;
 	try {
 		json = await request.json();
@@ -41,6 +46,9 @@ export async function POST(request: Request) {
 			{ status: 400 },
 		);
 	}
+
+	const limited = enforceDailyLimit(user, { decisions: 1 });
+	if (limited) return limited;
 
 	try {
 		const result = await getDecisionEngine().decide(parsed.data);

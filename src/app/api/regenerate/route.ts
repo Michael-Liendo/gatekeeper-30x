@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { enforceDailyLimit } from "@/modules/accounts/infrastructure/daily-limit";
 import { requireUser, UnauthorizedError } from "@/modules/accounts/infrastructure/session";
 import type { BrandProfile } from "@/modules/brand/domain/brand-profile";
 import { getCurrentBrand, getDefaultBrand } from "@/modules/brand/infrastructure/current-brand";
@@ -114,6 +115,15 @@ export async function POST(request: Request) {
 			createdAt: now.toISOString(),
 		};
 	}
+
+	// Rewrite + image redraw (when there is a screenshot) + the re-review, plus a first
+	// review when the piece has none stored.
+	const limited = enforceDailyLimit(user, {
+		llm: 1,
+		images: piece.imageDataUrl ? 1 : 0,
+		decisions: previousReview ? 1 : 2,
+	});
+	if (limited) return limited;
 
 	try {
 		const proposal: RegenerationProposal = await regeneratePiece(
