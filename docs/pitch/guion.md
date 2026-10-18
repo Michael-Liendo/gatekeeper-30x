@@ -3,18 +3,22 @@
 Lo que se dice en voz alta, lámina por lámina. Es el mismo texto que llevan las
 notas del deck (tecla `P`); si cambias uno, cambia el otro.
 
-Son ~770 palabras: **unos 4 minutos y medio** a ritmo de pitch. Si vas justo,
+Son ~850 palabras: **unos 5 minutos** a ritmo de pitch. Si vas justo,
 cada lámina tiene una frase marcada _[se puede quitar]_ que no rompe nada; sin
-ellas queda en unos 4 minutos.
+ellas queda en unos 4 minutos y medio.
 
-**La historia:** el reto pregunta qué decisiones de 30X podría tomar JEV miles
-de veces al día, en milisegundos y por fracciones de centavo. Respondemos con
-dos decisiones que ya funcionan (Media: _¿esta pieza sale?_; Comercial: _¿a qué
-programa va este inscrito y lo llamamos ya?_) y con una prueba de escala real.
-JEV es el protagonista; el producto es el contexto.
+**La historia:** la IA multiplicó lo que el equipo de contenido produce; nadie
+multiplicó la revisión. El cuello de botella pasó de crear a aprobar. El reto
+pregunta qué decisiones de 30X podría tomar JEV miles de veces al día, en
+milisegundos. Respondemos con la de Media (_¿esta pieza sale?_): el editor solo
+ve lo dudoso, la IA corrige lo que falló, JEV lo revisa de nuevo y el equipo
+vuelve a crear. Comercial es el mismo motor con otra decisión (_¿a qué programa
+va este inscrito y lo llamamos ya?_). Y una prueba de escala real. JEV es el
+protagonista; el producto es el contexto.
 
-Tono: de tú a tú, frases cortas, sin jerga. Se habla de decisiones, tiempo,
-dinero y riesgo. JEV se nombra siempre como el que decide; cómo funciona por
+Tono: de tú a tú, frases cortas, sin jerga. Se habla de cómo cambia el día del
+equipo: menos revisión a mano, el mismo criterio, nada riesgoso sale solo.
+JEV se nombra siempre como el que decide; cómo funciona por
 dentro está en el [playbook](../playbook/).
 
 ---
@@ -22,29 +26,30 @@ dentro está en el [playbook](../playbook/).
 ## 1 · Portada — Gatekeeper Editorial
 
 Hola, somos DevGain: Michael Liendo y Haron Acosta. El reto pregunta qué
-decisiones de 30X podría tomar JEV miles de veces al día, en milisegundos y por
-fracciones de centavo. Construimos dos, y las dos ya funcionan: para Media,
-¿esta pieza sale?; para Comercial, ¿a qué programa va este inscrito y lo
-llamamos ya? _[se puede quitar]_ La regla es simple: JEV decide; la IA
+decisiones de 30X podría tomar JEV miles de veces al día, en milisegundos.
+Construimos dos, y las dos ya funcionan: para Media, ¿esta pieza sale?; para
+Comercial, ¿a qué programa va este inscrito y lo llamamos ya? Así el equipo de
+contenido deja de aprobar a mano y vuelve a crear. _[se puede quitar]_ La regla es simple: JEV decide; la IA
 generativa solo escribe cuando hace falta.
 
 ## 2 · El problema
 
-30X toma estas dos decisiones todo el tiempo. En Media, cada pieza sale ante
-unos cuatrocientos veinticinco mil seguidores en Instagram, y con IA producir ya
-toma minutos. En Comercial, cada persona que se inscribe en Luma: solo en la
-hoja que nos compartieron hay seiscientos noventa y siete. _[se puede quitar]_
-Hoy las dos se deciden a mano: es lento, cada persona usa su criterio, y
-equivocarse cuesta marca o ventas.
+La IA multiplicó lo que el equipo produce; nadie multiplicó la revisión. El
+cuello de botella pasó de crear a aprobar. En Media, cada pieza sale ante unos
+cuatrocientos veinticinco mil seguidores en Instagram. Pero el editor sigue revisando a mano, una por una, decenas de piezas
+hechas con IA; cada persona usa su criterio, hay retrabajo y siempre está el
+miedo de que algo riesgoso se escape. _[se puede quitar]_ Y en Comercial pasa
+lo mismo con cada inscrito de Luma: solo en la hoja que nos compartieron hay
+seiscientos noventa y siete.
 
 ## 3 · La solución
 
-Nuestra respuesta: que JEV, el motor de decisión de TypeSafe, tome esas dos
-decisiones. Para una pieza, dice una de cuatro cosas: se publica, se mejora con
-IA, la revisa una persona o se descarta. Para un inscrito, dice a qué programa
-va y qué hacer: pasarlo a un asesor, enviarle la propuesta o nutrirlo con
-contenido. _[se puede quitar]_ Siempre explica por qué, y si duda, decide una
-persona.
+Nuestra respuesta: que JEV, el motor de decisión de TypeSafe, apruebe por el
+equipo. Para cada pieza dice una de cuatro cosas: se publica, se mejora con IA,
+la revisa una persona o se descarta. El editor solo ve lo dudoso, con el
+porqué; lo que falló lo corrige la IA y JEV lo revisa de nuevo. Y el equipo
+vuelve a crear. _[se puede quitar]_ El mismo motor toma otra decisión para
+Comercial: a qué programa va cada inscrito y si se le llama ya.
 
 ## 4 · Decisión 1: cómo se vive en Media
 
@@ -83,7 +88,7 @@ para un asesor. Con doscientos perfiles anónimos de 30X coincide con el program
 sugerido el cincuenta y cinco por ciento de las veces, y en AI Sales el noventa
 y cinco. De los que marca listos para un asesor, el ochenta y ocho por ciento
 tenía afinidad alta. Es una primera iteración, con perfiles que dicen muy poco;
-lo que ya sirve es saber a quién llamar primero.
+lo que ya sirve es que el asesor sabe a quién llamar primero.
 
 > No se quita la frase de «primera iteración»: ser honestos con el 55 % es lo
 > que hace creíble el 88 %.
@@ -92,22 +97,25 @@ lo que ya sirve es saber a quién llamar primero.
 
 Y esto responde al reto. Corrimos mil decisiones reales con JEV en producción:
 tardaron cuatro segundos y medio, doscientas veintidós por segundo, unos ciento
-treinta milisegundos cada una, y costaron seis centavos de dólar en total.
-_[se puede quitar]_ Ninguna necesitó respaldo. A ese costo, diez mil piezas al
-día son unos sesenta centavos. En contenido acierta entre el ochenta y el
-ochenta y siete por ciento, cuatro de cada diez se resuelven sin nadie, y cero
-piezas riesgosas se aprueban solas: cuando se equivoca, se equivoca del lado
-prudente.
+treinta milisegundos cada una. _[se puede quitar]_ Ninguna necesitó respaldo.
+Para el equipo eso significa que la decisión ya está cuando la pieza llega. En
+contenido acierta entre el ochenta y el ochenta y siete por ciento, cuatro de
+cada diez piezas se resuelven sin que nadie las revise, y cero piezas riesgosas
+se aprueban solas: cuando se equivoca, se equivoca del lado prudente.
 
 > Esta es la lámina que responde la pregunta del reto. «Mil decisiones en
-> cuatro segundos y medio, seis centavos» se dice despacio.
+> cuatro segundos y medio» y «cuatro de cada diez sin que nadie las revise» se
+> dicen despacio.
 
-## 9 · Qué gana 30X · por qué ahora
+## 9 · Qué gana 30X · cómo cambia el día del equipo
 
-¿Qué gana 30X? Tiempo: Media mira solo lo que importa. Una marca protegida: nada
-riesgoso sale sin una persona. Comercial llama primero a quien está listo. Y
-todo por centavos al día, sin contratar. ¿Por qué ahora? Porque la IA ya
-multiplicó lo que se produce y lo que entra. _[se puede quitar]_ Y el mismo
+¿Qué gana 30X? Que el equipo de contenido vuelve a crear. El editor deja de
+revisarlo todo: lo claro se decide solo y él ve solo lo dudoso, con el porqué.
+Si una pieza falla, la corrige la IA con un clic y JEV la revisa de nuevo; nadie
+la reescribe desde cero. Siempre con el mismo criterio: nada riesgoso sale solo,
+y cada decisión del editor queda como ejemplo para seguir mejorando. Y
+Comercial, con el mismo motor, llama primero a quien está listo.
+_[se puede quitar]_ Y el mismo
 motor puede tomar la siguiente decisión: quién está por abandonar o si la
 respuesta de un agente puede salir.
 
@@ -129,16 +137,18 @@ una frase y se remite al playbook.
 
 - **¿Y si se equivoca?** Se equivoca hacia el lado prudente: en las pruebas,
   ninguna pieza riesgosa se aprobó sola. Lo dudoso siempre llega a una persona.
-- **¿Cuánto cuesta operarlo?** Mil decisiones reales costaron seis centavos de
-  dólar; diez mil piezas al día, unos sesenta centavos. El costo no es la barrera.
+- **¿Reemplaza al equipo?** No. Le quita lo repetitivo: lo claro se decide
+  solo y lo que falló lo corrige la IA. La persona decide lo dudoso, y cada
+  decisión suya queda como ejemplo para que el sistema mejore.
 - **¿Aguanta volumen?** Mil decisiones en cuatro segundos y medio, doscientas
   veintidós por segundo, sin usar el respaldo ni una vez.
 - **¿Por qué solo 55 % en inscritos?** Los perfiles dicen muy poco (el 73 % no
   declara su rol) y 30X etiquetó algunos con historial del CRM que el motor no
   ve a propósito. Donde hay señal clara, como AI Sales, acierta 95 %. Y al marcar
   a quién llamar primero acierta 88 %.
-- **¿Reemplaza al editor o al asesor?** No. Les quita lo repetitivo para que
-  miren solo lo que importa.
+- **¿Y el asesor de Comercial?** Recibe a cada inscrito con su programa y su
+  siguiente acción, y sabe a quién llamar primero. Si cambia un dato, se
+  recalcula.
 - **¿Sirve para otra marca?** Sí: se pega la web de la marca y arma sus propias
   preguntas en segundos.
 - **¿Está en producción?** Sí, en gatekeeper-30x.michaelliendo.com, y el código

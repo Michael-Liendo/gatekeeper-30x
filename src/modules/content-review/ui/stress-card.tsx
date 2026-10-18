@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, useEffect, useId, useState } from "react";
-import { ClockIcon, CoinIcon, SparkleIcon } from "@/shared/ui/icons";
+import { CheckIcon, ClockIcon, SparkleIcon } from "@/shared/ui/icons";
 import type { StressReport } from "../application/stress-run";
 import { errorMessage, runStressTest } from "./api";
 import { formatInteger, formatPercent } from "./format";
@@ -12,19 +12,6 @@ const SECONDS_PER_DAY = 86_400;
 
 const LOCALE = "es-ES";
 const oneDecimal = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 1 });
-const twoDecimals = new Intl.NumberFormat(LOCALE, {
-	minimumFractionDigits: 2,
-	maximumFractionDigits: 2,
-});
-const significant = new Intl.NumberFormat(LOCALE, { maximumSignificantDigits: 2 });
-
-/** "USD 350", "USD 0,05", "USD 0,0041". */
-function usd(value: number): string {
-	if (!Number.isFinite(value) || value === 0) return "USD 0";
-	if (value >= 100) return `USD ${formatInteger(value)}`;
-	if (value >= 0.01) return `USD ${twoDecimals.format(value)}`;
-	return `USD ${significant.format(value)}`;
-}
 
 /** "12,4 s". */
 function seconds(ms: number): string {
@@ -115,7 +102,6 @@ function providerLine(report: StressReport): string {
 
 function Results({ report }: { report: StressReport }) {
 	const perDay = report.decisionsPerSecond * SECONDS_PER_DAY;
-	const costPerDay = (perDay / 1000) * report.costPer1kUsd;
 
 	return (
 		<div className="grid gap-6">
@@ -136,8 +122,9 @@ function Results({ report }: { report: StressReport }) {
 					</span>{" "}
 					decisiones por segundo
 				</Stat>
-				<Stat icon={<CoinIcon size={20} />}>
-					Costo total: {usd(report.totalCostUsd)} (≈ {usd(report.costPer1kUsd)} por cada 1.000)
+				<Stat icon={<CheckIcon size={20} />}>
+					<span className="tabular-nums">{formatInteger(report.count - report.failures)}</span> con
+					respuesta y su ruta lista
 				</Stat>
 				<Stat icon={<ClockIcon size={20} />}>
 					Cada decisión: {formatInteger(report.p50Ms)} ms (p95 {formatInteger(report.p95Ms)} ms)
@@ -149,7 +136,8 @@ function Results({ report }: { report: StressReport }) {
 			<div className="grid gap-1 rounded-[20px] border border-line bg-surface px-5 py-4">
 				<span className="text-xs text-ink-muted">Proyección con lo medido</span>
 				<p className="text-sm">
-					A este ritmo, 30X podría revisar ~{piecesCount(perDay)} al día por ~{usd(costPerDay)}.
+					A este ritmo, 30X podría revisar ~{piecesCount(perDay)} al día, y tu equipo solo vería las
+					dudosas.
 				</p>
 			</div>
 
@@ -158,7 +146,7 @@ function Results({ report }: { report: StressReport }) {
 	);
 }
 
-/** "Prueba de escala": runs 1.000 real decisions and shows speed and cost in plain words. */
+/** "Prueba de escala": runs 1.000 real decisions and shows speed in plain words. */
 export function StressCard() {
 	const [running, setRunning] = useState(false);
 	const [report, setReport] = useState<StressReport | null>(null);
@@ -190,7 +178,7 @@ export function StressCard() {
 				</h2>
 				<p id={hintId} className="max-w-prose text-sm leading-relaxed text-ink-muted">
 					JEV decide 1.000 piezas de verdad, en paralelo y sin respuestas guardadas. Solo texto, sin
-					imágenes, para que sea rápido y barato. Tarda menos de un minuto.
+					imágenes, para que sea rápido. Tarda menos de un minuto.
 				</p>
 			</div>
 

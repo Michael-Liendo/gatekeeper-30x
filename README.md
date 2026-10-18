@@ -3,7 +3,8 @@
 > **JEV decide, el LLM corrige, y el equipo solo revisa lo que de verdad importa.**
 
 Decisiones de 30X que [JEV de TypeSafe](https://docs.typesafe.ai) toma miles de veces al día,
-en milisegundos y por fracciones de centavo. Dos ya funcionan sobre el mismo motor:
+en milisegundos, para que los equipos de Media y Comercial dejen lo repetitivo y se enfoquen en
+lo que de verdad necesita criterio. Dos ya funcionan sobre el mismo motor:
 
 1. **Media: ¿esta pieza sale?** JEV decide si cada pieza de contenido se **aprueba, se manda a
    mejorar, va a una persona o se descarta**; con un clic la IA reescribe lo que falló y JEV
@@ -12,8 +13,16 @@ en milisegundos y por fracciones de centavo. Dos ya funcionan sobre el mismo mot
    programa, cargo, madurez en IA y si la persona está lista para un asesor; el código elige la
    siguiente acción.
 
+**Qué cambia para los equipos:**
+- **Media** deja de revisar pieza por pieza: solo ve lo dudoso, con el porqué de cada alerta, y
+  la IA corrige lo que falló en vez de reescribirlo a mano. Nada riesgoso sale sin una persona.
+- **Comercial** sabe a quién llamar primero y qué ofrecerle, y la recomendación se recalcula
+  cuando cambia un dato.
+- **Todos** usan el mismo criterio, escrito como reglas que el equipo ajusta sin programar, y
+  cada decisión del editor sirve para seguir mejorándolo.
+
 **Medido en producción:** 1.000 decisiones reales en **4,5 s** (222 por segundo, 128 ms cada
-una, p95 250 ms) por **USD 0,06** en total y 0 respaldos.
+una, p95 250 ms) sin un solo respaldo.
 
 Proyecto del equipo **DevGain** para el **Hackathon 30X (octubre 2026) · Reto 30X: JEV**.
 
@@ -27,9 +36,11 @@ Proyecto del equipo **DevGain** para el **Hackathon 30X (octubre 2026) · Reto 3
 
 ## Qué es y qué resuelve
 
-30X produce mucho contenido (posts, guiones, clips, newsletters, miniaturas) y cada vez más
-con IA. Revisarlo pieza por pieza a mano es lento; pasarlo todo por un LLM es caro, lento y no
-devuelve un "sí o no" confiable.
+La IA multiplicó lo que produce un equipo de contenido como el de 30X (posts, guiones, clips,
+newsletters, miniaturas), pero nadie multiplicó la revisión: el cuello de botella pasó de crear
+a aprobar. El editor revisa a mano decenas de piezas generadas con IA, cada persona usa su
+criterio, se rehace trabajo y siempre está el miedo a que algo riesgoso salga. Pasarlo todo por
+un LLM tampoco resuelve: no devuelve un "sí o no" confiable.
 
 Gatekeeper Editorial pone a JEV como primer filtro: responde preguntas tipadas sobre cada pieza
 (tema, relevancia, si es promocional, si promete de más, si tiene riesgo de marca…) y el código
@@ -93,14 +104,13 @@ sobre lo ya revisado, sin volver a llamar a JEV ni hacer deploy: los umbrales so
 En la Bandeja, **"Revisar contenido de ejemplo"** pasa por JEV 45 piezas simuladas de 30X
 (15 para aprobar, 10 para mejorar, 10 para revisión humana, 10 spam; ver
 [`docs/04-dataset.md`](docs/04-dataset.md)). `/contenido` las lista y `/metricas` muestra
-cuánto se resuelve solo, cuánto llega a una persona, cuánto acierta, latencia y costo.
+cuánto se resuelve solo, cuánto llega a una persona, cuánto acierta y qué tan rápido.
 
 ### 7. Prueba de escala
 En `/metricas`, **"Correr 1.000 decisiones"** lanza 1.000 decisiones reales de contenido contra
-JEV (solo texto, sin caché, 32 a la vez) y muestra tiempo total, decisiones por segundo, p50/p95,
-costo y quién respondió. Una corrida por minuto por usuario. Medido el 17 oct 2026 con
-`jev-1.13.0`: **4,5 s · 222 decisiones por segundo · 128 ms (p95 250 ms) · USD 0,06 · 0
-respaldos**; 10.000 piezas al día costarían ~USD 0,60.
+JEV (solo texto, sin caché, 32 a la vez) y muestra tiempo total, decisiones por segundo, p50/p95
+y quién respondió. Una corrida por minuto por usuario. Medido el 17 oct 2026 con
+`jev-1.13.0`: **4,5 s · 222 decisiones por segundo · 128 ms (p95 250 ms) · 0 respaldos**.
 
 ### 8. Inscritos de Luma (segmentación)
 La idea n.° 1 de 30X, con el mismo motor. En **Inscritos** (`/segmentos`):
@@ -115,7 +125,7 @@ La idea n.° 1 de 30X, con el mismo motor. En **Inscritos** (`/segmentos`):
   con clases gratis** o **revisión humana**.
 - Medido con JEV sobre 200 perfiles: **55,5 %** coincide con el programa de 30X (60 % donde 30X
   sugirió uno; **95 % en AI Sales**), **88 %** de precisión en "listo para un asesor", 93 ms por
-  persona, USD 0,009 por las 200. Primera iteración sobre perfiles muy escasos; detalle en
+  persona. Primera iteración sobre perfiles muy escasos; detalle en
   [`docs/12-segmentacion.md`](docs/12-segmentacion.md).
 
 ## Preguntas tipadas y umbrales
@@ -144,7 +154,7 @@ Política **Equilibrado** (calibrada con JEV real, ver [`docs/05-calibracion.md`
 Resultados medidos en las 45 piezas etiquetadas: coincidencia con la ruta esperada de 53 % con
 la política inicial a **80–87 %** con la calibrada (según la corrida; la última, con imágenes y
 preguntas por marca, 80 %), **42 %** resuelto sin persona, **0** piezas riesgosas aprobadas
-solas y ~0,3 s por pieza con imagen. A escala, 1.000 decisiones de texto en 4,5 s por USD 0,06. El detalle de decisiones, umbrales, quién opera y cómo se mide
+solas y ~0,3 s por pieza con imagen. A escala, 1.000 decisiones de texto en 4,5 s. El detalle de decisiones, umbrales, quién opera y cómo se mide
 está en el [playbook](docs/playbook/playbook.md).
 
 ## Arquitectura

@@ -32,7 +32,7 @@ la de notas (`P`) aparte: con `N` el público lee el guion. También se pasan
 tocando: la mitad derecha avanza, la izquierda retrocede. La URL guarda la lámina
 actual (`#3`).
 
-El guion completo son ~720 palabras: unos 5–6 minutos a ritmo normal.
+El guion completo son ~850 palabras: unos 6–7 minutos a ritmo normal.
 
 ## PDF
 

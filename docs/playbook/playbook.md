@@ -9,6 +9,9 @@ Demo: <https://gatekeeper-30x.michaelliendo.com> · Código: <https://github.com
 
 ## 1. La decisión
 
+La IA multiplicó lo que produce el equipo de contenido; nadie multiplicó la revisión. El
+cuello de botella pasó de crear a aprobar, y ahí es donde entra JEV.
+
 Cada pieza que produce 30X Media, la haga el equipo creativo o una IA (posts,
 guiones, clips, newsletters, capturas PNG/JPG), pasa por una sola pregunta:
 **¿esta pieza sale?** JEV la responde miles de veces al día con una de cuatro rutas:
@@ -22,9 +25,8 @@ guiones, clips, newsletters, capturas PNG/JPG), pasa por una sola pregunta:
 
 **Por qué JEV y no un LLM.** JEV no escribe, decide: devuelve probabilidades
 tipadas, no texto libre que haya que interpretar. Medido en producción con
-`jev-1.13.0` (TypeSafe): **1.000 decisiones en 4,5 s** (128 ms cada una) por
-**USD 0,06 en total** (USD 0,042 por millón de tokens de entrada, salida gratis).
-El LLM solo entra donde hay que escribir: la zona gris.
+`jev-1.13.0` (TypeSafe): **1.000 decisiones en 4,5 s** (128 ms cada una), con el
+mismo criterio en cada pieza. El LLM solo entra donde hay que escribir: la zona gris.
 
 Es la primera de dos decisiones que ya funcionan sobre el mismo motor; la
 segunda (¿a qué programa va este inscrito y lo llamamos ya?) está en la sección 6.
@@ -104,6 +106,15 @@ respaldo (OpenAI Decisions API, `gpt-6-luna`). Si ambos fallan, la pieza va a
 Todo vive en un **tablero del equipo** con columnas Por revisar · Por mejorar ·
 Aprobado · Rechazado, y cada pieza guarda autor, rol, versiones e historial.
 
+### Qué cambia en el día de cada equipo
+
+| Equipo | Antes | Con Gatekeeper |
+|---|---|---|
+| **Media (editor)** | Revisa cada pieza a mano, con criterios que cambian según quién mire. | Solo abre su bandeja: lo riesgoso y lo dudoso. Lo seguro sale solo y con el mismo criterio siempre. |
+| **Media (diseño y copy)** | Reescribe a mano lo que el editor devuelve. | La IA arregla solo lo que JEV marcó y JEV lo verifica; el equipo decide si lo guarda. |
+| **Comercial** | Revisa inscritos uno a uno para decidir a quién llamar. | La pantalla **Inscritos** dice a quién llamar primero, qué proponer y a quién nutrir, y se recalcula cuando cambia un dato. |
+| **Ambos** | Las correcciones se pierden. | Cada decisión humana queda como etiqueta para recalibrar. Nada riesgoso sale solo. |
+
 ### El ciclo «detecta → arregla → verifica» (caso real)
 
 1. **Detecta.** Se subió una captura de spam: «GANA $5.000 AL DÍA… cripto…
@@ -122,11 +133,12 @@ Aprobado · Rechazado, y cada pieza guarda autor, rol, versiones e historial.
 contenido contra JEV `jev-1.13.0`, 32 a la vez. Se repite desde **Métricas →
 Prueba de escala** o `POST /api/stress`.
 
-| Total | Por segundo | p50 | p95 | Costo total | Respaldo |
-|---:|---:|---:|---:|---:|---:|
-| **4,5 s** | **222** | **128 ms** | **250 ms** | **USD 0,06** | 0 de 1.000 |
+| Total | Por segundo | p50 | p95 | Respaldo |
+|---:|---:|---:|---:|---:|
+| **4,5 s** | **222** | **128 ms** | **250 ms** | 0 de 1.000 |
 
-Con ese costo, 10.000 piezas al día cuestan ~USD 0,60.
+A ese ritmo, 10.000 piezas de un día se revisan en menos de un minuto: el equipo
+nunca espera al filtro.
 
 **Calidad.** Calibrado el 17 oct 2026 con **45 piezas simuladas y etiquetadas**
 contra JEV real, probando umbrales sobre las mismas respuestas:
@@ -147,9 +159,8 @@ pieza con imagen. JEV no es 100 % determinista: por eso damos el rango.
 | % a persona o al LLM | 58 % | Revisar + Mejorar con IA / total |
 | Acierto vs. decisión esperada | 80–87 % | Ruta de JEV vs. etiqueta |
 | Latencia | 128 ms (p95 250 ms) solo texto · ~0,3 s con imagen | Medida en cada llamada |
-| Costo | ~USD 0,06 por 1.000 decisiones | Tokens de entrada × USD 0,042/M |
 | Respaldo usado | 0 de 1.000 y 0 de 45 | Conteo de fallbacks |
-| Horas ahorradas | — | Piezas resueltas sin persona × minutos por revisión |
+| Horas que el equipo recupera | — | Piezas resueltas sin persona × minutos por revisión |
 
 **Todos los errores son conservadores:** 5 piezas buenas van a «Mejorar con IA»
 en vez de aprobarse, 1 de zona gris va a revisión y 2 spam van a revisión en vez
@@ -180,9 +191,9 @@ Lo probamos con la idea n.° 1 de 30X, los **inscritos de Luma** (pantalla
 
 Medido con JEV en producción sobre **200 de los 697 perfiles anónimos** de 30X:
 
-| Coincide con el programa de 30X | Donde 30X sugirió uno | AI Sales | «Listo para un asesor»: precisión | Por persona | Costo de 200 |
-|---:|---:|---:|---:|---:|---:|
-| **55,5 %** | 60 % | **95 %** | **88 %** | 93 ms | USD 0,009 |
+| Coincide con el programa de 30X | Donde 30X sugirió uno | AI Sales | «Listo para un asesor»: precisión | Por persona |
+|---:|---:|---:|---:|---:|
+| **55,5 %** | 60 % | **95 %** | **88 %** | 93 ms |
 
 Es una **primera iteración** sobre perfiles con muy poca información (el 73 % no
 declara su rol) y contra etiquetas de 30X que a veces usan historial del CRM que

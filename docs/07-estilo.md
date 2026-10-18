@@ -18,7 +18,7 @@ Referencia: dashboard limpio con riel oscuro, lienzo blanco redondeado y tarjeta
 - Nada de jerga técnica a la vista: sin "tokens", "confidence", "provider", "ms" en primer plano.
   - "Aprobado automáticamente", "Necesita tu revisión", "Sugerencia de la IA", "Descartado".
   - Confianza → "Seguridad de la decisión: alta / media / baja".
-  - Latencia y costo solo en Métricas, redondeados y explicados ("Decide en 0,1 s · menos de 1 centavo por 100 piezas").
+  - Latencia solo en Métricas, redondeada y explicada ("Decide en 0,1 s"). No mostramos costos en la app.
 - Detalle técnico (probabilidades, modelo, tokens) escondido detrás de "Ver detalle técnico" (colapsado).
 
 ## Tipografía y color
