@@ -2,6 +2,12 @@
 
 > **JEV decide, el LLM corrige, y el equipo solo revisa lo que de verdad importa.**
 
+## 🎤 [PITCH AQUÍ → gatekeeper-30x.michaelliendo.com/pitch](https://gatekeeper-30x.michaelliendo.com/pitch/index.html)
+
+## 🚀 [DEMO EN VIVO → gatekeeper-30x.michaelliendo.com](https://gatekeeper-30x.michaelliendo.com)
+
+📘 [Playbook](https://gatekeeper-30x.michaelliendo.com/playbook/index.html)
+
 Decisiones de 30X que [JEV de TypeSafe](https://docs.typesafe.ai) toma miles de veces al día,
 en milisegundos, para que los equipos de Media y Comercial dejen lo repetitivo y se enfoquen en
 lo que de verdad necesita criterio. Dos ya funcionan sobre el mismo motor:
@@ -29,8 +35,8 @@ Proyecto del equipo **DevGain** para el **Hackathon 30X (octubre 2026) · Reto 3
 | | |
 |---|---|
 | Demo en línea | https://gatekeeper-30x.michaelliendo.com |
-| Playbook (8 slides) | [`docs/playbook/`](docs/playbook/) · versión en texto: [`docs/playbook/playbook.md`](docs/playbook/playbook.md) |
-| Pitch (10 láminas) | [`docs/pitch/`](docs/pitch/) · guion: [`docs/pitch/guion.md`](docs/pitch/guion.md) |
+| Playbook (8 slides) | https://gatekeeper-30x.michaelliendo.com/playbook/index.html · fuente: [`docs/playbook/`](docs/playbook/) · versión en texto: [`docs/playbook/playbook.md`](docs/playbook/playbook.md) |
+| Pitch (10 láminas) | **https://gatekeeper-30x.michaelliendo.com/pitch/index.html** · fuente: [`docs/pitch/`](docs/pitch/) · guion: [`docs/pitch/guion.md`](docs/pitch/guion.md) |
 | Video demo | [VIDEO] |
 | Repositorio | https://github.com/Michael-Liendo/gatekeeper-30x |
 
