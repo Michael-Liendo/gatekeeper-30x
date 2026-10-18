@@ -169,7 +169,7 @@ export function OnboardingWizard() {
 		setSaveError(null);
 		try {
 			await saveBrand(normalizeBrandInput(input));
-			router.replace("/");
+			router.replace("/tablero");
 		} catch (error) {
 			setSaving(false);
 			setSaveError(error instanceof Error ? error.message : "No pudimos guardar tu marca.");

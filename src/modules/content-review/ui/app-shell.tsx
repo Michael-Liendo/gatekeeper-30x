@@ -245,8 +245,8 @@ function BrandLink({ withName = false }: { withName?: boolean }) {
 	const name = brand?.name ?? "Gatekeeper";
 	return (
 		<Link
-			href="/"
-			aria-label={`${name}: ir a la bandeja`}
+			href="/tablero"
+			aria-label={`${name}: ir a contenido`}
 			className="flex min-w-0 items-center gap-2.5 rounded-xl"
 		>
 			{brand ? (

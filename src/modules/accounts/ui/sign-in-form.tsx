@@ -31,9 +31,9 @@ export function SignInForm() {
 		}
 		try {
 			const me = await fetchMe();
-			router.replace(me.brand ? "/" : "/bienvenida");
+			router.replace(me.brand ? "/tablero" : "/bienvenida");
 		} catch {
-			router.replace("/");
+			router.replace("/tablero");
 		}
 	}
 
