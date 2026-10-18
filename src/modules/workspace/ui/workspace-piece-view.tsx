@@ -64,6 +64,12 @@ function reasonsTitle(status: PieceStatus): string {
 }
 
 /** Detail of a stored piece: decision, reasons, actions, AI regeneration and history. */
+/** Just uploaded and still on its first version: the AI fix can start on its own. */
+const FRESH_UPLOAD_MS = 10 * 60 * 1000;
+function isFreshUpload(piece: WorkspacePiece): boolean {
+	return piece.version === 1 && Date.now() - Date.parse(piece.createdAt) < FRESH_UPLOAD_MS;
+}
+
 export function WorkspacePieceView({ id }: { id: string }) {
 	const { notify } = useToast();
 	const roleOf = useAuthorRole();
@@ -325,6 +331,7 @@ export function WorkspacePieceView({ id }: { id: string }) {
 					<RegeneratePanel
 						key={`${piece.id}-v${piece.version}`}
 						piece={piece}
+						autoStart={isFreshUpload(piece)}
 						onSaved={(saved) => {
 							setState((current) =>
 								current.status === "ready" ? { ...current, piece: saved } : current,

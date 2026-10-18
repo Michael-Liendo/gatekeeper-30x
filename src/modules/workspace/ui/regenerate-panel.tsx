@@ -40,7 +40,7 @@ type State =
 	| { status: "error"; message: string }
 	| { status: "proposal"; proposal: RegenerationProposal };
 
-function LoadingCard({ withImage }: { withImage: boolean }) {
+function LoadingCard({ withImage, auto }: { withImage: boolean; auto: boolean }) {
 	const steps = withImage ? IMAGE_STEPS : TEXT_STEPS;
 	const [step, setStep] = useState(0);
 	useEffect(() => {
@@ -56,6 +56,9 @@ function LoadingCard({ withImage }: { withImage: boolean }) {
 			role="status"
 			className="grid gap-4 rounded-card bg-linear-to-br from-lilac-from/60 to-lilac-to/60 p-5 sm:p-6"
 		>
+			{auto ? (
+				<p className="text-base font-medium">Te estamos generando la pieza corregida con IA</p>
+			) : null}
 			<p className="flex items-center gap-2 text-sm font-medium">
 				<SparkleIcon size={18} className="motion-safe:animate-pulse" />
 				{steps[step]}
@@ -107,16 +110,46 @@ function Column({
 interface RegeneratePanelProps {
 	piece: WorkspacePiece;
 	onSaved: (piece: WorkspacePiece) => void;
+	/** Start the AI fix on mount (a fresh upload JEV didn't approve). Once per session. */
+	autoStart?: boolean;
 }
 
 /** "Regenerar con IA": ask for a rewrite, compare before/after with JEV's new verdict, save or discard. */
-export function RegeneratePanel({ piece, onSaved }: RegeneratePanelProps) {
+/** sessionStorage key so a fresh upload is auto-corrected once, not on every visit. */
+function autoKey(pieceId: string): string {
+	return `gk-auto-regenerate:${pieceId}`;
+}
+
+/** Marks the piece as auto-corrected; false when it already was (or storage is blocked). */
+function claimAutoRun(pieceId: string): boolean {
+	try {
+		if (window.sessionStorage.getItem(autoKey(pieceId))) return false;
+		window.sessionStorage.setItem(autoKey(pieceId), "1");
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+export function RegeneratePanel({ piece, onSaved, autoStart = false }: RegeneratePanelProps) {
 	const { notify } = useToast();
 	const [state, setState] = useState<State>({ status: "idle" });
 	const [saving, setSaving] = useState(false);
 	const controllerRef = useRef<AbortController | null>(null);
 
 	useEffect(() => () => controllerRef.current?.abort(), []);
+
+	// Fresh upload that JEV didn't approve: start the AI fix right away, no click needed.
+	const autoRef = useRef(false);
+	const [auto, setAuto] = useState(false);
+	// biome-ignore lint/correctness/useExhaustiveDependencies: runs once per mounted piece.
+	useEffect(() => {
+		if (!autoStart || autoRef.current) return;
+		autoRef.current = true;
+		if (!claimAutoRun(piece.id)) return;
+		setAuto(true);
+		void regenerate();
+	}, [autoStart, piece.id]);
 
 	async function regenerate() {
 		controllerRef.current?.abort();
@@ -158,7 +191,8 @@ export function RegeneratePanel({ piece, onSaved }: RegeneratePanelProps) {
 		}
 	}
 
-	if (state.status === "loading") return <LoadingCard withImage={Boolean(piece.imageUrl)} />;
+	if (state.status === "loading")
+		return <LoadingCard withImage={Boolean(piece.imageUrl)} auto={auto} />;
 
 	if (state.status === "proposal") {
 		const { proposal } = state;
@@ -174,7 +208,7 @@ export function RegeneratePanel({ piece, onSaved }: RegeneratePanelProps) {
 				<div className="flex flex-wrap items-center justify-between gap-3">
 					<h2 id="regen-title" className="flex items-center gap-2 text-base font-medium">
 						<SparkleIcon size={18} />
-						Propuesta de la IA
+						{approved ? "Pieza corregida con IA, lista para subir" : "Propuesta de la IA"}
 					</h2>
 					<span className="text-xs text-ink-muted">Aún no se guardó</span>
 				</div>
