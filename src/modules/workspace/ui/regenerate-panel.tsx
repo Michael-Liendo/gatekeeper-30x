@@ -146,7 +146,11 @@ export function RegeneratePanel({ piece, onSaved }: RegeneratePanelProps) {
 			});
 			setState({ status: "idle" });
 			onSaved(saved);
-			notify(`Guardamos la versión ${saved.version}`);
+			notify(
+				saved.status === "approved"
+					? `Versión ${saved.version} aprobada y guardada`
+					: `Guardamos la versión ${saved.version}`,
+			);
 		} catch (error) {
 			notify(messageOf(error));
 		} finally {
@@ -160,6 +164,8 @@ export function RegeneratePanel({ piece, onSaved }: RegeneratePanelProps) {
 		const { proposal } = state;
 		const reasons = friendlyReasons(proposal.review);
 		const proposalText = proposal.body ? `${proposal.title}\n\n${proposal.body}` : proposal.title;
+		// JEV already approved the proposal: one click saves it and it lands as approved.
+		const approved = STATUS_FROM_ROUTE[proposal.review.route] === "approved";
 		return (
 			<section
 				aria-labelledby="regen-title"
@@ -243,7 +249,7 @@ export function RegeneratePanel({ piece, onSaved }: RegeneratePanelProps) {
 
 				<div className="flex flex-wrap items-start gap-2">
 					<PublishMenu
-						enabled={STATUS_FROM_ROUTE[proposal.review.route] === "approved"}
+						enabled={approved}
 						disabledHint="Guárdala y apruébala primero"
 						text={proposalText}
 						imageSrc={proposal.imageDataUrl}
@@ -264,7 +270,7 @@ export function RegeneratePanel({ piece, onSaved }: RegeneratePanelProps) {
 						aria-busy={saving}
 						className={primaryButton}
 					>
-						{saving ? "Guardando…" : "Guardar como nueva versión"}
+						{saving ? "Guardando…" : approved ? "Aprobar y guardar" : "Guardar como nueva versión"}
 					</button>
 					<button
 						type="button"
