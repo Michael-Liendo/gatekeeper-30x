@@ -13,11 +13,13 @@ import {
 	unauthorized,
 	workflowErrorResponse,
 } from "@/modules/workspace/infrastructure/piece-http";
+import { takeProposalReview } from "@/modules/workspace/infrastructure/proposal-reviews";
 import { getWorkspaceDeps } from "@/modules/workspace/infrastructure/workspace-deps";
 
 /**
  * Saves `{ title, body, changes?, imageDataUrl? }` as the next version of the piece,
- * re-reviews it with JEV and returns the updated `WorkspacePiece`.
+ * re-reviews it with JEV and returns the updated `WorkspacePiece`. Saving an unedited AI
+ * proposal keeps the verdict JEV already gave it (no second call, no flip on save).
  */
 export async function POST(request: Request, ctx: RouteContext<"/api/pieces/[id]/versions">) {
 	const user = await currentUser();
@@ -39,12 +41,15 @@ export async function POST(request: Request, ctx: RouteContext<"/api/pieces/[id]
 		);
 	}
 
-	const limited = enforceDailyLimit(user, { decisions: 1 });
-	if (limited) return limited;
+	const knownReview = takeProposalReview(user.id, id, parsed.data);
+	if (!knownReview) {
+		const limited = enforceDailyLimit(user, { decisions: 1 });
+		if (limited) return limited;
+	}
 
 	try {
 		return Response.json(
-			await saveNewVersion(id, parsed.data, user, brandFor(user), getWorkspaceDeps()),
+			await saveNewVersion(id, parsed.data, user, brandFor(user), getWorkspaceDeps(), knownReview),
 		);
 	} catch (error) {
 		return workflowErrorResponse(error);

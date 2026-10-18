@@ -28,6 +28,7 @@ import {
 	PieceNotFoundError,
 } from "@/modules/workspace/application/piece-workflow";
 import type { RegenerationProposal, WorkspacePiece } from "@/modules/workspace/domain/workspace";
+import { rememberProposalReview } from "@/modules/workspace/infrastructure/proposal-reviews";
 import { getWorkspaceDeps } from "@/modules/workspace/infrastructure/workspace-deps";
 import { env } from "@/shared/config/env";
 
@@ -130,6 +131,9 @@ export async function POST(request: Request) {
 			{ piece, brand, previousReview },
 			deps,
 		);
+		if ("pieceId" in input && !input.pieceId.startsWith("cp-")) {
+			rememberProposalReview(user.id, input.pieceId, proposal, proposal.review);
+		}
 		return Response.json(proposal);
 	} catch (error) {
 		if (error instanceof RegenerationNotConfiguredError) {
@@ -166,8 +170,8 @@ function loadUserPiece(
 		body: stored.body,
 		format: stored.format,
 		channel: stored.channel,
-		// Neutral author: the reviewer never needs the person's name.
-		author: "Equipo creativo",
+		// Same author the saved version is reviewed with, so both reviews see the same input.
+		author: stored.authorName,
 		createdAt: stored.createdAt,
 	};
 	if (image) {
