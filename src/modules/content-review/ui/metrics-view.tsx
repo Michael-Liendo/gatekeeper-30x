@@ -3,6 +3,7 @@
 import { HighlightCard, HighlightRow } from "@/shared/ui/highlight-card";
 import { CheckIcon, ChevronDownIcon, ClockIcon, EyeIcon, SparkleIcon } from "@/shared/ui/icons";
 import type { ReviewMetrics } from "../domain/review";
+import { hoursRecoveredPer, TEAM_TIME } from "../domain/team-time";
 import { AnalyzeButton } from "./analyze-button";
 import { EmptyState } from "./empty-state";
 import { formatMs, formatPercent } from "./format";
@@ -18,6 +19,11 @@ function speedText(avgMs: number): string {
 	if (avgMs < 1000) return "Decide en menos de un segundo";
 	const seconds = Math.round(avgMs / 1000);
 	return `Decide en unos ${seconds} ${seconds === 1 ? "segundo" : "segundos"}`;
+}
+
+/** "3,5". */
+function formatHours(hours: number): string {
+	return hours.toLocaleString("es-ES", { maximumFractionDigits: 1 });
 }
 
 function techFacts(metrics: ReviewMetrics) {
@@ -74,9 +80,16 @@ export function MetricsView() {
 		<>
 			{header}
 			<div className="grid gap-8">
-				<HighlightRow label="Resumen">
+				<HighlightRow label="Resumen" columns={4}>
 					<HighlightCard
 						tone="lilac"
+						label="Horas que recupera tu equipo"
+						value={`${formatHours(hoursRecoveredPer(metrics))} h`}
+						note={`por cada ${TEAM_TIME.perPieces} piezas, a ${TEAM_TIME.minutesPerManualReview} min por revisión`}
+						icon={<ClockIcon size={18} />}
+					/>
+					<HighlightCard
+						tone="plain"
 						label="Se resuelve solo"
 						value={formatPercent(metrics.automationRate)}
 						note={`${metrics.byRoute.AUTO_APPROVE + metrics.byRoute.REJECT} de ${metrics.total}`}

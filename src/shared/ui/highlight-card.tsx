@@ -44,9 +44,18 @@ export function HighlightCard({ label, value, note, icon, tone }: HighlightCardP
 }
 
 /** Up to three highlight cards in a row (stacked on phones). */
-export function HighlightRow({ label, children }: { label: string; children: ReactNode }) {
+export function HighlightRow({
+	label,
+	columns = 3,
+	children,
+}: {
+	label: string;
+	columns?: 3 | 4;
+	children: ReactNode;
+}) {
+	const grid = columns === 4 ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-3";
 	return (
-		<dl aria-label={label} className="grid gap-3 sm:grid-cols-3 sm:gap-4">
+		<dl aria-label={label} className={`grid gap-3 sm:gap-4 ${grid}`}>
 			{children}
 		</dl>
 	);
