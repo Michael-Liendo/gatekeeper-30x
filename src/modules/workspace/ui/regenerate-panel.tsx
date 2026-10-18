@@ -120,6 +120,29 @@ function autoKey(pieceId: string): string {
 	return `gk-auto-regenerate:${pieceId}`;
 }
 
+function requestKey(pieceId: string): string {
+	return `gk-improve-request:${pieceId}`;
+}
+
+/** Asks the piece page to start "Mejorar con IA" as soon as it opens (board button). */
+export function requestImprove(pieceId: string): void {
+	try {
+		window.sessionStorage.setItem(requestKey(pieceId), "1");
+	} catch {
+		// Storage blocked: the page still offers the button.
+	}
+}
+
+function takeImproveRequest(pieceId: string): boolean {
+	try {
+		const requested = window.sessionStorage.getItem(requestKey(pieceId)) !== null;
+		window.sessionStorage.removeItem(requestKey(pieceId));
+		return requested;
+	} catch {
+		return false;
+	}
+}
+
 /** Marks the piece as auto-corrected; false when it already was (or storage is blocked). */
 function claimAutoRun(pieceId: string): boolean {
 	try {
@@ -144,9 +167,10 @@ export function RegeneratePanel({ piece, onSaved, autoStart = false }: Regenerat
 	const [auto, setAuto] = useState(false);
 	// biome-ignore lint/correctness/useExhaustiveDependencies: runs once per mounted piece.
 	useEffect(() => {
-		if (!autoStart || autoRef.current) return;
+		if (autoRef.current) return;
 		autoRef.current = true;
-		if (!claimAutoRun(piece.id)) return;
+		const requested = takeImproveRequest(piece.id);
+		if (!requested && !(autoStart && claimAutoRun(piece.id))) return;
 		setAuto(true);
 		void regenerate();
 	}, [autoStart, piece.id]);
